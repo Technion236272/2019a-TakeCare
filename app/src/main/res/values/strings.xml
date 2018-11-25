@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">TakeCare</string>
+    <string name="text_take_role">Need Something?</string>
+    <string name="text_give_role">Share Something?</string>
+    <string name="font_title">serif</string>
+
+    <string name="title_activity_taker_menu">TakeCare</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Pick-Up Menu</string>
+    <string name="nav_header_subtitle">Search in a way that suits you</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="ic_map_title">Map</string>
+    <string name="ic_categories_title">Categories</string>
+    <string name="ic_filter_title">Filter</string>
+
 </resources>
