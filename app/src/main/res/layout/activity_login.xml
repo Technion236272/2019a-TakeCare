@@ -22,23 +22,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="15dp"
+                android:layout_marginBottom="30dp"
                 android:textSize="15sp"/>
         <com.google.android.gms.common.SignInButton
             android:id="@+id/sign_in_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="50dp" />
+            android:layout_marginBottom="30dp" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sign up using an E-mail address"
+            android:text="@string/email_signin_text"
             android:textSize="20sp"
             android:gravity="center"
-            android:textStyle="bold|italic"
-            android:layout_marginBottom="50dp"
-            android:textColor="#ff6a5a"
+            android:textStyle="italic|bold"
+            android:layout_marginBottom="10dp"
+            android:textColor="#0400ff"
             />
         </LinearLayout>
 

@@ -18,4 +18,5 @@
 
     <string name="facebook_app_id">[APP_ID]</string>
     <string name="fb_login_protocol_scheme">fb[APP_ID]</string>
+    <string name="email_signin_text"><u>Sign up using an E-mail address</u></string>
 </resources>
