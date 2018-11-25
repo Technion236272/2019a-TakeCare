@@ -10,4 +10,6 @@
     <color name="primary_light">#D1C4E9</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
+
+    <color name="report">#D32F2F</color>
 </resources>
