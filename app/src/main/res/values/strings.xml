@@ -12,9 +12,18 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <string name="ic_map_title">Map</string>
-    <string name="ic_categories_title">Categories</string>
+    <string name="ic_map_display_title">Map Display</string>
+    <string name="ic_feed_display_title">List Display</string>
+    <string name="ic_show_all_title">Show All</string>
     <string name="ic_filter_title">Filter</string>
+    <string name="ic_food_title">Food</string>
+    <string name="ic_study_material_title">Study Material</string>
+    <string name="ic_furniture_title">Household</string>
+    <string name="ic_lost_and_found_title">Lost &amp; Found</string>
+    <string name="ic_hitchhike_title">Hitchhiking</string>
+    <string name="ic_in_person_title">In Person</string>
+    <string name="ic_giveaway_title">Public Giveaway</string>
+    <string name="ic_race_title">Race</string>
 
     <string name="facebook_app_id">[APP_ID]</string>
     <string name="fb_login_protocol_scheme">fb[APP_ID]</string>

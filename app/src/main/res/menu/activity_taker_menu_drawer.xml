@@ -2,37 +2,80 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
-
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_map"
-            android:title="@string/ic_map_title" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_view_module_black_24dp"
-            android:title="@string/ic_categories_title" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
-    </group>
-
-    <item android:title="Communicate">
+    <item android:title="Display Mode">
         <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+            <group android:id="@+id/display_group">
+                <item
+                    android:id="@+id/nav_feed_display"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_list"
+                    android:title="@string/ic_feed_display_title" />
+                <item
+                    android:id="@+id/nav_map_display"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_menu_map"
+                    android:title="@string/ic_map_display_title" />
+            </group>
         </menu>
     </item>
 
+
+    <item android:title="Categories">
+        <menu>
+            <group android:id="@+id/categories_group">
+                <item
+                    android:id="@+id/nav_show_all"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_view_module_black_24dp"
+                    android:title="@string/ic_show_all_title" />
+                <item
+                    android:id="@+id/nav_food"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_pizza_slice"
+                    android:title="@string/ic_food_title" />
+                <item
+                    android:id="@+id/nav_study_material"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_book"
+                    android:title="@string/ic_study_material_title" />
+                <item
+                    android:id="@+id/nav_furniture"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_lamp"
+                    android:title="@string/ic_furniture_title" />
+                <item
+                    android:id="@+id/nav_lost_and_found"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_lost_and_found"
+                    android:title="@string/ic_lost_and_found_title" />
+                <item
+                    android:id="@+id/nav_hitchhike"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_car"
+                    android:title="@string/ic_hitchhike_title" />
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="Pickup Method">
+        <menu>
+            <group android:id="@+id/pickup_group">
+                <item
+                    android:id="@+id/nav_in_person"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_in_person"
+                    android:title="@string/ic_in_person_title" />
+                <item
+                    android:id="@+id/nav_giveaway"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_giveaway"
+                    android:title="@string/ic_giveaway_title" />
+                <item
+                    android:id="@+id/nav_race"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_race"
+                    android:title="@string/ic_race_title" />
+            </group>
+        </menu>
+    </item>
 </menu>
