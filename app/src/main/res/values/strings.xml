@@ -21,9 +21,13 @@
     <string name="ic_furniture_title">Household</string>
     <string name="ic_lost_and_found_title">Lost &amp; Found</string>
     <string name="ic_hitchhike_title">Hitchhiking</string>
+    <string name="ic_any_pickup_title">Any</string>
     <string name="ic_in_person_title">In Person</string>
     <string name="ic_giveaway_title">Public Giveaway</string>
     <string name="ic_race_title">Race</string>
+    <string name="pickup_menu_title">Pickup Method</string>
+    <string name="display_menu_title">Display Mode</string>
+    <string name="categories_menu_title">Categories</string>
 
     <string name="facebook_app_id">[APP_ID]</string>
     <string name="fb_login_protocol_scheme">fb[APP_ID]</string>

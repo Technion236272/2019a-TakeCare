@@ -53,7 +53,7 @@ public class TakerMenuActivity extends AppCompatActivity
         prevNavGroupItem[0].setChecked(true);
         prevNavGroupItem[1] = navigationView.getMenu().findItem(R.id.nav_show_all);
         prevNavGroupItem[1].setChecked(true);
-        prevNavGroupItem[2] = navigationView.getMenu().findItem(R.id.nav_in_person);
+        prevNavGroupItem[2] = navigationView.getMenu().findItem(R.id.nav_any_pickup);
         prevNavGroupItem[2].setChecked(true);
     }
 
@@ -105,11 +105,11 @@ public class TakerMenuActivity extends AppCompatActivity
         }
         item.setChecked(true);
 
-        // Handle navigation view item clicks here.
+        //TODO: Implement handlers for each item
         int id = item.getItemId();
 
         if (id == R.id.nav_map_display) {
-            // Handle the camera action
+
         } else if (id == R.id.nav_show_all) {
 
         } else if (id == R.id.nav_food) {
@@ -123,7 +123,7 @@ public class TakerMenuActivity extends AppCompatActivity
         } else if (id == R.id.nav_hitchhike) {
 
         }
-        
+
         return false;
     }
 }

@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
-    <item android:title="Display Mode">
+    <item android:title="@string/display_menu_title">
         <menu>
             <group android:id="@+id/display_group">
                 <item
@@ -20,7 +20,7 @@
     </item>
 
 
-    <item android:title="Categories">
+    <item android:title="@string/categories_menu_title">
         <menu>
             <group android:id="@+id/categories_group">
                 <item
@@ -57,9 +57,14 @@
         </menu>
     </item>
 
-    <item android:title="Pickup Method">
+    <item android:title="@string/pickup_menu_title">
         <menu>
             <group android:id="@+id/pickup_group">
+                <item
+                    android:id="@+id/nav_any_pickup"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_world"
+                    android:title="@string/ic_any_pickup_title" />
                 <item
                     android:id="@+id/nav_in_person"
                     android:checkable="true"
