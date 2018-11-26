@@ -38,7 +38,7 @@
                 android:layout_height="300dp"
                 android:layout_below="@id/item_title"
                 android:layout_alignParentTop="false"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="15dp"
                 android:padding="50dp"
                 android:background="@color/primary_light"
                 app:srcCompat="@drawable/ic_heart_muffin" />
@@ -99,102 +99,99 @@
                 android:text="Giver McGiverface"/>
 
 
-            <ImageView
-                android:id="@+id/star1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/giver_name"
-                android:layout_toLeftOf="@id/star2"
-                app:srcCompat="@drawable/star" />
-
-            <ImageView
-                android:id="@+id/star2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/giver_name"
-                android:layout_marginBottom="-25dp"
-                android:layout_toLeftOf="@id/star3"
-                app:srcCompat="@drawable/star" />
-
-            <ImageView
-                android:id="@+id/star3"
+            <RatingBar
+                android:id="@+id/ratingBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/giver_name"
                 android:layout_centerInParent="true"
-                app:srcCompat="@drawable/star" />
-
-            <ImageView
-                android:id="@+id/star4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/giver_name"
-                android:layout_marginBottom="-25dp"
-                android:layout_toRightOf="@id/star3"
-                app:srcCompat="@drawable/star" />
-
-            <ImageView
-                android:id="@+id/star5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/giver_name"
-                android:layout_marginBottom="-25dp"
-                android:layout_toRightOf="@id/star4"
-                app:srcCompat="@drawable/star_outline" />
+                android:isIndicator="true"
+                android:numStars="5"
+                android:rating="4"
+                android:scaleX="0.5"
+                android:scaleY="0.5"
+                android:stepSize="0.5"/>
 
             <ImageView
                 android:id="@+id/pickup_time_clock"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="25dp"
                 android:layout_marginStart="25dp"
                 android:layout_marginLeft="25dp"
-                android:layout_below="@id/star1"
+                android:layout_below="@id/ratingBar"
                 app:srcCompat="@drawable/clock_outline" />
 
             <TextView
                 android:id="@+id/pickup_time_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="25dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginLeft="10dp"
-                android:layout_below="@id/star1"
+                android:layout_centerInParent="true"
+                android:layout_below="@id/ratingBar"
                 android:layout_toEndOf="@id/pickup_time_clock"
                 android:layout_toRightOf="@id/pickup_time_clock"
                 android:textSize="20sp"
                 android:textColor="@color/secondary_text"
                 android:text="27 Nov 2018, 10:00-14:00\n28 Nov 2018, 13:00-16:00\n30 Nov 2018, 13:00-16:00" />
+            <LinearLayout
+                android:id="@+id/location"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_below="@id/pickup_time_text">
 
-            <ImageView
-                android:id="@+id/distance_image"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_below="@+id/pickup_time_text"
-                android:layout_marginTop="25dp"
-                android:layout_marginStart="25dp"
-                android:layout_marginLeft="25dp"
-                app:srcCompat="@drawable/routes" />
+                <ImageView
+                    android:id="@+id/distance_image"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginTop="30dp"
+                    app:srcCompat="@drawable/routes" />
 
-            <TextView
-                android:id="@+id/distance_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_below="@id/pickup_time_text"
-                android:layout_toEndOf="@id/distance_image"
-                android:layout_toRightOf="@id/distance_image"
-                android:textSize="20sp"
-                android:textColor="@color/secondary_text"
-                android:text="3.6 km" />
+                <TextView
+                    android:layout_weight="1"
+                    android:id="@+id/distance_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="30dp"
+                    android:text="0.4 km"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="20sp" />
 
+                <ImageView
+                    android:id="@+id/location_image"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="30dp"
+                    app:srcCompat="@drawable/map_marker" />
+
+                <TextView
+                    android:layout_weight="3"
+                    android:id="@+id/location_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="25dp"
+                    android:text="Ullman Building, Technion City, Haifa"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="20sp" />
+            </LinearLayout>
             <ImageView
                 android:id="@+id/phone_image"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_below="@+id/location_text"
+                android:layout_below="@id/location"
                 android:layout_marginTop="30dp"
                 android:layout_marginStart="25dp"
                 android:layout_marginLeft="25dp"
@@ -207,40 +204,12 @@
                 android:layout_marginTop="30dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginLeft="10dp"
-                android:layout_below="@id/location_text"
+                android:layout_below="@id/location"
                 android:layout_toEndOf="@id/pickup_time_clock"
                 android:layout_toRightOf="@id/pickup_time_clock"
                 android:textSize="20sp"
                 android:textColor="@color/secondary_text"
                 android:text="+972521234567" />
-
-            <ImageView
-                android:id="@+id/location_image"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_below="@+id/pickup_time_text"
-                android:layout_toEndOf="@id/distance_text"
-                android:layout_toRightOf="@id/distance_text"
-                android:layout_marginTop="25dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginLeft="30dp"
-                app:srcCompat="@drawable/map_marker" />
-
-            <TextView
-                android:id="@+id/location_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginEnd="25dp"
-                android:layout_marginRight="25dp"
-                android:layout_below="@id/pickup_time_text"
-                android:layout_toEndOf="@id/location_image"
-                android:layout_toRightOf="@id/location_image"
-                android:textSize="20sp"
-                android:textColor="@color/secondary_text"
-                android:text="Sigmund Freud 24, Haifa" />
 
             <Button
                 android:id="@+id/send_message_button"
@@ -266,6 +235,8 @@
                 android:layout_below="@id/send_message_button"
                 android:layout_centerInParent="true"
                 android:enabled="true"/>
+
+
 
             <Button
                 android:id="@+id/report_button"
