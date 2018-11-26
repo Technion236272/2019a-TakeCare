@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ItemInfoActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/item_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="25dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginRight="25dp"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text"
+                android:text="Muffin with Heart"/>
+
+            <ImageView
+                android:id="@+id/item_image"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_below="@id/item_title"
+                android:layout_alignParentTop="false"
+                android:layout_marginTop="25dp"
+                android:padding="50dp"
+                android:background="@color/primary_light"
+                app:srcCompat="@drawable/ic_heart_muffin" />
+
+            <TextView
+                android:id="@+id/item_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="25sp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginRight="25dp"
+                android:textSize="22sp"
+                android:layout_below="@id/item_image"
+                android:textColor="@color/primary_text"
+                android:text="This is a small but lovely muffin, that can't wait to be eaten by a nice and caring muffin lover. Made with care and love."/>
+
+            <Button
+                android:id="@+id/request_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/item_description"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="35dp"
+                android:background="@color/colorAccent"
+                android:padding="15dp"
+                android:text="@string/request_item"
+                android:textAllCaps="false"
+                android:textColor="@color/icons"
+                android:textSize="25sp"
+                android:textStyle="italic" />
+
+            <ImageView
+                android:id="@+id/profile_pic"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_below="@id/request_button"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="50dp"
+                app:srcCompat="@drawable/com_facebook_profile_picture_blank_square" />
+
+            <TextView
+                android:id="@+id/giver_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="50dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginEnd="50dp"
+                android:layout_marginRight="50dp"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                android:layout_below="@id/profile_pic"
+                android:textColor="@color/primary_text"
+                android:text="Giver McGiverface"/>
+
+
+            <ImageView
+                android:id="@+id/star1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/giver_name"
+                android:layout_toLeftOf="@id/star2"
+                app:srcCompat="@drawable/star" />
+
+            <ImageView
+                android:id="@+id/star2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/giver_name"
+                android:layout_marginBottom="-25dp"
+                android:layout_toLeftOf="@id/star3"
+                app:srcCompat="@drawable/star" />
+
+            <ImageView
+                android:id="@+id/star3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/giver_name"
+                android:layout_centerInParent="true"
+                app:srcCompat="@drawable/star" />
+
+            <ImageView
+                android:id="@+id/star4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/giver_name"
+                android:layout_marginBottom="-25dp"
+                android:layout_toRightOf="@id/star3"
+                app:srcCompat="@drawable/star" />
+
+            <ImageView
+                android:id="@+id/star5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/giver_name"
+                android:layout_marginBottom="-25dp"
+                android:layout_toRightOf="@id/star4"
+                app:srcCompat="@drawable/star_outline" />
+
+            <ImageView
+                android:id="@+id/pickup_time_clock"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginLeft="25dp"
+                android:layout_below="@id/star1"
+                app:srcCompat="@drawable/clock_outline" />
+
+            <TextView
+                android:id="@+id/pickup_time_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@id/star1"
+                android:layout_toEndOf="@id/pickup_time_clock"
+                android:layout_toRightOf="@id/pickup_time_clock"
+                android:textSize="20sp"
+                android:textColor="@color/secondary_text"
+                android:text="27 Nov 2018, 10:00-14:00\n28 Nov 2018, 13:00-16:00\n30 Nov 2018, 13:00-16:00" />
+
+            <ImageView
+                android:id="@+id/distance_image"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_below="@+id/pickup_time_text"
+                android:layout_marginTop="25dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginLeft="25dp"
+                app:srcCompat="@drawable/routes" />
+
+            <TextView
+                android:id="@+id/distance_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@id/pickup_time_text"
+                android:layout_toEndOf="@id/distance_image"
+                android:layout_toRightOf="@id/distance_image"
+                android:textSize="20sp"
+                android:textColor="@color/secondary_text"
+                android:text="3.6 km" />
+
+            <ImageView
+                android:id="@+id/phone_image"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_below="@+id/location_text"
+                android:layout_marginTop="30dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginLeft="25dp"
+                app:srcCompat="@drawable/phone" />
+
+            <TextView
+                android:id="@+id/phone_number"
+                android:layout_width="155dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@id/location_text"
+                android:layout_toEndOf="@id/pickup_time_clock"
+                android:layout_toRightOf="@id/pickup_time_clock"
+                android:textSize="20sp"
+                android:textColor="@color/secondary_text"
+                android:text="+972521234567" />
+
+            <ImageView
+                android:id="@+id/location_image"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_below="@+id/pickup_time_text"
+                android:layout_toEndOf="@id/distance_text"
+                android:layout_toRightOf="@id/distance_text"
+                android:layout_marginTop="25dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginLeft="30dp"
+                app:srcCompat="@drawable/map_marker" />
+
+            <TextView
+                android:id="@+id/location_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_below="@id/pickup_time_text"
+                android:layout_toEndOf="@id/location_image"
+                android:layout_toRightOf="@id/location_image"
+                android:textSize="20sp"
+                android:textColor="@color/secondary_text"
+                android:text="Sigmund Freud 24, Haifa" />
+
+            <Button
+                android:id="@+id/send_message_button"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/phone_number"
+                android:layout_marginTop="35dp"
+                android:layout_centerInParent="true"
+                android:textAllCaps="false"
+                android:drawableStart="@drawable/message_text_outline"
+                android:drawableLeft="@drawable/message_text_outline"
+                android:textSize="20sp"
+                android:textColor="@color/icons"
+                android:background="@color/colorPrimary"
+                android:padding="10dp"
+                android:text="@string/send_message_from_item_info" />
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/map"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="35dp"
+                android:layout_below="@id/send_message_button"
+                android:layout_centerInParent="true"
+                android:enabled="true"/>
+
+            <Button
+                android:id="@+id/report_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginRight="25dp"
+                android:padding="10dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/map"
+                android:drawableStart="@drawable/alert_circle"
+                android:drawableLeft="@drawable/alert_circle"
+                android:background="@android:color/transparent"
+                android:textColor="@color/report"
+                android:textAllCaps="false"
+                android:text="@string/report" />
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+
+</RelativeLayout>
