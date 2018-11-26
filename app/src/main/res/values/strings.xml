@@ -93,4 +93,9 @@
     </string>
     <string name="user_name">Name</string>
     <string name="add_profile_pic">Add a Profile Picture:</string>
+
+    <string name="request_item">I Want That!</string>
+    <string name="send_message_from_item_info">Send Message</string>
+    <string name="report">Report</string>
+
 </resources>
