@@ -40,6 +40,4 @@ public class LoginActivity extends AppCompatActivity {
         TransitionManager.beginDelayedTransition((ConstraintLayout) findViewById(R.id.login_screen_layout));
         constraintSet.applyTo((ConstraintLayout) findViewById(R.id.login_screen_layout));
 
-
-    }
 }

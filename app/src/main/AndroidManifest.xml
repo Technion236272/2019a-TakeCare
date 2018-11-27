@@ -11,7 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity">
+
+        </activity>
 
         <meta-data
             android:name="preloaded_fonts"
@@ -26,7 +28,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.yuval.takecare.MainActivity" />
         </activity>
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".LoginActivity"></activity>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -48,25 +50,13 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".SharedItemsActivity"
-            android:label="@string/shared_items_menu_title"></activity>
-        <activity
-            android:name=".RequestedItemsActivity"
-            android:label="@string/requested_items_menu_title"></activity>
-        <activity
-            android:name=".UserFavoritesActivity"
-            android:label="@string/user_favorites_menu_title">
+        <activity android:name=".GiverFormActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".GiverMenu"
-            android:label="@string/title_activity_giver_menu"
-            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
