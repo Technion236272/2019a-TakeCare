@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/report_inappropriate"
+        android:title="@string/report_inappropriate_text" />
+    <item
+        android:id="@+id/report_no_fit"
+        android:title="@string/report_no_fit_text"/>
+    <item
+        android:id="@+id/report_spam"
+        android:title="@string/report_spam_text"/>
+</menu>
