@@ -52,7 +52,7 @@
     <!--Report option elements-->
     <string name="report_inappropriate_text">Inappropriate content</string>
     <string name="report_no_fit_text">Item does not fit description</string>
-    <string name="report_spam_text">report_spam</string>
+    <string name="report_spam_text">Spam</string>
 
 
     <!---->
