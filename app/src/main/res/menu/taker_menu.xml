@@ -1,34 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
     <item
-        android:id="@+id/action_chat"
-        android:icon="@drawable/ic_chat"
-        android:title="@string/action_chat"
-        app:showAsAction="ifRoom"/>
-
-    <item
-        android:id="@+id/action_user_settings"
-        android:orderInCategory="1"
-        android:title="@string/action_user_settings"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_my_items"
-        android:orderInCategory="2"
-        android:title="@string/action_my_items"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_requested_items"
-        android:orderInCategory="3"
-        android:title="@string/action_requested_items"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_favorites"
-        android:orderInCategory="4"
-        android:title="@string/action_favorites"
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
         app:showAsAction="never" />
 </menu>
