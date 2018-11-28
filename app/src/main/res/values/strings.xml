@@ -72,5 +72,11 @@
     <string name="shared_items_empty_feed_text">Looks like you didn\'t share anything yet…\n\n\nWhy not get started?\nTake a look around the house and find something that you\'d like to share with others!</string>
     <string name="requested_items_empty_feed_text">You don\'t have any requested items at the moment…\n\n\nWant anything?\nTake a look at the pick-up menu and find something that you like!</string>
 
-    <!---->
+
+    <!--Favorites page elements-->
+    <string name="favorites_tag_hint">e.g. "muffins", "giveaway", "music"…</string>
+    <string name="favorites_instruction_text">Type in words that interest you.\nWe\'ll make sure to notify you when a suitable item is posted!</string>
+
+
+    <!--Misc-->
 </resources>

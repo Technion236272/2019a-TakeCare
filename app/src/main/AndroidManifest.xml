@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity">
+        </activity>
 
         <meta-data
             android:name="preloaded_fonts"
@@ -55,6 +56,10 @@
         <activity
             android:name=".RequestedItemsActivity"
             android:label="@string/requested_items_menu_title">
+        </activity>
+        <activity
+            android:name=".UserFavoritesActivity"
+            android:label="@string/user_favorites_menu_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
