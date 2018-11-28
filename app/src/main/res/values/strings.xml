@@ -8,6 +8,15 @@
     <string name="font_title">serif</string>
 
 
+    <!--Activity title elements-->
+    <string name="taker_menu_title">TakeCare</string>
+    <string name="giver_menu_title">TakeCare</string>
+    <string name="shared_items_menu_title">My Items</string>
+    <string name="requested_items_menu_title">Requested Items</string>
+    <string name="user_favorites_menu_title">My Favorites</string>
+    <string name="user_profile_menu_title">My Profile</string>
+
+
     <!--Drawer elements-->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -57,9 +66,11 @@
     <string name="report_hide_text">Hide</string>
 
 
-    <!--Empty taker feed elements-->
+    <!--Empty feed elements-->
     <string name="empty_feed_text_1">Uh-oh…\n\nSeems like there are no nearby items available right now!\n\nThe good news is:"</string>
-    <string name="empty_feed_text_2">you can share the first one!</string>
+    <string name="empty_feed_text_2">you can share the first one!</string>>
+    <string name="shared_items_empty_feed_text">Looks like you didn\'t share anything yet…\n\n\nWhy not get started?\nTake a look around the house and find something that you\'d like to share with others!</string>
+    <string name="requested_items_empty_feed_text">You don\'t have any requested items at the moment…\n\n\nWant anything?\nTake a look at the pick-up menu and find something that you like!</string>
 
     <!---->
 </resources>

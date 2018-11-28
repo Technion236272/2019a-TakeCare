@@ -50,7 +50,7 @@ public class TakerMenuActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Should open the giver form", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -65,7 +65,7 @@ public class TakerMenuActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //Initialize three default checked items from the drawer
+        //Initialize three default checked items from the pickup drawer
         //Manipulating these items ensures that one item is always checked from each menu
         prevNavGroupItem = new MenuItem[3];
         prevNavGroupItem[0] = navigationView.getMenu().findItem(R.id.nav_feed_display);
@@ -74,9 +74,6 @@ public class TakerMenuActivity extends AppCompatActivity
         prevNavGroupItem[1].setChecked(true);
         prevNavGroupItem[2] = navigationView.getMenu().findItem(R.id.nav_any_pickup);
         prevNavGroupItem[2].setChecked(true);
-
-        ImageView arrow = (ImageView) findViewById(R.id.empty_feed_arrow);
-        arrow.setRotation(45);
 
         setUpRecyclerView();
     }
