@@ -24,11 +24,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void transition(View view) {
-        ConstraintSet constraintSet = new ConstraintSet();
+        /*ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(this,R.layout.activity_login2);
         TransitionManager tr = new TransitionManager();
         TransitionManager.beginDelayedTransition((ConstraintLayout) findViewById(R.id.shit));
-        constraintSet.applyTo((ConstraintLayout) findViewById(R.id.shit));
+        constraintSet.applyTo((ConstraintLayout) findViewById(R.id.shit));*/
 
     }
 }
