@@ -77,7 +77,20 @@
     <string name="favorites_tag_hint">e.g. "muffins", "giveaway", "music"…</string>
     <string name="favorites_instruction_text">Type in words that interest you.\nWe\'ll make sure to notify you when a suitable item is posted!</string>
     <string name="title_activity_giver_menu">GiverMenu</string>
-
-
-    <!--Misc-->
+    
+    <string name="title_activity_sign_up">Sign in</string>
+    <!-- Strings related to sign up -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_confirm_password">Confirm Password</string>
+    <string name="action_sign_up">Sign Up</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="user_name">Name</string>
+    <string name="add_profile_pic">Add a Profile Picture:</string>
 </resources>
