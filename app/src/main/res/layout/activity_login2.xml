@@ -4,25 +4,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
     tools:context=".LoginActivity"
-    android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
+    android:background="@android:color/black">
 
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/background_image_mq"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <ImageView
+        android:id="@+id/faded_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background_image_blurred_mq"
+        android:scaleType="centerCrop" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background_image_mq"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_button"
@@ -54,9 +62,9 @@
         android:onClick="transition"
         android:text="@string/email_signin_text"
         android:textColor="@color/primary_text"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView3"
-        app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textView5"
@@ -74,8 +82,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
         android:hint="E-mail"
+        android:inputType="textPersonName"
         android:textColor="@color/primary_text"
         app:layout_constraintBottom_toBottomOf="@+id/sign_in_button"
         app:layout_constraintStart_toStartOf="@+id/editText2"
@@ -89,8 +97,8 @@
         android:layout_marginLeft="84dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
-        android:inputType="textPersonName"
         android:hint="Password"
+        android:inputType="textPersonName"
         android:textColor="@color/primary_text"
         app:layout_constraintBottom_toBottomOf="@+id/textView3"
         app:layout_constraintStart_toStartOf="parent"
