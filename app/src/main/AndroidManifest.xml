@@ -55,9 +55,10 @@
         <activity
             android:name=".RequestedItemsActivity"
             android:label="@string/requested_items_menu_title">
+        </activity>
+        <activity android:name=".UserProfileActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

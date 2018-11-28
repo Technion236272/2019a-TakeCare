@@ -72,5 +72,14 @@
     <string name="shared_items_empty_feed_text">Looks like you didn\'t share anything yet…\n\n\nWhy not get started?\nTake a look around the house and find something that you\'d like to share with others!</string>
     <string name="requested_items_empty_feed_text">You don\'t have any requested items at the moment…\n\n\nWant anything?\nTake a look at the pick-up menu and find something that you like!</string>
 
+    <!--User Profile elements-->
+    <string name="show_phone_number">Show Phone Number</string>
+    <string name="get_favorites_notifications">Receive Notifications from Favorites</string>
+    <string name="change_password">Change Password</string>
+    <string name="my_favorites">My Favorites</string>
+    <string name="my_items">My Items</string>
+    <string name="pending_requests">Pending Requests</string>
+    <string name="log_out">Log Out</string>
+
     <!---->
 </resources>
