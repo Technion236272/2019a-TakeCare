@@ -53,6 +53,11 @@
                     android:checkable="true"
                     android:icon="@drawable/ic_car"
                     android:title="@string/ic_hitchhike_title" />
+                <item
+                    android:id="@+id/nav_other"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_treasure"
+                    android:title="@string/ic_other" />
             </group>
         </menu>
     </item>
