@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class TakerRVAdapter extends RecyclerView.Adapter<TakerRVAdapter.ItemsViewHolder> {
+public class TakerRVAdapter extends FeedRecyclerView.Adapter<TakerRVAdapter.ItemsViewHolder> {
 
     List<FeedCardInformation> cardsAmount;
 

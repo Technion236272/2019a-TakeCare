@@ -9,4 +9,7 @@
     <item
         android:id="@+id/report_spam"
         android:title="@string/report_spam_text"/>
+    <item
+        android:id="@+id/report_hide"
+        android:title="@string/report_hide_text"/>
 </menu>

@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
@@ -31,7 +32,7 @@ public class TakerMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     MenuItem[] prevNavGroupItem;
-    private RecyclerView recyclerView;
+    private FeedRecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
@@ -74,32 +75,34 @@ public class TakerMenuActivity extends AppCompatActivity
         prevNavGroupItem[2] = navigationView.getMenu().findItem(R.id.nav_any_pickup);
         prevNavGroupItem[2].setChecked(true);
 
-        setUpRecyclerView(recyclerView);
+        ImageView arrow = (ImageView) findViewById(R.id.empty_feed_arrow);
+        arrow.setRotation(45);
+
+        setUpRecyclerView();
     }
 
-    private void setUpRecyclerView(RecyclerView recyclerView) {
-        recyclerView = (RecyclerView) findViewById(R.id.taker_feed_list);
+    private void setUpRecyclerView() {
+        recyclerView = (FeedRecyclerView) findViewById(R.id.taker_feed_list);
+        View emptyFeedView = findViewById(R.id.empty_feed_view);
         //Optimizing recycler view's performance:
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(10);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-        //TODO: properly implement factory with input stream
-        /*InputStream is = null;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 8;
-        Bitmap preview_bitmap = BitmapFactory.decodeStream(is, null, options);*/
+        //TODO: properly implement factory with input stream once database is ready
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        List<FeedCardInformation> cards = initData();
-
-        adapter = new TakerRVAdapter(cards);
+        List<FeedCardInformation> cards = new ArrayList<>();
+        adapter = new TakerRVAdapter(cards); //List is still empty
         recyclerView.setAdapter(adapter);
+        //Set the view to be displayed when the FeedRecyclerView is empty!
+        recyclerView.setEmptyView(emptyFeedView);
     }
 
+    /*
     private List<FeedCardInformation> initData() {
         List<FeedCardInformation> list = new ArrayList<>();
         list.add(new FeedCardInformation("Yummy Muffins For All!", R.drawable.photo_muffin, R.drawable.photo_mcgiverface, "Giver McGiverFace", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
@@ -108,7 +111,7 @@ public class TakerMenuActivity extends AppCompatActivity
         list.add(new FeedCardInformation("FREE PIZZAS IN TAUB'S BALCONY!! GET OVER HERE QUICKLY!!", R.drawable.photo_pizza, R.drawable.ic_user_purple, "Yuval", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
         list.add(new FeedCardInformation("This Cool Nightstand!", R.drawable.photo_nightstand, R.drawable.ic_user_purple, "Tzvika", R.drawable.ic_lamp_purple, R.drawable.ic_race_purple));
         return list;
-    }
+    }*/
 
 
     @Override
@@ -135,11 +138,15 @@ public class TakerMenuActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
 
         //TODO: Implement handlers for each user settings item
-        switch(item.getItemId()) {
-            case R.id.action_user_settings: return true;
-            case R.id.action_my_items: return true;
-            case R.id.action_requested_items: return true;
-            case R.id.action_favorites: return true;
+        switch (item.getItemId()) {
+            case R.id.action_user_settings:
+                return true;
+            case R.id.action_my_items:
+                return true;
+            case R.id.action_requested_items:
+                return true;
+            case R.id.action_favorites:
+                return true;
         }
 
 
@@ -150,39 +157,50 @@ public class TakerMenuActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int groupId = item.getGroupId();
-        if(groupId == R.id.display_group && prevNavGroupItem[0] != item) {
+        if (groupId == R.id.display_group && prevNavGroupItem[0] != item) {
             prevNavGroupItem[0].setChecked(false);
             prevNavGroupItem[0] = item;
-        } else if(groupId == R.id.categories_group && prevNavGroupItem[1] != item) {
+        } else if (groupId == R.id.categories_group && prevNavGroupItem[1] != item) {
             prevNavGroupItem[1].setChecked(false);
             prevNavGroupItem[1] = item;
-        } else if(groupId == R.id.pickup_group && prevNavGroupItem[2] != item) {
+        } else if (groupId == R.id.pickup_group && prevNavGroupItem[2] != item) {
             prevNavGroupItem[2].setChecked(false);
             prevNavGroupItem[2] = item;
         }
         item.setChecked(true);
 
         //TODO: Implement handlers for each drawer item
-        switch(item.getItemId()) {
-            case R.id.nav_map_display: break;
-            case R.id.nav_show_all: break;
-            case R.id.nav_food: break;
-            case R.id.nav_study_material: break;
-            case R.id.nav_furniture: break;
-            case R.id.nav_lost_and_found: break;
-            case R.id.nav_hitchhike: break;
-            case R.id.nav_any_pickup: break;
-            case R.id.nav_in_person: break;
-            case R.id.nav_giveaway: break;
-            case R.id.nav_race: break;
+        switch (item.getItemId()) {
+            case R.id.nav_map_display:
+                break;
+            case R.id.nav_show_all:
+                break;
+            case R.id.nav_food:
+                break;
+            case R.id.nav_study_material:
+                break;
+            case R.id.nav_furniture:
+                break;
+            case R.id.nav_lost_and_found:
+                break;
+            case R.id.nav_hitchhike:
+                break;
+            case R.id.nav_any_pickup:
+                break;
+            case R.id.nav_in_person:
+                break;
+            case R.id.nav_giveaway:
+                break;
+            case R.id.nav_race:
+                break;
         }
 
         return false;
     }
 
     public void onItemCategoryPress(View view) {
-        String str="";
-        if(view.getId() == R.id.item_category) {
+        String str = "";
+        if (view.getId() == R.id.item_category) {
             switch ((int) view.getTag()) {
                 case R.drawable.ic_pizza_slice_purple:
                     str = "This item's category is food";
@@ -203,8 +221,7 @@ public class TakerMenuActivity extends AppCompatActivity
                     str = "This item is in a category of its own";
                     break;
             }
-        }
-        else {
+        } else {
             switch ((int) view.getTag()) {
                 case R.drawable.ic_in_person_purple:
                     str = "This item is available for pick-up in person";
@@ -226,5 +243,18 @@ public class TakerMenuActivity extends AppCompatActivity
         PopupMenu menu = new PopupMenu(this, view);
         menu.getMenuInflater().inflate(R.menu.report_menu, menu.getMenu());
         menu.show();
+    }
+
+    public void tempFillItems(View view) {
+        List<FeedCardInformation> list = new ArrayList<>();
+        list.add(new FeedCardInformation("Yummy Muffins For All!", R.drawable.photo_muffin, R.drawable.photo_mcgiverface, "Giver McGiverFace", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
+        list.add(new FeedCardInformation("Driving to Tel-Aviv at Approx 7pm", R.drawable.photo_hittchhiker, R.drawable.ic_user_purple, "Israel M. Shalom", R.drawable.ic_car_purple, R.drawable.ic_race_purple));
+        list.add(new FeedCardInformation("I Found An Umbrella Near Ullman", R.drawable.photo_umbrella, R.drawable.ic_user_purple, "Noa", R.drawable.ic_lost_and_found_purple, R.drawable.ic_in_person_purple));
+        list.add(new FeedCardInformation("FREE PIZZAS IN TAUB'S BALCONY!! GET OVER HERE QUICKLY!!", R.drawable.photo_pizza, R.drawable.ic_user_purple, "Yuval", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
+        list.add(new FeedCardInformation("This Cool Nightstand!", R.drawable.photo_nightstand, R.drawable.ic_user_purple, "Tzvika", R.drawable.ic_lamp_purple, R.drawable.ic_race_purple));
+
+        List<FeedCardInformation> cards = list;
+        adapter = new TakerRVAdapter(cards);
+        recyclerView.setAdapter(adapter);
     }
 }

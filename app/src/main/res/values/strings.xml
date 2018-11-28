@@ -24,6 +24,7 @@
     <string name="ic_furniture_title">Household</string>
     <string name="ic_lost_and_found_title">Lost &amp; Found</string>
     <string name="ic_hitchhike_title">Hitchhiking</string>
+    <string name="ic_other">Other</string>
     <string name="ic_any_pickup_title">Any</string>
     <string name="ic_in_person_title">In Person</string>
     <string name="ic_giveaway_title">Public Giveaway</string>
@@ -51,9 +52,14 @@
 
     <!--Report option elements-->
     <string name="report_inappropriate_text">Inappropriate content</string>
-    <string name="report_no_fit_text">Item does not fit description</string>
+    <string name="report_no_fit_text">Does not fit description</string>
     <string name="report_spam_text">Spam</string>
+    <string name="report_hide_text">Hide</string>
 
+
+    <!--Empty taker feed elements-->
+    <string name="empty_feed_text_1">Uh-oh…\n\nSeems like there are no nearby items available right now!\n\nThe good news is:"</string>
+    <string name="empty_feed_text_2">you can share the first one!</string>
 
     <!---->
 </resources>
