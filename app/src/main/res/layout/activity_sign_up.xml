@@ -155,7 +155,7 @@
                 android:layout_marginTop="50dp"
                 android:layout_centerHorizontal="true"
                 android:background="@color/colorPrimary"
-                android:text="@string/action_sign_up"
+                android:text="Continue"
                 android:textAllCaps="false"
                 android:textColor="@color/icons"
                 android:textSize="20sp"
