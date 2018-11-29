@@ -79,7 +79,7 @@ public class GiverFormActivity extends AppCompatActivity {
 
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        time_slot_text.append(" " + hourOfDay + ":" + minute + " - ");
+                        time_slot_text.append(" " + (hourOfDay < 10 ? "0":"") + hourOfDay + ":" + (minute < 10 ? "0":"")+ minute + " - ");
                         TimePickerDialog endTime = new TimePickerDialog(GiverFormActivity.this, new TimePickerDialog.OnTimeSetListener() {
                             @Override
                             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
