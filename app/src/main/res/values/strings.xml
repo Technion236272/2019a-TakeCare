@@ -15,6 +15,8 @@
     <string name="requested_items_menu_title">Requested Items</string>
     <string name="user_favorites_menu_title">My Favorites</string>
     <string name="user_profile_menu_title">My Profile</string>
+    <string name="title_activity_giver_menu">GiverMenu</string>
+    <string name="title_activity_sign_up">Sign in</string>
 
 
     <!--Drawer elements-->
@@ -76,9 +78,8 @@
     <!--Favorites page elements-->
     <string name="favorites_tag_hint">e.g. "muffins", "giveaway", "music"…</string>
     <string name="favorites_instruction_text">Type in words that interest you.\nWe\'ll make sure to notify you when a suitable item is posted!</string>
-    <string name="title_activity_giver_menu">GiverMenu</string>
-    
-    <string name="title_activity_sign_up">Sign in</string>
+
+
     <!-- Strings related to sign up -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
