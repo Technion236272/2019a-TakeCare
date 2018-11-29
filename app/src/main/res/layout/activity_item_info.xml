@@ -30,7 +30,7 @@
                 android:textSize="30sp"
                 android:textStyle="bold"
                 android:textColor="@color/primary_text"
-                android:text="Muffin with Heart"/>
+                android:text="Yummy Muffins For All!"/>
 
             <ImageView
                 android:id="@+id/item_image"
@@ -41,7 +41,8 @@
                 android:layout_marginTop="15dp"
                 android:padding="50dp"
                 android:background="@color/primary_light"
-                app:srcCompat="@drawable/ic_heart_muffin" />
+                android:src="@drawable/photo_muffin"
+                android:scaleType="center"/>
 
             <TextView
                 android:id="@+id/item_description"
@@ -80,7 +81,8 @@
                 android:layout_below="@id/request_button"
                 android:layout_centerInParent="true"
                 android:layout_marginTop="50dp"
-                app:srcCompat="@drawable/com_facebook_profile_picture_blank_square" />
+                 android:src="@drawable/photo_mcgiverface"
+                android:scaleType="centerCrop"/>
 
             <TextView
                 android:id="@+id/giver_name"
@@ -105,12 +107,13 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/giver_name"
                 android:layout_centerInParent="true"
+                android:layout_marginTop="-4dp"
                 android:isIndicator="true"
                 android:numStars="5"
-                android:rating="4"
+                android:rating="4.5"
                 android:scaleX="0.5"
                 android:scaleY="0.5"
-                android:stepSize="0.5"/>
+                android:stepSize="0.5" />
 
             <ImageView
                 android:id="@+id/pickup_time_clock"

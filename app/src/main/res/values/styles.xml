@@ -17,7 +17,7 @@
     </style>
 
     <style name="UserSettings" parent="@android:style/Widget.Holo.ActionButton.Overflow">
-        <item name="android:src">@drawable/ic_user_vector</item>
+        <item name="android:src">@drawable/ic_user_vector_white</item>
     </style>
 
     <style name="MenuTitle">

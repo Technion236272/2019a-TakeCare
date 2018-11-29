@@ -7,13 +7,19 @@
     android:orientation="vertical"
     tools:context=".UserProfileActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/dummy_toolbar"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme" />
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/user_profile_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -31,7 +37,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="30dp"
-                app:srcCompat="@drawable/ic_user_vector"/>
+                app:srcCompat="@drawable/ic_user_vector" />
 
             <TextView
                 android:id="@+id/user_name"
@@ -46,23 +52,25 @@
 
             <RatingBar
                 android:id="@+id/ratingBar"
+                style="@style/Base.Widget.AppCompat.RatingBar.Indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Base.Widget.AppCompat.RatingBar.Indicator"
-                android:layout_centerHorizontal="true"
                 android:layout_below="@id/user_name"
+                android:layout_centerHorizontal="true"
+                android:rating="4.5"
+                android:isIndicator="true"
                 android:layout_marginTop="5dp" />
 
             <ImageButton
                 android:id="@+id/imageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/user_name"
-                android:layout_toRightOf="@id/user_name"
                 android:layout_below="@id/profile_pic"
-                android:layout_marginTop="15dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_toEndOf="@id/user_name"
+                android:layout_toRightOf="@id/user_name"
                 android:background="@android:color/transparent"
                 app:srcCompat="@drawable/ic_edit_black_24dp" />
 
@@ -70,120 +78,118 @@
                 android:id="@+id/about"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/ratingBar"
                 android:layout_marginStart="15dp"
                 android:layout_marginLeft="15dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginRight="15dp"
-                android:layout_marginTop="30dp"
-                android:padding="10dp"
-                android:layout_below="@id/ratingBar"
+                android:background="@drawable/text_box"
                 android:ems="10"
+                android:hint="Tell about yourself"
                 android:inputType="text"
                 android:maxLines="5"
-                android:hint="Tell about yourself"
-                android:background="@drawable/text_box"/>
+                android:padding="10dp" />
 
             <Button
                 android:id="@+id/change_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/change_password"
-                android:textAllCaps="false"
                 android:layout_below="@id/about"
                 android:layout_marginTop="40dp"
-                android:gravity="start"
-                android:padding="25dp"
                 android:drawableEnd="@drawable/ic_arrow_forward_black_24dp"
                 android:drawableRight="@drawable/ic_arrow_forward_black_24dp"
+                android:gravity="start"
+                android:padding="25dp"
+                android:text="@string/change_password"
+                android:textAllCaps="false"
                 app:backgroundTint="@android:color/transparent"
-                app:backgroundTintMode="add"/>
+                app:backgroundTintMode="add" />
 
             <Button
                 android:id="@+id/my_favorites"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/my_favorites"
-                android:textAllCaps="false"
                 android:layout_below="@id/change_password"
                 android:layout_marginTop="10dp"
-                android:gravity="start"
-                android:padding="25dp"
                 android:drawableEnd="@drawable/ic_arrow_forward_black_24dp"
                 android:drawableRight="@drawable/ic_arrow_forward_black_24dp"
+                android:gravity="start"
+                android:padding="25dp"
+                android:text="@string/my_favorites"
+                android:textAllCaps="false"
                 app:backgroundTint="@android:color/transparent"
-                app:backgroundTintMode="add"
-                />
+                app:backgroundTintMode="add" />
+
             <Button
                 android:id="@+id/my_items"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/my_items"
-                android:textAllCaps="false"
                 android:layout_below="@id/my_favorites"
                 android:layout_marginTop="10dp"
-                android:gravity="start"
-                android:padding="25dp"
                 android:drawableEnd="@drawable/ic_arrow_forward_black_24dp"
                 android:drawableRight="@drawable/ic_arrow_forward_black_24dp"
+                android:gravity="start"
+                android:padding="25dp"
+                android:text="@string/my_items"
+                android:textAllCaps="false"
                 app:backgroundTint="@android:color/transparent"
-                app:backgroundTintMode="add"
-                />
+                app:backgroundTintMode="add" />
+
             <Button
                 android:id="@+id/pending_requests"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/pending_requests"
-                android:textAllCaps="false"
                 android:layout_below="@id/my_items"
                 android:layout_marginTop="10dp"
-                android:gravity="start"
-                android:padding="25dp"
                 android:drawableEnd="@drawable/ic_arrow_forward_black_24dp"
                 android:drawableRight="@drawable/ic_arrow_forward_black_24dp"
+                android:gravity="start"
+                android:padding="25dp"
+                android:text="@string/pending_requests"
+                android:textAllCaps="false"
                 app:backgroundTint="@android:color/transparent"
-                app:backgroundTintMode="add"
-                />
+                app:backgroundTintMode="add" />
 
             <Switch
                 android:id="@+id/show_phone_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/pending_requests"
                 android:layout_marginTop="30dp"
                 android:padding="20dp"
-                android:layout_below="@id/pending_requests"
                 android:text="@string/show_phone_number" />
 
             <Switch
                 android:id="@+id/unmute_favorites"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/show_phone_number"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="40dp"
                 android:padding="20dp"
-                android:layout_below="@id/show_phone_number"
                 android:text="@string/get_favorites_notifications" />
 
             <Button
                 android:id="@+id/logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/log_out"
-                android:textAllCaps="false"
                 android:layout_below="@id/unmute_favorites"
                 android:layout_alignParentBottom="true"
                 android:layout_marginTop="10dp"
-                android:gravity="start"
-                android:padding="30dp"
-                android:textColor="@android:color/white"
+                android:background="@android:color/holo_red_dark"
+                android:clickable="true"
                 android:drawableEnd="@drawable/ic_logout_small"
                 android:drawableRight="@drawable/ic_arrow_forward_black_24dp"
-                android:background="@android:color/holo_red_dark"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:clickable="true"
                 android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="start"
+                android:padding="30dp"
+                android:text="@string/log_out"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
                 app:backgroundTint="@android:color/holo_red_dark"
-                app:backgroundTintMode="add"
-                />
+                app:backgroundTintMode="add" />
         </RelativeLayout>
     </ScrollView>
 

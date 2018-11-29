@@ -28,11 +28,6 @@
                 android:value="com.example.yuval.takecare.MainActivity" />
         </activity>
         <activity android:name=".LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
 
@@ -74,12 +69,28 @@
             android:name=".SignUpActivity" >
         </activity>
 
-        <activity android:name=".UserProfileActivity">
+        <activity
+            android:name=".UserProfileActivity"
+            android:label="@string/user_profile_menu_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ItemInfoActivity">
+        </activity>
+
+        <activity
+            android:name=".GiverFormActivity">
+        </activity>
+
+        <activity
+            android:name=".GiverMenu"
+            android:label="@string/giver_menu_title">
+        </activity>
+
     </application>
 
 </manifest>
