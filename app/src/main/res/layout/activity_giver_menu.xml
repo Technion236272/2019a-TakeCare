@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent"
+    android:orientation="vertical"
+    tools:context=".GiverMenu">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="Category Selection"
+            app:titleTextColor="@android:color/white"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <TextView
+        style="@style/MenuTitle"
+        android:textColor="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="What do you want to share?"
+        app:autoSizeTextType="uniform" />
+
+    <android.support.v7.widget.GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:alignmentMode="alignBounds"
+        app:columnCount="2"
+        app:columnOrderPreserved="false"
+        app:rowCount="3"
+        app:rowOrderPreserved="false"
+        app:useDefaultMargins="false"
+        android:paddingEnd="10dp"
+        android:paddingStart="10dp">
+
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1"
+            card_view:cardBackgroundColor="@color/colorAccent"
+            card_view:cardCornerRadius="0dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/muffin1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    app:backgroundTint="@color/colorAccent"/>
+
+                <ImageView
+                    android:id="@+id/pizza_slice_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:scaleX="2"
+                    android:scaleY="2"
+                    android:src="@drawable/ic_pizza_96_big_purple"
+                    card_view:layout_constraintBottom_toBottomOf="parent"
+                    card_view:layout_constraintEnd_toEndOf="@+id/muffin1"
+                    card_view:layout_constraintStart_toStartOf="@+id/muffin1"
+                    card_view:layout_constraintTop_toTopOf="@+id/muffin1" />
+
+                <TextView
+                    style="@style/MenuTitle"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="Food"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="25sp"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin1"
+                    card_view:layout_constraintEnd_toEndOf="@+id/muffin1"
+                    card_view:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintTop_toBottomOf="@+id/pizza_slice_image"
+                    card_view:layout_constraintVertical_bias="0.75" />
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1"
+            card_view:cardBackgroundColor="@color/colorAccent"
+            card_view:cardCornerRadius="0dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/muffin2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    app:backgroundTint="@color/colorAccent" />
+
+                <ImageView
+                    android:id="@+id/pizza_slice_image2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:scaleX="2"
+                    android:scaleY="2"
+                    android:src="@drawable/ic_book_purple"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin2"
+                    card_view:layout_constraintEnd_toEndOf="@+id/muffin2"
+                    card_view:layout_constraintStart_toStartOf="@+id/muffin2"
+                    card_view:layout_constraintTop_toTopOf="@+id/muffin2" />
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:gravity="center"
+                    android:textColor="@color/colorPrimary"
+                    style="@style/MenuTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="Study Material"
+                    android:textSize="25sp"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin2"
+                    card_view:layout_constraintEnd_toEndOf="@+id/muffin2"
+                    card_view:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintTop_toBottomOf="@+id/pizza_slice_image2"
+                    card_view:layout_constraintVertical_bias="0.75" />
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1"
+            card_view:cardBackgroundColor="@color/colorAccent"
+            card_view:cardCornerRadius="0dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/muffin3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    app:backgroundTint="@color/colorAccent" />
+
+                <ImageView
+                    android:id="@+id/pizza_slice_image3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:scaleX="2"
+                    android:scaleY="2"
+                    android:src="@drawable/ic_lamp_purple"
+                    card_view:layout_constraintBottom_toBottomOf="parent"
+                    card_view:layout_constraintEnd_toEndOf="@+id/muffin3"
+                    card_view:layout_constraintStart_toStartOf="@+id/muffin3"
+                    card_view:layout_constraintTop_toTopOf="@+id/muffin3" />
+
+                <TextView
+                    style="@style/MenuTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:gravity="center"
+                    android:text="Households"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="25sp"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin3"
+                    card_view:layout_constraintEnd_toEndOf="@+id/muffin3"
+                    card_view:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintTop_toBottomOf="@+id/pizza_slice_image3"
+                    card_view:layout_constraintVertical_bias="0.75" />
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1"
+            card_view:cardBackgroundColor="@color/colorAccent"
+            card_view:cardCornerRadius="0dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/muffin4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    app:backgroundTint="@color/colorAccent" />
+
+                <ImageView
+                    android:id="@+id/pizza_slice_image4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:scaleX="2"
+                    android:scaleY="2"
+                    android:src="@drawable/ic_lost_and_found_purple"
+                    card_view:layout_constraintBottom_toBottomOf="parent"
+                    card_view:layout_constraintEnd_toEndOf="@+id/muffin4"
+                    card_view:layout_constraintStart_toStartOf="@+id/muffin4"
+                    card_view:layout_constraintTop_toTopOf="@+id/muffin4" />
+
+                <TextView
+                    style="@style/MenuTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:gravity="center"
+                    android:text="Lost &amp; Found"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="25sp"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin4"
+                    card_view:layout_constraintEnd_toEndOf="@+id/muffin4"
+                    card_view:layout_constraintHorizontal_bias="0.48"
+                    card_view:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintTop_toBottomOf="@+id/pizza_slice_image4"
+                    card_view:layout_constraintVertical_bias="0.75" />
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1"
+            card_view:cardBackgroundColor="@color/colorAccent"
+            card_view:cardCornerRadius="0dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/muffin5"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    app:backgroundTint="@color/colorAccent" />
+
+                <ImageView
+                    android:id="@+id/pizza_slice_image5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:scaleX="2"
+                    android:scaleY="2"
+                    android:src="@drawable/ic_car_purple"
+                    card_view:layout_constraintBottom_toBottomOf="parent"
+                    card_view:layout_constraintEnd_toEndOf="@+id/muffin5"
+                    card_view:layout_constraintStart_toStartOf="@+id/muffin5"
+                    card_view:layout_constraintTop_toTopOf="@+id/muffin5" />
+
+                <TextView
+                    style="@style/MenuTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:gravity="center"
+                    android:text="Hitchhike"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="25sp"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin5"
+                    card_view:layout_constraintEnd_toEndOf="@+id/muffin5"
+                    card_view:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintTop_toBottomOf="@+id/pizza_slice_image5"
+                    card_view:layout_constraintVertical_bias="0.75" />
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1"
+            card_view:cardBackgroundColor="@color/colorAccent"
+            card_view:cardCornerRadius="0dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/muffin6"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    app:backgroundTint="@color/colorAccent" />
+
+                <ImageView
+                    android:id="@+id/pizza_slice_image6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:scaleX="2"
+                    android:scaleY="2"
+                    android:src="@drawable/ic_treasure_96_purple_purple"
+                    card_view:layout_constraintBottom_toBottomOf="parent"
+                    card_view:layout_constraintEnd_toEndOf="@+id/muffin6"
+                    card_view:layout_constraintStart_toStartOf="@+id/muffin6"
+                    card_view:layout_constraintTop_toTopOf="@+id/muffin6" />
+
+                <TextView
+                    style="@style/MenuTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:gravity="center"
+                    android:text="Other"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="25sp"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin6"
+                    card_view:layout_constraintEnd_toEndOf="@+id/muffin6"
+                    card_view:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintTop_toBottomOf="@+id/pizza_slice_image6"
+                    card_view:layout_constraintVertical_bias="0.75" />
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </android.support.v7.widget.GridLayout>
+</LinearLayout>
