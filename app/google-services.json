@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1093192580078",
+    "firebase_url": "https://takecare-81dab.firebaseio.com",
+    "project_id": "takecare-81dab",
+    "storage_bucket": "takecare-81dab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1093192580078:android:2a69b522e547c4f3",
+        "android_client_info": {
+          "package_name": "com.example.yuval.takecare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1093192580078-b5dgbk1rhnn5sb395se8s3b8dv8o28g8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD18EvoF2GRZeWpKYQitEBi_JCk9aJsNFw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
