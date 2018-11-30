@@ -1,5 +1,6 @@
 package com.example.yuval.takecare;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,20 +33,36 @@ public class RequestedItemsActivity extends AppCompatActivity {
         setUpRecyclerView();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            //TODO: create intent to move back to taker feed
-            super.onBackPressed();
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.taker_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+//        android.R.id.home
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.action_user_settings:
+                intent = new Intent(this, UserProfileActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.action_my_items:
+                intent = new Intent(this, SharedItemsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.action_requested_items:
+                intent = new Intent(this, RequestedItemsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.action_favorites:
+                intent = new Intent(this, UserFavoritesActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setUpRecyclerView() {

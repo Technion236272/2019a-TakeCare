@@ -2,6 +2,10 @@ package com.example.yuval.takecare;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Build;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -23,6 +27,7 @@ public class GiverFormActivity extends AppCompatActivity {
     String[] spinnerNames;
     int[] spinnerIcons;
     Calendar calander;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +48,6 @@ public class GiverFormActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-
     }
 
     public void pickDate(View view) {
@@ -122,5 +126,25 @@ public class GiverFormActivity extends AppCompatActivity {
         SeekBar s = findViewById(R.id.seekBar);
         s.setVisibility(View.GONE);
         e.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(this);
+        builder.setTitle("Exit Form")
+                .setMessage("Are you sure you want to discard the form?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //discard the giver form
+                        GiverFormActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //do nothing: dismiss alert dialog
+                    }
+                })
+                .show();
     }
 }

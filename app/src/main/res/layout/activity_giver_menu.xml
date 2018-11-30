@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorAccent"
     android:orientation="vertical"
-    tools:context=".GiverMenu">
+    tools:context=".GiverMenuActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -64,7 +64,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    app:backgroundTint="@color/colorAccent" />
+                    app:backgroundTint="@color/colorAccent"
+                    android:onClick="onCategorySelect"/>
 
                 <ImageView
                     android:id="@+id/pizza_slice_image"
@@ -123,7 +124,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    app:backgroundTint="@color/colorAccent" />
+                    app:backgroundTint="@color/colorAccent"
+                    android:onClick="onCategorySelect"/>
 
                 <ImageView
                     android:id="@+id/pizza_slice_image2"
@@ -183,7 +185,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    app:backgroundTint="@color/colorAccent" />
+                    app:backgroundTint="@color/colorAccent"
+                    android:onClick="onCategorySelect"/>
 
                 <ImageView
                     android:id="@+id/pizza_slice_image3"
@@ -243,7 +246,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    app:backgroundTint="@color/colorAccent" />
+                    app:backgroundTint="@color/colorAccent"
+                    android:onClick="onCategorySelect"/>
 
                 <ImageView
                     android:id="@+id/pizza_slice_image4"
@@ -304,7 +308,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    app:backgroundTint="@color/colorAccent" />
+                    app:backgroundTint="@color/colorAccent"
+                    android:onClick="onCategorySelect"/>
 
                 <ImageView
                     android:id="@+id/pizza_slice_image5"
@@ -364,7 +369,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    app:backgroundTint="@color/colorAccent" />
+                    app:backgroundTint="@color/colorAccent"
+                    android:onClick="onCategorySelect" />
 
                 <ImageView
                     android:id="@+id/pizza_slice_image6"

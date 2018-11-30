@@ -1,5 +1,6 @@
 package com.example.yuval.takecare;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
@@ -50,8 +51,8 @@ public class TakerMenuActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Should open the giver form", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(TakerMenuActivity.this, GiverMenuActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -130,23 +131,25 @@ public class TakerMenuActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        //TODO: Implement handlers for each user settings item
+        Intent intent;
         switch (item.getItemId()) {
             case R.id.action_user_settings:
-                return true;
+                intent = new Intent(this, UserProfileActivity.class);
+                startActivity(intent);
+                break;
             case R.id.action_my_items:
-                return true;
+                intent = new Intent(this, SharedItemsActivity.class);
+                startActivity(intent);
+                break;
             case R.id.action_requested_items:
-                return true;
+                intent = new Intent(this, RequestedItemsActivity.class);
+                startActivity(intent);
+                break;
             case R.id.action_favorites:
-                return true;
+                intent = new Intent(this, UserFavoritesActivity.class);
+                startActivity(intent);
+                break;
         }
-
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -253,5 +256,11 @@ public class TakerMenuActivity extends AppCompatActivity
         List<FeedCardInformation> cards = list;
         adapter = new TakerRVAdapter(cards);
         recyclerView.setAdapter(adapter);
+    }
+
+    public void onTakerCardSelected(View view) {
+        //TODO: add extra information to intent
+        Intent intent = new Intent(this, ItemInfoActivity.class);
+        startActivity(intent);
     }
 }

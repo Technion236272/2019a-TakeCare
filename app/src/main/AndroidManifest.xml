@@ -11,7 +11,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".GatewayActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <meta-data
@@ -21,11 +25,11 @@
         <activity
             android:name=".TakerMenuActivity"
             android:label="@string/title_activity_taker_menu"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".GatewayActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.yuval.takecare.MainActivity" />
+                android:value="com.example.yuval.takecare.GatewayActivity" />
         </activity>
         <activity android:name=".LoginActivity">
         </activity>
@@ -72,14 +76,11 @@
         <activity
             android:name=".UserProfileActivity"
             android:label="@string/user_profile_menu_title">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity
-            android:name=".ItemInfoActivity">
+            android:name=".ItemInfoActivity"
+            android:label="@string/item_info_title">
         </activity>
 
         <activity
@@ -87,7 +88,7 @@
         </activity>
 
         <activity
-            android:name=".GiverMenu"
+            android:name=".GiverMenuActivity"
             android:label="@string/giver_menu_title">
         </activity>
 
