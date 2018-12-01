@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1093192580078-f5qrbimij9nog4qrbif8khs4megjf2po.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.yuval.takecare",
+            "certificate_hash": "4a73115a55218e308d6ed4c31e0e7342f6b84a7c"
+          }
+        },
+        {
           "client_id": "1093192580078-b5dgbk1rhnn5sb395se8s3b8dv8o28g8.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1093192580078-b5dgbk1rhnn5sb395se8s3b8dv8o28g8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

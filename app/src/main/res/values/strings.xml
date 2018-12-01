@@ -86,17 +86,20 @@
     <string name="prompt_password">Password</string>
     <string name="prompt_confirm_password">Confirm Password</string>
     <string name="action_sign_up">Sign Up</string>
+    <string name="error_invalid_name">This username is invalid</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_invalid_re_password">This does not match your entered password</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+        completions."</string>
     <string name="user_name">Name</string>
+    <string name="sign_up_form_text">Continue</string>
     <string name="add_profile_pic">Add a Profile Picture:</string>
 
 
+    <!--ItemInfo elements-->
     <string name="request_item">I Want That!</string>
     <string name="send_message_from_item_info">Send Message</string>
     <string name="report">Report</string>

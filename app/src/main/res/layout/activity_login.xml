@@ -62,7 +62,7 @@
         android:layout_marginBottom="16dp"
         android:background="@drawable/invisible_button"
         android:fontFamily="@font/asap_italic"
-        android:onClick="transition"
+        android:onClick="onSignUpClick"
         android:text="@string/email_signin_text"
         android:textColor="@color/primary_text"
         app:layout_constraintBottom_toBottomOf="parent"
