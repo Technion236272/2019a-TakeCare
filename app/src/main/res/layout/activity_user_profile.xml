@@ -188,6 +188,7 @@
                 android:text="@string/log_out"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
+                android:onClick="onLogOutClick"
                 app:backgroundTint="@android:color/holo_red_dark"
                 app:backgroundTintMode="add" />
         </RelativeLayout>

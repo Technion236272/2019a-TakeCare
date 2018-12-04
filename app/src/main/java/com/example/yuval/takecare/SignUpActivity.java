@@ -5,10 +5,12 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -42,6 +44,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -389,9 +393,8 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Toast.makeText(SignUpActivity.this, "TEMP!",
-                                Toast.LENGTH_SHORT).show();
-                        if (task.isSuccessful()) {
+                        if(task.isSuccessful()) {
+                            assert auth.getCurrentUser()!=null;
                             setUserInfo(auth.getCurrentUser(), name, email, password);
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "createUserWithEmail:success");
@@ -402,10 +405,42 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                         } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("TAG", "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(SignUpActivity.this, "Authentication failed!",
-                                    Toast.LENGTH_SHORT).show();
+                            try {
+                                throw task.getException();
+                            } catch(FirebaseAuthUserCollisionException e) {
+                                AlertDialog.Builder builder;
+                                builder = new AlertDialog.Builder(SignUpActivity.this);
+                                builder.setTitle("Sign Up")
+                                        .setMessage("Entered email is already registered")
+                                        .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                //close login session of the user
+                                                FirebaseAuth.getInstance().signOut();
+                                                Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+                                            }
+                                        })
+                                        .show();
+
+                            } catch(FirebaseAuthInvalidCredentialsException e) {
+                                AlertDialog.Builder builder;
+                                builder = new AlertDialog.Builder(SignUpActivity.this);
+                                builder.setTitle("Sign Up")
+                                        .setMessage("You have entered an illegal email")
+                                        .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                //close login session of the user
+                                                FirebaseAuth.getInstance().signOut();
+                                                Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+                                            }
+                                        })
+                                        .show();
+                            } catch(Exception e) {
+                                //Do nothing
+                            }
                         }
 //                        pd.hide();
                     }
