@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 public class TakerRVAdapter extends FeedRecyclerView.Adapter<TakerRVAdapter.ItemsViewHolder> {
@@ -52,7 +54,7 @@ public class TakerRVAdapter extends FeedRecyclerView.Adapter<TakerRVAdapter.Item
     public void onBindViewHolder(@NonNull ItemsViewHolder itemsViewHolder, int i) {
         FeedCardInformation currentCard = cardsAmount.get(i);
         itemsViewHolder.itemTitle.setText(currentCard.title);
-        itemsViewHolder.itemPhoto.setImageResource(currentCard.photoId);
+        Glide.with(itemsViewHolder.card).load(currentCard.photoURL).into(itemsViewHolder.itemPhoto);
         itemsViewHolder.profilePhoto.setImageResource(currentCard.userProfileId);
         itemsViewHolder.itemPublisher.setText(currentCard.publisher);
         itemsViewHolder.itemCategory.setImageResource(cardsAmount.get(i).itemCategoryId);

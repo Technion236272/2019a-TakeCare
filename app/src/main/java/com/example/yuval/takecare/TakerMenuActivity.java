@@ -25,6 +25,8 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -247,11 +249,13 @@ public class TakerMenuActivity extends AppCompatActivity
 
     public void tempFillItems(View view) {
         List<FeedCardInformation> list = new ArrayList<>();
-        list.add(new FeedCardInformation("Yummy Muffins For All!", R.drawable.photo_muffin, R.drawable.photo_mcgiverface, "Giver McGiverFace", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
-        list.add(new FeedCardInformation("Driving to Tel-Aviv at Approx 7pm", R.drawable.photo_hittchhiker, R.drawable.ic_user_purple, "Israel M. Shalom", R.drawable.ic_car_purple, R.drawable.ic_race_purple));
-        list.add(new FeedCardInformation("I Found An Umbrella Near Ullman", R.drawable.photo_umbrella, R.drawable.ic_user_purple, "Noa", R.drawable.ic_lost_and_found_purple, R.drawable.ic_in_person_purple));
-        list.add(new FeedCardInformation("FREE PIZZAS IN TAUB'S BALCONY!! GET OVER HERE QUICKLY!!", R.drawable.photo_pizza, R.drawable.ic_user_purple, "Yuval", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
-        list.add(new FeedCardInformation("This Cool Nightstand!", R.drawable.photo_nightstand, R.drawable.ic_user_purple, "Tzvika", R.drawable.ic_lamp_purple, R.drawable.ic_race_purple));
+        String muffinPhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_muffin.png?alt=media&token=d52abb7a-1763-4c6b-ac74-89ffab4a8714";
+        String nightstandURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_nightstand.png?alt=media&token=a3afa089-acaf-4a05-94eb-8cc581121935";
+        list.add(new FeedCardInformation("Yummy Muffins For All!",muffinPhotoURL, R.drawable.photo_mcgiverface, "Giver McGiverFace", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
+        list.add(new FeedCardInformation("Driving to Tel-Aviv at Approx 7pm",muffinPhotoURL, R.drawable.ic_user_purple, "Israel M. Shalom", R.drawable.ic_car_purple, R.drawable.ic_race_purple));
+        list.add(new FeedCardInformation("I Found An Umbrella Near Ullman", muffinPhotoURL, R.drawable.ic_user_purple, "Noa", R.drawable.ic_lost_and_found_purple, R.drawable.ic_in_person_purple));
+        list.add(new FeedCardInformation("FREE PIZZAS IN TAUB'S BALCONY!! GET OVER HERE QUICKLY!!",muffinPhotoURL, R.drawable.ic_user_purple, "Yuval", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
+        list.add(new FeedCardInformation("This Cool Nightstand!", nightstandURL, R.drawable.ic_user_purple, "Tzvika", R.drawable.ic_lamp_purple, R.drawable.ic_race_purple));
 
         List<FeedCardInformation> cards = list;
         adapter = new TakerRVAdapter(cards);
