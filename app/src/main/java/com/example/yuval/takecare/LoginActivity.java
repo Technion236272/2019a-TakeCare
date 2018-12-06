@@ -39,6 +39,8 @@ public class LoginActivity extends AppCompatActivity {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
+
+
     }
 
     public void transition(View view) {
@@ -58,5 +60,8 @@ public class LoginActivity extends AppCompatActivity {
     public void onSignUpClick(View view) {
         Intent intent = new Intent(this, SignUpActivity.class);
         startActivity(intent);
+    }
+
+    public void onSignInClick(View view) {
     }
 }

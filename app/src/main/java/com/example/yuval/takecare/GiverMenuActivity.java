@@ -65,7 +65,31 @@ public class GiverMenuActivity extends AppCompatActivity {
 
     public void onCategorySelect(View view) {
         //TODO: send extra message to the intent: the selected category
+        String category;
+        switch(view.getId()) {
+            case R.id.category_food:
+                category = "food";
+                break;
+            case R.id.category_study_material:
+                category = "study material";
+                break;
+            case R.id.category_households:
+                category = "households";
+                break;
+            case R.id.category_lost_and_found:
+                category = "lost&found";
+                break;
+            case R.id.category_hitchhike:
+                category = "hitchhike";
+                break;
+            case R.id.category_other:
+                category = "other";
+                break;
+            default:
+                category = "ERROR";
+        }
         Intent intent = new Intent(this, GiverFormActivity.class);
+        intent.putExtra("CATEGORY", category);
         startActivity(intent);
     }
 }

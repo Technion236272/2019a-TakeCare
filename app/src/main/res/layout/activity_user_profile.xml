@@ -46,7 +46,7 @@
                 android:layout_below="@id/profile_pic"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
-                android:text="Giver McGiverFace"
+                android:text="User"
                 android:textColor="@color/primary_text"
                 android:textSize="25sp" />
 

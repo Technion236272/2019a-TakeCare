@@ -60,7 +60,7 @@
                 android:layout_height="match_parent">
 
                 <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/muffin1"
+                    android:id="@+id/category_food"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
@@ -79,9 +79,9 @@
                     android:scaleY="2"
                     android:src="@drawable/ic_pizza_96_big_purple"
                     card_view:layout_constraintBottom_toBottomOf="parent"
-                    card_view:layout_constraintEnd_toEndOf="@+id/muffin1"
-                    card_view:layout_constraintStart_toStartOf="@+id/muffin1"
-                    card_view:layout_constraintTop_toTopOf="@+id/muffin1" />
+                    card_view:layout_constraintEnd_toEndOf="@+id/category_food"
+                    card_view:layout_constraintStart_toStartOf="@+id/category_food"
+                    card_view:layout_constraintTop_toTopOf="@+id/category_food" />
 
                 <TextView
                     style="@style/MenuTitle"
@@ -98,8 +98,8 @@
                     android:text="Food"
                     android:textColor="@color/colorPrimary"
                     android:textSize="25sp"
-                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin1"
-                    card_view:layout_constraintEnd_toEndOf="@+id/muffin1"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/category_food"
+                    card_view:layout_constraintEnd_toEndOf="@+id/category_food"
                     card_view:layout_constraintStart_toStartOf="parent"
                     card_view:layout_constraintTop_toBottomOf="@+id/pizza_slice_image"
                     card_view:layout_constraintVertical_bias="0.75" />
@@ -120,7 +120,7 @@
                 android:layout_height="match_parent">
 
                 <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/muffin2"
+                    android:id="@+id/category_study_material"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
@@ -138,10 +138,10 @@
                     android:scaleX="2"
                     android:scaleY="2"
                     android:src="@drawable/ic_book_purple"
-                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin2"
-                    card_view:layout_constraintEnd_toEndOf="@+id/muffin2"
-                    card_view:layout_constraintStart_toStartOf="@+id/muffin2"
-                    card_view:layout_constraintTop_toTopOf="@+id/muffin2" />
+                    card_view:layout_constraintBottom_toBottomOf="@+id/category_study_material"
+                    card_view:layout_constraintEnd_toEndOf="@+id/category_study_material"
+                    card_view:layout_constraintStart_toStartOf="@+id/category_study_material"
+                    card_view:layout_constraintTop_toTopOf="@+id/category_study_material" />
 
                 <TextView
                     android:id="@+id/textView6"
@@ -159,8 +159,8 @@
                     android:text="Study Material"
                     android:textColor="@color/colorPrimary"
                     android:textSize="25sp"
-                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin2"
-                    card_view:layout_constraintEnd_toEndOf="@+id/muffin2"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/category_study_material"
+                    card_view:layout_constraintEnd_toEndOf="@+id/category_study_material"
                     card_view:layout_constraintStart_toStartOf="parent"
                     card_view:layout_constraintTop_toBottomOf="@+id/pizza_slice_image2"
                     card_view:layout_constraintVertical_bias="0.75" />
@@ -181,7 +181,7 @@
                 android:layout_height="match_parent">
 
                 <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/muffin3"
+                    android:id="@+id/category_households"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
@@ -201,9 +201,9 @@
                     android:scaleY="2"
                     android:src="@drawable/ic_lamp_purple"
                     card_view:layout_constraintBottom_toBottomOf="parent"
-                    card_view:layout_constraintEnd_toEndOf="@+id/muffin3"
-                    card_view:layout_constraintStart_toStartOf="@+id/muffin3"
-                    card_view:layout_constraintTop_toTopOf="@+id/muffin3" />
+                    card_view:layout_constraintEnd_toEndOf="@+id/category_households"
+                    card_view:layout_constraintStart_toStartOf="@+id/category_households"
+                    card_view:layout_constraintTop_toTopOf="@+id/category_households" />
 
                 <TextView
                     style="@style/MenuTitle"
@@ -220,8 +220,8 @@
                     android:text="Households"
                     android:textColor="@color/colorPrimary"
                     android:textSize="25sp"
-                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin3"
-                    card_view:layout_constraintEnd_toEndOf="@+id/muffin3"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/category_households"
+                    card_view:layout_constraintEnd_toEndOf="@+id/category_households"
                     card_view:layout_constraintStart_toStartOf="parent"
                     card_view:layout_constraintTop_toBottomOf="@+id/pizza_slice_image3"
                     card_view:layout_constraintVertical_bias="0.75" />
@@ -242,7 +242,7 @@
                 android:layout_height="match_parent">
 
                 <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/muffin4"
+                    android:id="@+id/category_lost_and_found"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
@@ -262,9 +262,9 @@
                     android:scaleY="2"
                     android:src="@drawable/ic_lost_and_found_purple"
                     card_view:layout_constraintBottom_toBottomOf="parent"
-                    card_view:layout_constraintEnd_toEndOf="@+id/muffin4"
-                    card_view:layout_constraintStart_toStartOf="@+id/muffin4"
-                    card_view:layout_constraintTop_toTopOf="@+id/muffin4" />
+                    card_view:layout_constraintEnd_toEndOf="@+id/category_lost_and_found"
+                    card_view:layout_constraintStart_toStartOf="@+id/category_lost_and_found"
+                    card_view:layout_constraintTop_toTopOf="@+id/category_lost_and_found" />
 
                 <TextView
                     style="@style/MenuTitle"
@@ -281,8 +281,8 @@
                     android:text="Lost &amp; Found"
                     android:textColor="@color/colorPrimary"
                     android:textSize="25sp"
-                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin4"
-                    card_view:layout_constraintEnd_toEndOf="@+id/muffin4"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/category_lost_and_found"
+                    card_view:layout_constraintEnd_toEndOf="@+id/category_lost_and_found"
                     card_view:layout_constraintHorizontal_bias="0.48"
                     card_view:layout_constraintStart_toStartOf="parent"
                     card_view:layout_constraintTop_toBottomOf="@+id/pizza_slice_image4"
@@ -304,7 +304,7 @@
                 android:layout_height="match_parent">
 
                 <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/muffin5"
+                    android:id="@+id/category_hitchhike"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
@@ -324,9 +324,9 @@
                     android:scaleY="2"
                     android:src="@drawable/ic_car_purple"
                     card_view:layout_constraintBottom_toBottomOf="parent"
-                    card_view:layout_constraintEnd_toEndOf="@+id/muffin5"
-                    card_view:layout_constraintStart_toStartOf="@+id/muffin5"
-                    card_view:layout_constraintTop_toTopOf="@+id/muffin5" />
+                    card_view:layout_constraintEnd_toEndOf="@+id/category_hitchhike"
+                    card_view:layout_constraintStart_toStartOf="@+id/category_hitchhike"
+                    card_view:layout_constraintTop_toTopOf="@+id/category_hitchhike" />
 
                 <TextView
                     style="@style/MenuTitle"
@@ -343,8 +343,8 @@
                     android:text="Hitchhike"
                     android:textColor="@color/colorPrimary"
                     android:textSize="25sp"
-                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin5"
-                    card_view:layout_constraintEnd_toEndOf="@+id/muffin5"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/category_hitchhike"
+                    card_view:layout_constraintEnd_toEndOf="@+id/category_hitchhike"
                     card_view:layout_constraintStart_toStartOf="parent"
                     card_view:layout_constraintTop_toBottomOf="@+id/pizza_slice_image5"
                     card_view:layout_constraintVertical_bias="0.75" />
@@ -365,7 +365,7 @@
                 android:layout_height="match_parent">
 
                 <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/muffin6"
+                    android:id="@+id/category_other"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
@@ -385,9 +385,9 @@
                     android:scaleY="2"
                     android:src="@drawable/ic_treasure_96_purple_purple"
                     card_view:layout_constraintBottom_toBottomOf="parent"
-                    card_view:layout_constraintEnd_toEndOf="@+id/muffin6"
-                    card_view:layout_constraintStart_toStartOf="@+id/muffin6"
-                    card_view:layout_constraintTop_toTopOf="@+id/muffin6" />
+                    card_view:layout_constraintEnd_toEndOf="@+id/category_other"
+                    card_view:layout_constraintStart_toStartOf="@+id/category_other"
+                    card_view:layout_constraintTop_toTopOf="@+id/category_other" />
 
                 <TextView
                     style="@style/MenuTitle"
@@ -404,8 +404,8 @@
                     android:text="Other"
                     android:textColor="@color/colorPrimary"
                     android:textSize="25sp"
-                    card_view:layout_constraintBottom_toBottomOf="@+id/muffin6"
-                    card_view:layout_constraintEnd_toEndOf="@+id/muffin6"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/category_other"
+                    card_view:layout_constraintEnd_toEndOf="@+id/category_other"
                     card_view:layout_constraintStart_toStartOf="parent"
                     card_view:layout_constraintTop_toBottomOf="@+id/pizza_slice_image6"
                     card_view:layout_constraintVertical_bias="0.75" />
