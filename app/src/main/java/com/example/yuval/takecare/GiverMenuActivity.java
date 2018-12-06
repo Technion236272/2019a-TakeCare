@@ -64,7 +64,6 @@ public class GiverMenuActivity extends AppCompatActivity {
     }
 
     public void onCategorySelect(View view) {
-        //TODO: send extra message to the intent: the selected category
         String category;
         switch(view.getId()) {
             case R.id.category_food:

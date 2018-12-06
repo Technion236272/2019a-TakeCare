@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.sql.Time;
@@ -200,7 +201,7 @@ public class GiverFormActivity extends AppCompatActivity {
         //Air Time is in hours
         itemInfo.put("airTime", 72); //TODO: change this when the layout file changes
         Log.d("TAG", "filled airtime");
-        itemInfo.put("category", category); //TODO: change this via extra message in intent
+        itemInfo.put("category", category);
         Log.d("TAG", "filled category");
         String pickupMethod;
         switch (pickup.getSelectedItemPosition()) {
@@ -223,7 +224,7 @@ public class GiverFormActivity extends AppCompatActivity {
             itemInfo.put("pickupDescription", pickupDescription.getText().toString());
             Log.d("TAG", "filled pickup description");
         }
-        FirebaseUser user = auth.getCurrentUser();
+        final FirebaseUser user = auth.getCurrentUser();
         Log.d("TAG", "1");
         if (user != null) {
             Log.d("TAG", "2");
@@ -232,23 +233,50 @@ public class GiverFormActivity extends AppCompatActivity {
 
         }
 
-        db.collection("items").document()
-                .set(itemInfo)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection("items")
+                .add(itemInfo)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("TAG", "DocumentSnapshot successfully written!");
-                        Toast.makeText(GiverFormActivity.this, "Shared successfully!",
-                                Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
-                        startActivity(intent);
-                        finish();
+                    public void onSuccess(final DocumentReference documentReference) {
+                        Log.d("TAG", "DocumentSnapshot added with ID: " + documentReference.getId());
+                        Map<String, Object> itemRef = new HashMap<>();
+                        itemRef.put("itemRef", documentReference);
+
+                        // Item created successfully: need to link item with its publisher
+
+                        db.collection("users").document(user.getUid()).collection("publishedItems")
+                                .add(itemRef)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        // Everything worked!
+                                        Log.d("TAG", "DocumentSnapshot added with ID: " + documentReference.getId());
+                                        Toast.makeText(GiverFormActivity.this, "Shared successfully!",
+                                                Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        // Failed to add entry to the user's published items: delete entry altogether!
+                                        Log.w("TAG", "Error adding document", e);
+                                        db.collection("items").document(documentReference.getId()).delete();
+                                        Toast.makeText(GiverFormActivity.this, "An error has occurred. Please try again",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
                     }
+
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d("TAG", "Error writing document", e);
+                        Log.w("TAG", "Error adding document", e);
                         Toast.makeText(GiverFormActivity.this, "An error has occurred. Please try again",
                                 Toast.LENGTH_SHORT).show();
                     }
