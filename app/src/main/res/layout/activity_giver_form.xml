@@ -29,7 +29,7 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="10dp">
 
@@ -57,12 +57,12 @@
                 android:layout_marginLeft="8dp"
                 android:text="Add A Picture:"
                 android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/imageButton"
+                app:layout_constraintBottom_toBottomOf="@+id/upload_picture_button"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/imageButton" />
+                app:layout_constraintTop_toTopOf="@+id/upload_picture_button" />
 
             <ImageButton
-                android:id="@+id/imageButton"
+                android:id="@+id/upload_picture_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/title_input"
@@ -73,6 +73,7 @@
                 android:layout_marginRight="8dp"
                 android:layout_toEndOf="@id/add_picture_text"
                 android:layout_toRightOf="@id/add_picture_text"
+                android:onClick="onUploadPicture"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.55"
                 app:layout_constraintStart_toEndOf="@+id/add_picture_text"
@@ -81,8 +82,8 @@
 
             <ImageView
                 android:id="@+id/item_picture"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="216dp"
+                android:layout_height="216dp"
                 android:layout_below="@id/add_picture_text"
                 android:layout_gravity="center"
                 android:layout_marginStart="8dp"
@@ -90,10 +91,9 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
-                android:onClick="addPicture"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageButton"
+                app:layout_constraintTop_toBottomOf="@+id/upload_picture_button"
                 app:srcCompat="@drawable/ic_heart_muffin" />
 
             <Button
@@ -298,11 +298,12 @@
                 android:id="@+id/textView9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="144dp"
-                android:layout_marginLeft="144dp"
                 android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:text="Choose A Pickup Time Specifier:"
                 android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/pickup_method_spinner" />
 

@@ -2,7 +2,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.yuval.takecare">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.INTERNET" />
+
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission
+        android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -11,12 +25,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".GatewayActivity">
-        </activity>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.example.yuval.takecare.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <activity android:name=".GatewayActivity">
+        </activity>
 
         <activity
             android:name=".TakerMenuActivity"
@@ -27,6 +57,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.yuval.takecare.GatewayActivity" />
         </activity>
+
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,16 +65,12 @@
             </intent-filter>
         </activity>
 
-
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
-
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name">
         </activity>
+
         <activity
             android:name="com.facebook.CustomTabActivity"
             android:exported="true">
@@ -56,10 +83,12 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".SharedItemsActivity"
             android:label="@string/shared_items_menu_title">
         </activity>
+
         <activity
             android:name=".RequestedItemsActivity"
             android:label="@string/requested_items_menu_title">
@@ -69,6 +98,7 @@
             android:name=".UserFavoritesActivity"
             android:label="@string/user_favorites_menu_title">
         </activity>
+
         <activity
             android:name=".SignUpActivity" >
         </activity>

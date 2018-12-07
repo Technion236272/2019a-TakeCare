@@ -24,7 +24,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Pick-Up Menu</string>
-    <string name="nav_header_subtitle">Search in a way that suits you</string>
+    <string name="nav_header_subtitle">Search for items that suit your needs</string>
     <string name="nav_header_desc">Navigation header</string>
 
     <string name="ic_map_display_title">Map Display</string>
@@ -67,6 +67,11 @@
     <string name="report_no_fit_text">Does not fit description</string>
     <string name="report_spam_text">Spam</string>
     <string name="report_hide_text">Hide</string>
+
+
+    <!--Image upload elements-->
+    <string name="upload_camera_text">Camera</string>
+    <string name="upload_gallery_text">Gallery</string>
 
 
     <!--Empty feed elements-->

@@ -1,12 +1,23 @@
 package com.example.yuval.takecare;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +28,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -29,9 +44,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,13 +64,25 @@ public class GiverFormActivity extends AppCompatActivity {
     String[] spinnerNames;
     int[] spinnerIcons;
     Calendar calander;
-    FirebaseFirestore db;
-    FirebaseAuth auth;
 
     EditText title;
     EditText description;
     Spinner pickup;
     EditText pickupDescription;
+
+    private ImageView itemImageView;
+    final static int REQUEST_CAMERA = 1;
+    final static int SELECT_IMAGE = 2;
+    String imageFilePath;
+    File imageFile;
+    Uri imageFileUri;
+    private ProgressBar pb;
+
+    FirebaseFirestore db;
+    FirebaseAuth auth;
+    StorageReference storage;
+
+    private int APP_PERMISSION_REQUEST_CAMERA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,9 +114,21 @@ public class GiverFormActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+        itemImageView = (ImageView) findViewById(R.id.item_picture);
+        imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture.jpg";
+        imageFile = new File(imageFilePath);
+        imageFileUri = Uri.fromFile(imageFile);
+
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
+        storage = FirebaseStorage.getInstance().getReference();
     }
+
+    private void addDeviceFilesPath() {
+        String path = System.getenv("EXTERNAL_STORAGE");
+
+    }
+
 
     public void pickDate(View view) {
 
@@ -103,8 +147,6 @@ public class GiverFormActivity extends AppCompatActivity {
         tpd.show();
     }
 
-    public void addPicture(View view) {
-    }
 
     public void pickTimeSlot(View view) {
 
@@ -282,5 +324,72 @@ public class GiverFormActivity extends AppCompatActivity {
                     }
                 });
         Log.d("TAG", "finished form method");
+    }
+
+    public void onUploadPicture(View view) {
+        PopupMenu menu = new PopupMenu(this, view);
+        menu.getMenuInflater().inflate(R.menu.photo_upload_menu, menu.getMenu());
+        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent intent;
+                switch (item.getItemId()) {
+                    case R.id.upload_camera:
+                        Log.d("IMAGE", "Starting upload from camera");
+                        /*intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
+                        startActivityForResult(intent, REQUEST_CAMERA);*/
+
+                        if (ContextCompat.checkSelfPermission(GiverFormActivity.this, Manifest.permission.CAMERA)
+                                != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(GiverFormActivity.this,
+                                    new String[]{Manifest.permission.CAMERA},
+                                    APP_PERMISSION_REQUEST_CAMERA);
+                        } else {
+                            Intent it = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                            startActivityForResult(it, REQUEST_CAMERA);
+                        }
+                        break;
+                    case R.id.upload_gallery:
+                        Log.d("IMAGE", "Starting upload from gallery");
+                        intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        intent.setType("image/*");
+                        startActivityForResult(intent, SELECT_IMAGE);
+                        break;
+                    default:
+                        return false;
+                }
+                return true;
+            }
+        });
+        menu.show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("IMAGE", "Media activity finished!");
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CAMERA) {
+                Log.d("IMAGE", "Fetching camera's image");
+                /*BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
+                bmpFactoryOptions.inJustDecodeBounds = false;
+                Bitmap bmp = BitmapFactory.decodeFile(imageFilePath, bmpFactoryOptions);
+                Log.d("IMAGE", "About to set image");
+                itemImageView.setImageBitmap(bmp);*/
+
+                Bundle extras = data.getExtras();
+                Bitmap bmp = (Bitmap) extras.get("data");
+                Log.d("IMAGE", "About to set image");
+                itemImageView.setImageBitmap(bmp);
+
+            } else if (requestCode == SELECT_IMAGE) {
+                Log.d("IMAGE", "Fetching gallery's image");
+                Uri selectedImage = data.getData();
+                //TODO: add Glide
+                Log.d("IMAGE", "About to set image");
+                itemImageView.setImageURI(selectedImage);
+            }
+        }
     }
 }
