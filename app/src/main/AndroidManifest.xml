@@ -14,9 +14,11 @@
     <uses-permission
         android:name="android.permission.CAMERA" />
 
+
+    <!--TODO: CHANGE REQUIRED TO FALSE AFTER IT WORKS!-->
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" />
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -28,7 +30,7 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.example.yuval.takecare.fileprovider"
+            android:authorities="com.example.yuval.takecare.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

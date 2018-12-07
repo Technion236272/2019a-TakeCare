@@ -4,14 +4,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -25,10 +22,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -46,14 +41,11 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,9 +65,8 @@ public class GiverFormActivity extends AppCompatActivity {
     private ImageView itemImageView;
     final static int REQUEST_CAMERA = 1;
     final static int SELECT_IMAGE = 2;
-    String imageFilePath;
-    File imageFile;
-    Uri imageFileUri;
+    File selectedImageFile;
+    Uri selectedImage;
     private ProgressBar pb;
 
     FirebaseFirestore db;
@@ -115,9 +106,8 @@ public class GiverFormActivity extends AppCompatActivity {
         }
 
         itemImageView = (ImageView) findViewById(R.id.item_picture);
-        imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture.jpg";
-        imageFile = new File(imageFilePath);
-        imageFileUri = Uri.fromFile(imageFile);
+        selectedImage = null;
+        selectedImageFile = null;
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -238,42 +228,9 @@ public class GiverFormActivity extends AppCompatActivity {
     public void onSendForm(View view) {
         Log.d("TAG", "entered send form method");
         Map<String, Object> itemInfo = new HashMap<>();
-        itemInfo.put("timestamp", serverTimestamp());
-        Log.d("TAG", "filled timestamp");
-        //Air Time is in hours
-        itemInfo.put("airTime", 72); //TODO: change this when the layout file changes
-        Log.d("TAG", "filled airtime");
-        itemInfo.put("category", category);
-        Log.d("TAG", "filled category");
-        String pickupMethod;
-        switch (pickup.getSelectedItemPosition()) {
-            case 2:
-                pickupMethod = "Giveaway";
-                break;
-            case 3:
-                pickupMethod = "Race";
-                break;
-            default:
-                pickupMethod = "In Person";
-        }
-        itemInfo.put("pickupMethod", pickupMethod);
-        Log.d("TAG", "filled pickup method");
-        itemInfo.put("title", title.getText().toString());
-        Log.d("TAG", "filled title");
-        itemInfo.put("description", description.getText().toString());
-        Log.d("TAG", "filled description");
-        if (!pickupDescription.getText().toString().isEmpty()) {
-            itemInfo.put("pickupDescription", pickupDescription.getText().toString());
-            Log.d("TAG", "filled pickup description");
-        }
         final FirebaseUser user = auth.getCurrentUser();
-        Log.d("TAG", "1");
-        if (user != null) {
-            Log.d("TAG", "2");
-            itemInfo.put("publisher", user.getUid());
-            Log.d("TAG", "filled publisher");
-
-        }
+        if (!fillFormData(itemInfo, user))
+            return;
 
         db.collection("items")
                 .add(itemInfo)
@@ -304,16 +261,18 @@ public class GiverFormActivity extends AppCompatActivity {
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        // Failed to add entry to the user's published items: delete entry altogether!
                                         Log.w("TAG", "Error adding document", e);
+                                        // Failed to add entry to the user's published items!
+                                        // Delete entry from database:
                                         db.collection("items").document(documentReference.getId()).delete();
+                                        // Delete item photo from storage
+                                        StorageReference storageRef = storage.child("itemPictures/userUploads/" + user.getUid() + "/" + selectedImageFile.getName());
+                                        storageRef.delete();
                                         Toast.makeText(GiverFormActivity.this, "An error has occurred. Please try again",
                                                 Toast.LENGTH_SHORT).show();
                                     }
                                 });
-
                     }
-
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -326,6 +285,72 @@ public class GiverFormActivity extends AppCompatActivity {
         Log.d("TAG", "finished form method");
     }
 
+    private boolean fillFormData(final Map<String, Object> itemInfo, FirebaseUser user) {
+        String uid;
+        //Stop if the user is not logged in or no picture was added
+        if (user == null || selectedImage == null || selectedImageFile == null)
+            return false;
+        uid = user.getUid();
+        itemInfo.put("publisher", uid);
+        Log.d("TAG", "filled publisher");
+
+        //Store the image URI on the cloud
+        Log.d("TAG", "uploading image to cloud");
+        StorageReference storageRef = storage.child("itemPictures/userUploads/" + uid + "/" + selectedImageFile.getName());
+        storageRef.putFile(selectedImage)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Log.d("TAG", "uploaded image successfully");
+                        Uri cloudUri = taskSnapshot.getUploadSessionUri();
+                        assert cloudUri != null;
+                        itemInfo.put("photoUri", cloudUri);
+                        db.collection("items").document()
+                        Log.d("TAG", "filled item photo");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("TAG", "failed to upload image");
+                        //TODO: need to check how we can fail the process when this happens
+                    }
+                });
+
+        if (itemInfo.isEmpty())
+            return false;
+
+        itemInfo.put("timestamp", serverTimestamp());
+        Log.d("TAG", "filled timestamp");
+        //Air Time is in hours
+        itemInfo.put("airTime", 72); //TODO: change this when the layout file changes
+        Log.d("TAG", "filled airtime");
+        itemInfo.put("category", category);
+        Log.d("TAG", "filled category");
+        String pickupMethod;
+        switch (pickup.getSelectedItemPosition()) {
+            case 2:
+                pickupMethod = "Giveaway";
+                break;
+            case 3:
+                pickupMethod = "Race";
+                break;
+            default:
+                pickupMethod = "In Person";
+        }
+        itemInfo.put("pickupMethod", pickupMethod);
+        Log.d("TAG", "filled pickup method");
+        itemInfo.put("title", title.getText().toString());
+        Log.d("TAG", "filled title");
+        itemInfo.put("description", description.getText().toString());
+        Log.d("TAG", "filled description");
+        if (!pickupDescription.getText().toString().isEmpty()) {
+            itemInfo.put("pickupDescription", pickupDescription.getText().toString());
+            Log.d("TAG", "filled pickup description");
+        }
+        return true;
+    }
+
     public void onUploadPicture(View view) {
         PopupMenu menu = new PopupMenu(this, view);
         menu.getMenuInflater().inflate(R.menu.photo_upload_menu, menu.getMenu());
@@ -336,18 +361,19 @@ public class GiverFormActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.upload_camera:
                         Log.d("IMAGE", "Starting upload from camera");
-                        /*intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
-                        startActivityForResult(intent, REQUEST_CAMERA);*/
-
                         if (ContextCompat.checkSelfPermission(GiverFormActivity.this, Manifest.permission.CAMERA)
                                 != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions(GiverFormActivity.this,
                                     new String[]{Manifest.permission.CAMERA},
                                     APP_PERMISSION_REQUEST_CAMERA);
                         } else {
-                            Intent it = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                            startActivityForResult(it, REQUEST_CAMERA);
+                            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            selectedImageFile = new File(getExternalCacheDir(),
+                                    String.valueOf(System.currentTimeMillis()) + ".jpg");
+                            selectedImage = FileProvider.getUriForFile(GiverFormActivity.this, getPackageName() + ".provider", selectedImageFile);
+                            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, selectedImage);
+                            Log.d("IMAGE", "Activating camera");
+                            startActivityForResult(intent, REQUEST_CAMERA);
                         }
                         break;
                     case R.id.upload_gallery:
@@ -370,25 +396,23 @@ public class GiverFormActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("IMAGE", "Media activity finished!");
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CAMERA) {
-                Log.d("IMAGE", "Fetching camera's image");
-                /*BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
-                bmpFactoryOptions.inJustDecodeBounds = false;
-                Bitmap bmp = BitmapFactory.decodeFile(imageFilePath, bmpFactoryOptions);
-                Log.d("IMAGE", "About to set image");
-                itemImageView.setImageBitmap(bmp);*/
-
-                Bundle extras = data.getExtras();
-                Bitmap bmp = (Bitmap) extras.get("data");
-                Log.d("IMAGE", "About to set image");
-                itemImageView.setImageBitmap(bmp);
-
-            } else if (requestCode == SELECT_IMAGE) {
-                Log.d("IMAGE", "Fetching gallery's image");
-                Uri selectedImage = data.getData();
-                //TODO: add Glide
-                Log.d("IMAGE", "About to set image");
-                itemImageView.setImageURI(selectedImage);
+            switch (requestCode) {
+                case REQUEST_CAMERA:
+                    if (selectedImage != null) {
+                        Log.d("IMAGE", "About to set image");
+                        itemImageView.setImageURI(selectedImage);
+                    }
+                    break;
+                case SELECT_IMAGE:
+                    Log.d("IMAGE", "Fetching gallery's image");
+                    selectedImage = data.getData();
+                    //TODO: add Glide
+                    Log.d("IMAGE", "About to set image");
+                    itemImageView.setImageURI(selectedImage);
+//                    Log.d("IMAGE", "Allocating file for photo uri");
+                    break;
+                default:
+                    Log.d("IMAGE", "Error: unknown request code");
             }
         }
     }
