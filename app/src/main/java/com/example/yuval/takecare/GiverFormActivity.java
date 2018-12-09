@@ -8,8 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -22,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -33,17 +35,23 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.yuval.takecare.utilities.RotateBitmap;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -65,15 +73,29 @@ public class GiverFormActivity extends AppCompatActivity {
     private ImageView itemImageView;
     final static int REQUEST_CAMERA = 1;
     final static int SELECT_IMAGE = 2;
-    File selectedImageFile;
-    Uri selectedImage;
-    private ProgressBar pb;
+    private File selectedImageFile;
+    private Uri selectedImage;
+    private byte[] uploadBytes;
+    private ProgressBar formPB;
+    private ProgressBar picturePB;
+    private Button formBtn;
 
     FirebaseFirestore db;
     FirebaseAuth auth;
     StorageReference storage;
+    private double progress = 0;
+    private final int UPLOAD_PROGRESS_MIN_FACTOR = 20;
 
-    private int APP_PERMISSION_REQUEST_CAMERA;
+    enum formResult {
+        ERROR_UNKNOWN,
+        ERROR_TITLE,
+        ERROR_PICTURE_NOT_INCLUDED,
+        ERROR_OTHER_CATEGORY_NOT_SPECIFIED,
+        PICTURE_UPLOADED,
+        PICTURE_MISSING
+    }
+
+    int APP_PERMISSION_REQUEST_CAMERA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +130,10 @@ public class GiverFormActivity extends AppCompatActivity {
         itemImageView = (ImageView) findViewById(R.id.item_picture);
         selectedImage = null;
         selectedImageFile = null;
+        formPB = (ProgressBar) findViewById(R.id.form_pb);
+        picturePB = (ProgressBar) findViewById(R.id.picture_pb);
+        formBtn = (Button) findViewById(R.id.send_form_button);
+        uploadBytes = null;
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -227,49 +253,65 @@ public class GiverFormActivity extends AppCompatActivity {
 
     public void onSendForm(View view) {
         Log.d("TAG", "entered send form method");
+        formPB.setVisibility(View.VISIBLE);
         Map<String, Object> itemInfo = new HashMap<>();
         final FirebaseUser user = auth.getCurrentUser();
-        if (!fillFormData(itemInfo, user))
-            return;
+        FieldValue timestamp = serverTimestamp();
+        switch (formStatus(itemInfo, user, timestamp)) {
+            case ERROR_UNKNOWN:
+                formPB.setVisibility(View.GONE);
+                showAlertMessage("An unknown error has occurred. Please try again later");
+                break;
+            case ERROR_TITLE:
+                formPB.setVisibility(View.GONE);
+                showAlertMessage("Please include a title to describe your item");
+                break;
+            case ERROR_PICTURE_NOT_INCLUDED:
+                formPB.setVisibility(View.GONE);
+                showAlertMessage("Please include a picture of the item it's posted for pick-up in person");
+                break;
+            case PICTURE_MISSING:
+                assert user != null;
+                uploadItemData(itemInfo, user, timestamp);
+                break;
+            case PICTURE_UPLOADED:
+                assert user != null;
+                //TODO: fix this case
+//                uploadPhoto(itemInfo, user, timestamp, selectedImage);
+                break;
+        }
+    }
 
-        db.collection("items")
-                .add(itemInfo)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+    private void uploadItemData(Map<String, Object> itemInfo, final FirebaseUser user, final FieldValue timestamp) {
+        db.collection("items").document(timestamp.toString())
+                .set(itemInfo)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onSuccess(final DocumentReference documentReference) {
-                        Log.d("TAG", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    public void onSuccess(Void aVoid) {
+                        Log.d("TAG", "Item added successfully");
                         Map<String, Object> itemRef = new HashMap<>();
-                        itemRef.put("itemRef", documentReference);
-
-                        // Item created successfully: need to link item with its publisher
-
-                        db.collection("users").document(user.getUid()).collection("publishedItems")
-                                .add(itemRef)
-                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        final DocumentReference ref = db.collection("items").document(timestamp.toString());
+                        itemRef.put("ref", ref);
+                        db.collection("users").document(user.getUid()).collection("publishedItems").document(timestamp.toString())
+                                .set(itemRef)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
-                                    public void onSuccess(DocumentReference documentReference) {
-                                        // Everything worked!
-                                        Log.d("TAG", "DocumentSnapshot added with ID: " + documentReference.getId());
-                                        Toast.makeText(GiverFormActivity.this, "Shared successfully!",
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("TAG", "Item reference added successfully");
+                                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
                                                 Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
                                         startActivity(intent);
                                         finish();
                                     }
-
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Log.w("TAG", "Error adding document", e);
-                                        // Failed to add entry to the user's published items!
-                                        // Delete entry from database:
-                                        db.collection("items").document(documentReference.getId()).delete();
-                                        // Delete item photo from storage
-                                        StorageReference storageRef = storage.child("itemPictures/userUploads/" + user.getUid() + "/" + selectedImageFile.getName());
-                                        storageRef.delete();
+                                        Log.d("TAG", "Error adding item reference");
                                         Toast.makeText(GiverFormActivity.this, "An error has occurred. Please try again",
                                                 Toast.LENGTH_SHORT).show();
+                                        ref.delete();
                                     }
                                 });
                     }
@@ -277,55 +319,185 @@ public class GiverFormActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.w("TAG", "Error adding document", e);
+                        Log.d("TAG", "Error adding document");
                         Toast.makeText(GiverFormActivity.this, "An error has occurred. Please try again",
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
-        Log.d("TAG", "finished form method");
     }
 
-    private boolean fillFormData(final Map<String, Object> itemInfo, FirebaseUser user) {
-        String uid;
-        //Stop if the user is not logged in or no picture was added
-        if (user == null || selectedImage == null || selectedImageFile == null)
-            return false;
-        uid = user.getUid();
-        itemInfo.put("publisher", uid);
-        Log.d("TAG", "filled publisher");
-
-        //Store the image URI on the cloud
-        Log.d("TAG", "uploading image to cloud");
-        StorageReference storageRef = storage.child("itemPictures/userUploads/" + uid + "/" + selectedImageFile.getName());
-        storageRef.putFile(selectedImage)
+    private void uploadItemAndPictureData(final Map<String, Object> itemInfo, final FirebaseUser user, final FieldValue timestamp) {
+        Log.d("TAG", "uploadItemAndPictureData: starting data upload ");
+        final StorageReference storageRef = storage.child("itemPictures/userUploads/" + user.getUid());
+        UploadTask uploadTask = storageRef.putBytes(uploadBytes);
+        uploadTask
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Log.d("TAG", "uploaded image successfully");
-                        Uri cloudUri = taskSnapshot.getUploadSessionUri();
-                        assert cloudUri != null;
-                        itemInfo.put("photoUri", cloudUri);
-                        db.collection("items").document()
-                        Log.d("TAG", "filled item photo");
+                        Log.d("TAG", "uploadItemAndPictureData: image uploaded successfully ");
+                        storageRef.getDownloadUrl()
+                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        Log.d("TAG", "uploadItemAndPictureData: storage uri for image fetched successfully ");
+                                        itemInfo.put("photo", uri);
+                                        Log.d("TAG", "uploadItemAndPictureData: step 2 TEMP " + itemInfo.toString());
+                                        final DocumentReference publishedItemRef = db.collection("items").document(timestamp.toString());
+                                        publishedItemRef
+                                                .set(itemInfo)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Log.d("TAG", "uploadItemAndPictureData: item added successfully ");
+                                                        Map<String, Object> itemRef = new HashMap<>();
+                                                        itemRef.put("item", publishedItemRef);
+                                                        db.collection("users").document(user.getUid()).collection("publishedItems").document(timestamp.toString())
+                                                                .set(itemRef)
+                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+                                                                        Log.d("TAG", "uploadItemAndPictureData: user's published item reference added successfully ");
+                                                                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
+                                                                                Toast.LENGTH_SHORT).show();
+                                                                        Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
+                                                                        startActivity(intent);
+                                                                        finish();
+                                                                    }
+                                                                })
+                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+
+                                                                    }
+                                                                });
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+
+                                                    }
+                                                });
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                    }
+                                });
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d("TAG", "failed to upload image");
-                        //TODO: need to check how we can fail the process when this happens
+
+                    }
+                })
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        double currentProgress = taskSnapshot.getBytesTransferred() * 100 / taskSnapshot.getTotalByteCount();
+                        if (currentProgress > progress + UPLOAD_PROGRESS_MIN_FACTOR) {
+                            progress = currentProgress;
+                            Toast.makeText(GiverFormActivity.this, progress + "%", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 
-        if (itemInfo.isEmpty())
-            return false;
 
-        itemInfo.put("timestamp", serverTimestamp());
+
+        /*
+        db.collection("items").document(timestamp.toString())
+                .set(itemInfo)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("TAG", "Item added successfully");
+                        Map<String, Object> itemRef = new HashMap<>();
+                        final DocumentReference ref = db.collection("items").document(timestamp.toString());
+                        itemRef.put("ref", ref);
+                        db.collection("users").document(user.getUid()).collection("publishedItems").document(timestamp.toString())
+                                .set(itemRef)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("TAG", "Item reference added successfully");
+                                        StorageReference storageRef = storage.child("itemPictures/userUploads/" + user.getUid() + "/" + timestamp.toString());
+                                        storageRef.putFile(selectedImage)
+                                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                        Log.d("TAG", "uploaded image successfully");
+                                                        Uri cloudUri = taskSnapshot.getUploadSessionUri();
+                                                        Map<String, Object> itemPhoto = new HashMap<>();
+                                                        assert cloudUri != null;
+                                                        itemPhoto.put("photo", cloudUri);
+                                                        db.collection("users").document(user.getUid()).collection("publishedItems").document(timestamp.toString())
+                                                                .set(itemPhoto, SetOptions.merge())
+                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+                                                                        Log.d("TAG", "added image to item document successfully");
+                                                                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
+                                                                                Toast.LENGTH_SHORT).show();
+                                                                        Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
+                                                                        startActivity(intent);
+                                                                        finish();
+                                                                    }
+                                                                })
+                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        Log.d("TAG", "failed to add image to item document");
+                                                                    }
+                                                                });
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Log.d("TAG", "failed to upload image");
+                                                    }
+                                                });
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("TAG", "Error adding item reference");
+                                        Toast.makeText(GiverFormActivity.this, "An error has occurred. Please try again",
+                                                Toast.LENGTH_SHORT).show();
+                                        ref.delete();
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("TAG", "Error adding document");
+                        Toast.makeText(GiverFormActivity.this, "An error has occurred. Please try again",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }); */
+    }
+
+    private formResult formStatus(final Map<String, Object> itemInfo, FirebaseUser user, FieldValue timestamp) {
+        String uid;
+        //Stop if the user is not logged in
+        if (user == null) {
+            return formResult.ERROR_UNKNOWN;
+        }
+        uid = user.getUid();
+        itemInfo.put("publisher", uid);
+        Log.d("TAG", "filled publisher");
+        itemInfo.put("timestamp", timestamp);
         Log.d("TAG", "filled timestamp");
         //Air Time is in hours
         itemInfo.put("airTime", 72); //TODO: change this when the layout file changes
         Log.d("TAG", "filled airtime");
-        itemInfo.put("category", category);
+        itemInfo.put("category", category); //TODO: change this when support for "other" category is enabled in the form
         Log.d("TAG", "filled category");
         String pickupMethod;
         switch (pickup.getSelectedItemPosition()) {
@@ -340,15 +512,26 @@ public class GiverFormActivity extends AppCompatActivity {
         }
         itemInfo.put("pickupMethod", pickupMethod);
         Log.d("TAG", "filled pickup method");
+        if (selectedImage == null && pickupMethod.equals("In Person")) {
+            return formResult.ERROR_PICTURE_NOT_INCLUDED;
+        }
+        if (title.getText().toString().isEmpty()) {
+            return formResult.ERROR_TITLE;
+        }
         itemInfo.put("title", title.getText().toString());
         Log.d("TAG", "filled title");
-        itemInfo.put("description", description.getText().toString());
+        if (!description.getText().toString().isEmpty()) {
+            itemInfo.put("description", description.getText().toString());
+            Log.d("TAG", "filled description");
+        }
         Log.d("TAG", "filled description");
         if (!pickupDescription.getText().toString().isEmpty()) {
             itemInfo.put("pickupDescription", pickupDescription.getText().toString());
             Log.d("TAG", "filled pickup description");
         }
-        return true;
+        if (selectedImage == null)
+            return formResult.PICTURE_MISSING;
+        return formResult.PICTURE_UPLOADED;
     }
 
     public void onUploadPicture(View view) {
@@ -400,7 +583,7 @@ public class GiverFormActivity extends AppCompatActivity {
                 case REQUEST_CAMERA:
                     if (selectedImage != null) {
                         Log.d("IMAGE", "About to set image");
-                        itemImageView.setImageURI(selectedImage);
+                        uploadPhoto(selectedImage);
                     }
                     break;
                 case SELECT_IMAGE:
@@ -408,12 +591,77 @@ public class GiverFormActivity extends AppCompatActivity {
                     selectedImage = data.getData();
                     //TODO: add Glide
                     Log.d("IMAGE", "About to set image");
-                    itemImageView.setImageURI(selectedImage);
-//                    Log.d("IMAGE", "Allocating file for photo uri");
+                    uploadPhoto(selectedImage);
                     break;
                 default:
                     Log.d("IMAGE", "Error: unknown request code");
             }
+        }
+    }
+
+    private void showAlertMessage(final String msg) {
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(this);
+        builder.setTitle("Upload Information")
+                .setMessage(msg)
+                .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Do nothing
+                    }
+                })
+                .show();
+    }
+
+    private void uploadPhoto(Uri imagePath) {
+        Log.d("TAG", "uploadPhoto: started");
+        ImageCompressTask resize = new ImageCompressTask();
+        Log.d("TAG", "uploadPhoto: starting execute");
+        resize.execute(imagePath);
+    }
+
+    public class ImageCompressTask extends AsyncTask<Uri, Integer, byte[]> {
+
+        @Override
+        protected void onPreExecute() {
+            picturePB.setVisibility(View.VISIBLE);
+            itemImageView.setVisibility(View.INVISIBLE);
+            formBtn.setClickable(false);
+            formBtn.setAlpha((float) 0.6);
+        }
+
+        @Override
+        protected byte[] doInBackground(Uri... uris) {
+            Log.d("TAG", "doInBackground: compressing");
+            try {
+                RotateBitmap rotateBitmap = new RotateBitmap();
+                Log.d("TAG", "doInBackground: test: "+uris[0].toString());
+                Bitmap bitmap = rotateBitmap.HandleSamplingAndRotationBitmap(GiverFormActivity.this, uris[0]);
+                Log.d("TAG", "doInBackground: MBs before compression: " + (double) bitmap.getByteCount() / 1e6);
+                byte[] bytes = getBytesFromBitmap(bitmap, 80);
+                Log.d("TAG", "doInBackground: MBs after compression: " + (double) bytes.length / 1e6);
+                return bytes;
+            } catch (IOException e) {
+                Log.d("TAG", "doInBackground: exception: " + e.getMessage());
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(byte[] bytes) {
+            super.onPostExecute(bytes);
+            uploadBytes = bytes;
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            itemImageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap,  itemImageView.getWidth(), itemImageView.getHeight(), false));
+            picturePB.setVisibility(View.GONE);
+            itemImageView.setVisibility(View.VISIBLE);
+            formBtn.setAlpha((float) 1.0);
+            formBtn.setClickable(true);
+        }
+
+        private byte[] getBytesFromBitmap(Bitmap bitmap, int quality) {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
+            return stream.toByteArray();
         }
     }
 }
