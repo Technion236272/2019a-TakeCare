@@ -83,8 +83,6 @@ public class GiverFormActivity extends AppCompatActivity {
     FirebaseFirestore db;
     FirebaseAuth auth;
     StorageReference storage;
-    private double progress = 0;
-    private final int UPLOAD_PROGRESS_MIN_FACTOR = 20;
 
     enum formResult {
         ERROR_UNKNOWN,
@@ -268,21 +266,20 @@ public class GiverFormActivity extends AppCompatActivity {
                 break;
             case ERROR_PICTURE_NOT_INCLUDED:
                 formPB.setVisibility(View.GONE);
-                showAlertMessage("Please include a picture of the item it's posted for pick-up in person");
+                showAlertMessage("Please include a picture of the item when posting for pick-up in person");
                 break;
             case PICTURE_MISSING:
                 assert user != null;
-                uploadItemData(itemInfo, user, timestamp);
+                uploadItemDataNoPicture(itemInfo, user, timestamp);
                 break;
             case PICTURE_UPLOADED:
                 assert user != null;
-                //TODO: fix this case
-//                uploadPhoto(itemInfo, user, timestamp, selectedImage);
+                uploadItemDataWithPicture(itemInfo, user, timestamp);
                 break;
         }
     }
 
-    private void uploadItemData(Map<String, Object> itemInfo, final FirebaseUser user, final FieldValue timestamp) {
+    private void uploadItemDataNoPicture(Map<String, Object> itemInfo, final FirebaseUser user, final FieldValue timestamp) {
         db.collection("items").document(timestamp.toString())
                 .set(itemInfo)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -326,9 +323,9 @@ public class GiverFormActivity extends AppCompatActivity {
                 });
     }
 
-    private void uploadItemAndPictureData(final Map<String, Object> itemInfo, final FirebaseUser user, final FieldValue timestamp) {
+    private void uploadItemDataWithPicture(final Map<String, Object> itemInfo, final FirebaseUser user, final FieldValue timestamp) {
         Log.d("TAG", "uploadItemAndPictureData: starting data upload ");
-        final StorageReference storageRef = storage.child("itemPictures/userUploads/" + user.getUid());
+        final StorageReference storageRef = storage.child("itemPictures/userUploads/" + user.getUid() + "/" + timestamp.toString());
         UploadTask uploadTask = storageRef.putBytes(uploadBytes);
         uploadTask
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -340,17 +337,16 @@ public class GiverFormActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         Log.d("TAG", "uploadItemAndPictureData: storage uri for image fetched successfully ");
-                                        itemInfo.put("photo", uri);
-                                        Log.d("TAG", "uploadItemAndPictureData: step 2 TEMP " + itemInfo.toString());
-                                        final DocumentReference publishedItemRef = db.collection("items").document(timestamp.toString());
-                                        publishedItemRef
+                                        itemInfo.put("photo", uri.toString());
+                                        final DocumentReference documentRef = db.collection("items").document();
+                                        documentRef
                                                 .set(itemInfo)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
                                                         Log.d("TAG", "uploadItemAndPictureData: item added successfully ");
                                                         Map<String, Object> itemRef = new HashMap<>();
-                                                        itemRef.put("item", publishedItemRef);
+                                                        itemRef.put("item", documentRef);
                                                         db.collection("users").document(user.getUid()).collection("publishedItems").document(timestamp.toString())
                                                                 .set(itemRef)
                                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -393,94 +389,7 @@ public class GiverFormActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
 
                     }
-                })
-                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                        double currentProgress = taskSnapshot.getBytesTransferred() * 100 / taskSnapshot.getTotalByteCount();
-                        if (currentProgress > progress + UPLOAD_PROGRESS_MIN_FACTOR) {
-                            progress = currentProgress;
-                            Toast.makeText(GiverFormActivity.this, progress + "%", Toast.LENGTH_SHORT).show();
-                        }
-                    }
                 });
-
-
-
-        /*
-        db.collection("items").document(timestamp.toString())
-                .set(itemInfo)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("TAG", "Item added successfully");
-                        Map<String, Object> itemRef = new HashMap<>();
-                        final DocumentReference ref = db.collection("items").document(timestamp.toString());
-                        itemRef.put("ref", ref);
-                        db.collection("users").document(user.getUid()).collection("publishedItems").document(timestamp.toString())
-                                .set(itemRef)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("TAG", "Item reference added successfully");
-                                        StorageReference storageRef = storage.child("itemPictures/userUploads/" + user.getUid() + "/" + timestamp.toString());
-                                        storageRef.putFile(selectedImage)
-                                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                                    @Override
-                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                                        Log.d("TAG", "uploaded image successfully");
-                                                        Uri cloudUri = taskSnapshot.getUploadSessionUri();
-                                                        Map<String, Object> itemPhoto = new HashMap<>();
-                                                        assert cloudUri != null;
-                                                        itemPhoto.put("photo", cloudUri);
-                                                        db.collection("users").document(user.getUid()).collection("publishedItems").document(timestamp.toString())
-                                                                .set(itemPhoto, SetOptions.merge())
-                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                    @Override
-                                                                    public void onSuccess(Void aVoid) {
-                                                                        Log.d("TAG", "added image to item document successfully");
-                                                                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
-                                                                                Toast.LENGTH_SHORT).show();
-                                                                        Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
-                                                                        startActivity(intent);
-                                                                        finish();
-                                                                    }
-                                                                })
-                                                                .addOnFailureListener(new OnFailureListener() {
-                                                                    @Override
-                                                                    public void onFailure(@NonNull Exception e) {
-                                                                        Log.d("TAG", "failed to add image to item document");
-                                                                    }
-                                                                });
-                                                    }
-                                                })
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        Log.d("TAG", "failed to upload image");
-                                                    }
-                                                });
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d("TAG", "Error adding item reference");
-                                        Toast.makeText(GiverFormActivity.this, "An error has occurred. Please try again",
-                                                Toast.LENGTH_SHORT).show();
-                                        ref.delete();
-                                    }
-                                });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("TAG", "Error adding document");
-                        Toast.makeText(GiverFormActivity.this, "An error has occurred. Please try again",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }); */
     }
 
     private formResult formStatus(final Map<String, Object> itemInfo, FirebaseUser user, FieldValue timestamp) {
