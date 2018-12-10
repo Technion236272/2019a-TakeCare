@@ -27,6 +27,7 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -38,7 +39,6 @@ public class TakerMenuActivity extends AppCompatActivity
     MenuItem[] prevNavGroupItem;
     private FeedRecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +90,7 @@ public class TakerMenuActivity extends AppCompatActivity
         recyclerView.setItemViewCacheSize(10);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
-        //TODO: properly implement factory with input stream once database is ready
-
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         List<FeedCardInformation> cards = new ArrayList<>();
         adapter = new TakerRVAdapter(cards); //List is still empty
