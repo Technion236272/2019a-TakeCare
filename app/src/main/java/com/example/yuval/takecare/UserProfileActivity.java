@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
@@ -18,10 +20,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -45,16 +52,24 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.w3c.dom.Text;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.text.InputType.TYPE_CLASS_TEXT;
+
 public class UserProfileActivity extends AppCompatActivity {
 
     private ImageView profilePictureView;
     private ProgressBar picturePB;
+    private EditText userNameView;
+    private Drawable originalEditTextDrawable;
+    private KeyListener originalKeyListener;
+    private EditText userDescriptionView;
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
@@ -81,6 +96,44 @@ public class UserProfileActivity extends AppCompatActivity {
 
         profilePictureView = (ImageView) findViewById(R.id.profile_pic);
         picturePB = (ProgressBar) findViewById(R.id.profile_pic_progress_bar);
+        userNameView = (EditText) findViewById(R.id.user_name);
+        userDescriptionView = (EditText) findViewById(R.id.about);
+        originalEditTextDrawable = userNameView.getBackground();
+        originalKeyListener = userNameView.getKeyListener();
+        userNameView.setBackground(null);
+        userNameView.setKeyListener(null);
+
+        userNameView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(userNameView.getWindowToken(), 0);
+                    userNameView.setFocusableInTouchMode(false);
+                    userNameView.setKeyListener(null);
+                    userNameView.setBackground(null);
+                    setUserName();
+                }
+            }
+        });
+
+        userDescriptionView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                setUserDescription();
+            }
+        });
+
         selectedImageFile = null;
         selectedImage = null;
 
@@ -88,7 +141,8 @@ public class UserProfileActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
 
-        final TextView username = findViewById(R.id.user_name);
+        final TextView usernameViewRef = userNameView;
+        final TextView userDescriptionRef = userDescriptionView;
         final FirebaseUser user = auth.getCurrentUser();
         if (user != null) {
             DocumentReference docRef = db.collection("users").document(user.getUid());
@@ -99,7 +153,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             Log.d("TAG", "DocumentSnapshot data: " + document.getData());
-                            username.setText(document.getString("name"));
+                            usernameViewRef.setText(document.getString("name"));
                             if (document.getString("profilePicture") != null) {
                                 Log.d(TAG, "Found profile pic. Fetched picture url: " + Uri.parse(document.getString("profilePicture")));
                                 Glide.with(UserProfileActivity.this)
@@ -107,6 +161,11 @@ public class UserProfileActivity extends AppCompatActivity {
                                         .apply(RequestOptions.circleCropTransform())
                                         .into(profilePictureView);
                             }
+                            if (document.getString("description") != null) {
+                                Log.d(TAG, "Found description. Writing: ");
+                                userDescriptionRef.setText(document.getString("description"));
+                            }
+
                         } else {
                             Log.d("TAG", "No such document");
                         }
@@ -154,6 +213,58 @@ public class UserProfileActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    public void onChangeNameClick(View view) {
+        userNameView.setKeyListener(originalKeyListener);
+        userNameView.setBackground(originalEditTextDrawable);
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        imm.showSoftInput(userNameView, InputMethodManager.SHOW_IMPLICIT);
+        userNameView.setFocusableInTouchMode(true);
+        userNameView.requestFocus();
+    }
+
+    private void setUserName() {
+        final FirebaseUser user = auth.getCurrentUser();
+        if (user == null) {
+            return;
+        }
+        db.collection("users").document(user.getUid())
+                .update("name", userNameView.getText().toString())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "user name updated!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+    }
+
+    private void setUserDescription() {
+        final FirebaseUser user = auth.getCurrentUser();
+        if (user == null) {
+            return;
+        }
+        db.collection("users").document(user.getUid())
+                .update("description", userDescriptionView.getText().toString())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "user name updated!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+    }
+
 
     public void onLogOutClick(View view) {
         AlertDialog.Builder builder;

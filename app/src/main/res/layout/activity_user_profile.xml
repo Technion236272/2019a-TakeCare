@@ -40,13 +40,15 @@
                 android:onClick="onChangeProfilePic"
                 app:srcCompat="@drawable/ic_user_vector" />
 
-            <TextView
+            <EditText
                 android:id="@+id/user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/profile_pic"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
+                android:inputType="textPersonName"
+                android:maxLines="1"
                 android:text="@string/user_settings_default_user_text"
                 android:textColor="@color/primary_text"
                 android:textSize="25sp" />
@@ -63,16 +65,17 @@
                 android:rating="4.5" />
 
             <ImageButton
-                android:id="@+id/imageButton"
+                android:id="@+id/edit_name_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/profile_pic"
                 android:layout_marginStart="15dp"
                 android:layout_marginLeft="15dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="25dp"
                 android:layout_toEndOf="@id/user_name"
                 android:layout_toRightOf="@id/user_name"
                 android:background="@android:color/transparent"
+                android:onClick="onChangeNameClick"
                 app:srcCompat="@drawable/ic_edit_black_24dp" />
 
             <EditText
