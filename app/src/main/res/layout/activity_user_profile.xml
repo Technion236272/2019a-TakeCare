@@ -37,6 +37,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="30dp"
+                android:onClick="onChangeProfilePic"
                 app:srcCompat="@drawable/ic_user_vector" />
 
             <TextView
@@ -46,7 +47,7 @@
                 android:layout_below="@id/profile_pic"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
-                android:text="User"
+                android:text="@string/user_settings_default_user_text"
                 android:textColor="@color/primary_text"
                 android:textSize="25sp" />
 
@@ -57,9 +58,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/user_name"
                 android:layout_centerHorizontal="true"
-                android:rating="4.5"
+                android:layout_marginTop="5dp"
                 android:isIndicator="true"
-                android:layout_marginTop="5dp" />
+                android:rating="4.5" />
 
             <ImageButton
                 android:id="@+id/imageButton"
@@ -86,7 +87,7 @@
                 android:layout_marginRight="15dp"
                 android:background="@drawable/text_box"
                 android:ems="10"
-                android:hint="Tell about yourself"
+                android:hint="@string/user_description_text"
                 android:inputType="text"
                 android:maxLines="5"
                 android:padding="10dp" />
@@ -184,13 +185,32 @@
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:gravity="start"
+                android:onClick="onLogOutClick"
                 android:padding="30dp"
                 android:text="@string/log_out"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:onClick="onLogOutClick"
                 app:backgroundTint="@android:color/holo_red_dark"
                 app:backgroundTintMode="add" />
+
+            <ProgressBar
+                android:id="@+id/profile_pic_progress_bar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/profile_pic"
+                android:layout_alignLeft="@+id/profile_pic"
+                android:layout_alignTop="@+id/profile_pic"
+                android:layout_alignEnd="@+id/profile_pic"
+                android:layout_alignRight="@+id/profile_pic"
+                android:layout_alignBottom="@+id/profile_pic"
+                android:layout_marginStart="82dp"
+                android:layout_marginLeft="82dp"
+                android:layout_marginTop="89dp"
+                android:layout_marginEnd="86dp"
+                android:layout_marginRight="86dp"
+                android:layout_marginBottom="79dp"
+                android:visibility="gone" />
         </RelativeLayout>
     </ScrollView>
 
