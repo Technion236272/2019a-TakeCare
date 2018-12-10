@@ -28,6 +28,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.yuval.takecare.utilities.RotateBitmap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -100,7 +102,10 @@ public class UserProfileActivity extends AppCompatActivity {
                             username.setText(document.getString("name"));
                             if (document.getString("profilePicture") != null) {
                                 Log.d(TAG, "Found profile pic. Fetched picture url: " + Uri.parse(document.getString("profilePicture")));
-                                profilePictureView.setImageURI(Uri.parse(Uri.decode(document.getString("profilePicture"))));
+                                Glide.with(UserProfileActivity.this)
+                                        .load(document.getString("profilePicture"))
+                                        .apply(RequestOptions.circleCropTransform())
+                                        .into(profilePictureView);
                             }
                         } else {
                             Log.d("TAG", "No such document");
@@ -306,7 +311,12 @@ public class UserProfileActivity extends AppCompatActivity {
         protected void onPostExecute(byte[] bytes) {
             super.onPostExecute(bytes);
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            profilePictureView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, profilePictureView.getWidth(), profilePictureView.getHeight(), false));
+            Glide.with(UserProfileActivity.this)
+                    .asBitmap()
+                    .load(bytes)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(profilePictureView);
+//            profilePictureView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, profilePictureView.getWidth(), profilePictureView.getHeight(), false));
             picturePB.setVisibility(View.GONE);
             profilePictureView.setVisibility(View.VISIBLE);
             setUserProfilePic(bytes);

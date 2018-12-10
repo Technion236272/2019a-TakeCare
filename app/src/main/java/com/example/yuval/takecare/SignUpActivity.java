@@ -453,6 +453,8 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
         userInfo.put("name", name);
         userInfo.put("email", email);
         userInfo.put("password", password);
+        userInfo.put("rating", 0);
+        userInfo.put("ratingCount", 0);
         String uid = user.getUid();
         db.collection("users").document(uid)
                 .set(userInfo)

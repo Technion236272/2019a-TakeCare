@@ -35,6 +35,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.yuval.takecare.utilities.RotateBitmap;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -559,8 +561,12 @@ public class GiverFormActivity extends AppCompatActivity {
         protected void onPostExecute(byte[] bytes) {
             super.onPostExecute(bytes);
             uploadBytes = bytes;
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            itemImageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap,  itemImageView.getWidth(), itemImageView.getHeight(), false));
+            Glide.with(GiverFormActivity.this)
+                    .asBitmap()
+                    .load(bytes)
+                    .into(itemImageView);
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//            itemImageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap,  itemImageView.getWidth(), itemImageView.getHeight(), false));
             picturePB.setVisibility(View.GONE);
             itemImageView.setVisibility(View.VISIBLE);
             formBtn.setAlpha((float) 1.0);
