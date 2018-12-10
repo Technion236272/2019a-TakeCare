@@ -565,8 +565,6 @@ public class GiverFormActivity extends AppCompatActivity {
                     .asBitmap()
                     .load(bytes)
                     .into(itemImageView);
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//            itemImageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap,  itemImageView.getWidth(), itemImageView.getHeight(), false));
             picturePB.setVisibility(View.GONE);
             itemImageView.setVisibility(View.VISIBLE);
             formBtn.setAlpha((float) 1.0);

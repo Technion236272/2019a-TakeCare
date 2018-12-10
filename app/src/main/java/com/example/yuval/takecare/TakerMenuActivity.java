@@ -256,15 +256,15 @@ public class TakerMenuActivity extends AppCompatActivity
         String booksPhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_books.png?alt=media&token=1cb30a65-80cc-4957-9254-a7f52234b2ca";
         String hitchhikerPhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_hittchhiker.png?alt=media&token=f4d2f6ea-9590-4297-a1f5-04c8a2673108";
         String umbrellaPhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_umbrella.png?alt=media&token=6638b6a1-b1a4-4e26-926b-3af1532be35c";
-
+        String mcGiverFacePhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_mcgiverface.png?alt=media&token=3fa0c143-34c9-44ce-bcf7-e2888a3880b6";
 
         for(int i = 0; i<1e3; i++) {
-            list.add(new FeedCardInformation("Yummy Muffins For All!", muffinPhotoURL, R.drawable.photo_mcgiverface, "Giver McGiverFace", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
-            list.add(new FeedCardInformation("Driving to Tel-Aviv at Approx 7pm", hitchhikerPhotoURL, R.drawable.ic_user_purple, "Israel M. Shalom", R.drawable.ic_car_purple, R.drawable.ic_race_purple));
-            list.add(new FeedCardInformation("I Found An Umbrella Near Ullman", umbrellaPhotoURL, R.drawable.photo_mcgiverface, "Giver McGiverFace", R.drawable.ic_lost_and_found_purple, R.drawable.ic_in_person_purple));
-            list.add(new FeedCardInformation("FREE PIZZAS IN TAUB'S BALCONY!! GET OVER HERE QUICKLY!!", pizzaPhotoURL, R.drawable.ic_user_purple, "Yuval", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
-            list.add(new FeedCardInformation("This Cool Nightstand!", nightstandURL, R.drawable.ic_user_purple, "Tzvika", R.drawable.ic_lamp_purple, R.drawable.ic_race_purple));
-            list.add(new FeedCardInformation("I have lots of MATAM books", booksPhotoURL, R.drawable.photo_mcgiverface, "Giver McGiverFace", R.drawable.ic_book_purple, R.drawable.ic_race_purple));
+            list.add(new FeedCardInformation("Yummy Muffins For All!", muffinPhotoURL, mcGiverFacePhotoURL, "Giver McGiverFace", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
+            list.add(new FeedCardInformation("Driving to Tel-Aviv at Approx 7pm", hitchhikerPhotoURL, null, "Israel M. Shalom", R.drawable.ic_car_purple, R.drawable.ic_race_purple));
+            list.add(new FeedCardInformation("I Found An Umbrella Near Ullman", umbrellaPhotoURL, mcGiverFacePhotoURL, "Giver McGiverFace", R.drawable.ic_lost_and_found_purple, R.drawable.ic_in_person_purple));
+            list.add(new FeedCardInformation("FREE PIZZAS IN TAUB'S BALCONY!! GET OVER HERE QUICKLY!!", pizzaPhotoURL, null, "Yuval", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
+            list.add(new FeedCardInformation("This Cool Nightstand!", nightstandURL, null, "Tzvika", R.drawable.ic_lamp_purple, R.drawable.ic_race_purple));
+            list.add(new FeedCardInformation("I have lots of MATAM books", booksPhotoURL, mcGiverFacePhotoURL, "Giver McGiverFace", R.drawable.ic_book_purple, R.drawable.ic_race_purple));
         }
 
         List<FeedCardInformation> cards = list;
