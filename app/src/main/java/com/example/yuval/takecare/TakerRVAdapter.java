@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class TakerRVAdapter extends FeedRecyclerView.Adapter<TakerRVAdapter.Item
 
     List<FeedCardInformation> cardsAmount;
 
-    TakerRVAdapter(List<FeedCardInformation> persons){
+    TakerRVAdapter(List<FeedCardInformation> persons) {
         this.cardsAmount = persons;
     }
 
@@ -46,24 +47,30 @@ public class TakerRVAdapter extends FeedRecyclerView.Adapter<TakerRVAdapter.Item
     @Override
     public ItemsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card, viewGroup, false);
-        ItemsViewHolder holder = new ItemsViewHolder(view);
-        return holder;
+        return new ItemsViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ItemsViewHolder itemsViewHolder, int i) {
         FeedCardInformation currentCard = cardsAmount.get(i);
         itemsViewHolder.itemTitle.setText(currentCard.title);
-        Glide.with(itemsViewHolder.card).load(currentCard.photoURL).into(itemsViewHolder.itemPhoto);
-        itemsViewHolder.profilePhoto.setImageResource(currentCard.userProfileId);
+        Glide.with(itemsViewHolder.card)
+                .load(currentCard.photoURL)
+                .into(itemsViewHolder.itemPhoto);
+        if (currentCard.userPictureURL != null) {
+            Glide.with(itemsViewHolder.card)
+                    .load(currentCard.userPictureURL)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(itemsViewHolder.profilePhoto);
+        } else {
+            itemsViewHolder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
+        }
         itemsViewHolder.itemPublisher.setText(currentCard.publisher);
         itemsViewHolder.itemCategory.setImageResource(cardsAmount.get(i).itemCategoryId);
         itemsViewHolder.itemPickupMethod.setImageResource(currentCard.itemPickupMethodId);
         //Tag the category & pickup views
         itemsViewHolder.itemCategory.setTag(currentCard.itemCategoryId);
         itemsViewHolder.itemPickupMethod.setTag(currentCard.itemPickupMethodId);
-//        itemsViewHolder.itemCategory.setTag(currentCard.itemCategoryId, itemsViewHolder.itemCategory.getTag());
-//        itemsViewHolder.itemPickupMethod.setTag(currentCard.itemPickupMethodId, itemsViewHolder.itemPickupMethod.getTag());
     }
 
     @Override
