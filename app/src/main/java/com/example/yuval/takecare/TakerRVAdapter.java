@@ -15,10 +15,10 @@ import java.util.List;
 
 public class TakerRVAdapter extends FeedRecyclerView.Adapter<TakerRVAdapter.ItemsViewHolder> {
 
-    List<FeedCardInformation> cardsAmount;
+    List<FeedCardInformation> cards;
 
-    TakerRVAdapter(List<FeedCardInformation> persons){
-        this.cardsAmount = persons;
+    TakerRVAdapter(List<FeedCardInformation> cards){
+        this.cards = cards;
     }
 
     public static class ItemsViewHolder extends RecyclerView.ViewHolder {
@@ -52,12 +52,12 @@ public class TakerRVAdapter extends FeedRecyclerView.Adapter<TakerRVAdapter.Item
 
     @Override
     public void onBindViewHolder(@NonNull ItemsViewHolder itemsViewHolder, int i) {
-        FeedCardInformation currentCard = cardsAmount.get(i);
+        FeedCardInformation currentCard = cards.get(i);
         itemsViewHolder.itemTitle.setText(currentCard.title);
         Glide.with(itemsViewHolder.card).load(currentCard.photoURL).into(itemsViewHolder.itemPhoto);
         itemsViewHolder.profilePhoto.setImageResource(currentCard.userProfileId);
         itemsViewHolder.itemPublisher.setText(currentCard.publisher);
-        itemsViewHolder.itemCategory.setImageResource(cardsAmount.get(i).itemCategoryId);
+        itemsViewHolder.itemCategory.setImageResource(cards.get(i).itemCategoryId);
         itemsViewHolder.itemPickupMethod.setImageResource(currentCard.itemPickupMethodId);
         //Tag the category & pickup views
         itemsViewHolder.itemCategory.setTag(currentCard.itemCategoryId);
@@ -68,6 +68,6 @@ public class TakerRVAdapter extends FeedRecyclerView.Adapter<TakerRVAdapter.Item
 
     @Override
     public int getItemCount() {
-        return cardsAmount.size();
+        return cards.size();
     }
 }
