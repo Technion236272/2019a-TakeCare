@@ -8,8 +8,6 @@ import android.view.MenuItem;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.MapView;
-
 public class ItemInfoActivity extends AppCompatActivity {
 
     @Override

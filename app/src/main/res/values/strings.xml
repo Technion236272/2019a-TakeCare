@@ -27,33 +27,37 @@
     <string name="nav_header_subtitle">Search for items that suit your needs</string>
     <string name="nav_header_desc">Navigation header</string>
 
-    <string name="ic_map_display_title">Map Display</string>
-    <string name="ic_feed_display_title">List Display</string>
-    <string name="ic_show_all_title">Show All</string>
-    <string name="ic_filter_title">Filter</string>
-    <string name="ic_food_title">Food</string>
-    <string name="ic_study_material_title">Study Material</string>
-    <string name="ic_furniture_title">Household</string>
-    <string name="ic_lost_and_found_title">Lost &amp; Found</string>
-    <string name="ic_hitchhike_title">Hitchhiking</string>
-    <string name="ic_other">Other</string>
-    <string name="ic_any_pickup_title">Any</string>
-    <string name="ic_in_person_title">In Person</string>
-    <string name="ic_giveaway_title">Public Giveaway</string>
-    <string name="ic_race_title">Race</string>
-    <string name="pickup_menu_title">Pickup Method</string>
-    <string name="display_menu_title">Display Mode</string>
+    <string name="nav_show_all_title">Show All</string>
+    <string name="nav_filter_title">Filter</string>
+    <string name="nav_food_title">Food</string>
+    <string name="nav_study_material_title">Study Material</string>
+    <string name="nav_furniture_title">Household</string>
+    <string name="nav_lost_and_found_title">Lost &amp; Found</string>
+    <string name="nav_hitchhike_title">Hitchhiking</string>
+    <string name="nav_other">Other</string>
+    <string name="nav_favorites">Favorites</string>
     <string name="categories_menu_title">Categories</string>
-
+    <string name="nav_requested_items">Requested Items</string>
+    <string name="nav_my_items">My Items</string>
+    <string name="nav_manage_favorites">Manage Favorites</string>
+    <string name="nav_chat">Chat</string>
+    <string name="nav_user_settings">User Settings</string>
 
     <!--Taker activity AppBar elements-->
     <string name="title_activity_taker_menu">TakeCare</string>
+    <string name="action_change_display">Change Display Mode</string>
     <string name="action_search">Search</string>
+    <string name="action_filter">Filter</string>
     <string name="action_chat">Chat</string>
     <string name="action_user_settings">User Settings</string>
     <string name="action_my_items">My Items</string>
     <string name="action_requested_items">Requested Items</string>
     <string name="action_favorites">Favorites</string>
+
+
+    <!--Taker activity filter popup menu elements-->
+    <string name="filter_menu_display_mode_text">Display Mode:</string>
+    <string name="filter_menu_pickup_method_text">Pickup Method:</string>
 
 
     <!--Login activity elements-->
@@ -82,9 +86,9 @@
 
 
     <!--Favorites page elements-->
+    <string name="favorites_tags_title">Tags:</string>
     <string name="favorites_tag_hint">e.g. "muffins", "giveaway", "music"…</string>
     <string name="favorites_instruction_text">Type in words that interest you.\nWe\'ll make sure to notify you when a suitable item is posted!</string>
-
 
     <!-- Strings related to sign up -->
     <string name="prompt_email">Email</string>
