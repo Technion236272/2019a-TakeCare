@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -11,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.SoundEffectConstants;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -21,13 +23,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
+//import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.bumptech.glide.request.RequestOptions;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -38,7 +50,11 @@ public class TakerMenuActivity extends AppCompatActivity
 
     MenuItem[] prevNavGroupItem;
     private FeedRecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
+    //private RecyclerView.Adapter adapter;
+    FirebaseFirestore db;
+    FirebaseAuth auth;
+    StorageReference storage;
+    FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +95,9 @@ public class TakerMenuActivity extends AppCompatActivity
         prevNavGroupItem[2] = navigationView.getMenu().findItem(R.id.nav_any_pickup);
         prevNavGroupItem[2].setChecked(true);
 
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        storage = FirebaseStorage.getInstance().getReference();
         setUpRecyclerView();
     }
 
@@ -90,15 +109,70 @@ public class TakerMenuActivity extends AppCompatActivity
         recyclerView.setItemViewCacheSize(10);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
 
-        List<FeedCardInformation> cards = new ArrayList<>();
-        adapter = new TakerRVAdapter(cards); //List is still empty
+
+        Query query = db.collection("items");
+        FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
+                .setQuery(query, FeedCardInformation.class)
+                .build();
+
+        adapter = new FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder>(response) {
+            @Override
+            protected void onBindViewHolder(@NonNull ItemsViewHolder holder, int position, @NonNull FeedCardInformation model) {
+                Log.d("harah", "model " + model.getPhoto());
+                holder.itemTitle.setText(model.getTitle());
+                Uri uri = Uri.parse(model.getPhoto());
+                StorageReference ref = FirebaseStorage.getInstance().getReference().child(uri.getPath());
+                //Log.println(Log.ASSERT,"path", uri.getPath());
+                Glide.with(holder.card).load(model.getPhoto()).into(holder.itemPhoto);
+                //Glide.with(holder.card).load(model.getPhotoURL()).into(holder.itemPhoto);
+                if (model.getPhoto() != null) {
+                    Glide.with(holder.card).load(model.getUserPictureURL()).apply(RequestOptions.circleCropTransform()).into(holder.profilePhoto);
+                } else {
+                    holder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
+                }
+                holder.itemPublisher.setText(model.getPublisher());
+                holder.itemCategory.setImageResource(model.getItemCategoryId());
+                holder.itemPickupMethod.setImageResource(model.getItemPickupMethodId());
+                holder.itemCategory.setTag(model.getItemCategoryId());
+                holder.itemPickupMethod.setTag(model.getItemPickupMethodId());
+            }
+
+            @NonNull
+            @Override
+            public ItemsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card, viewGroup, false);
+                return new ItemsViewHolder(view);
+            }
+            @Override
+            public void onError(FirebaseFirestoreException e) {
+                Log.e("error", e.getMessage());
+            }
+        };
+        adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
-        //Set the view to be displayed when the FeedRecyclerView is empty!
         recyclerView.setEmptyView(emptyFeedView);
+//
+//        List<FeedCardInformation> cards = new ArrayList<>();
+//        adapter = new TakerRVAdapter(cards); //List is still empty
+//        recyclerView.setAdapter(adapter);
+//        //Set the view to be displayed when the FeedRecyclerView is empty!
+//        recyclerView.setEmptyView(emptyFeedView);
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+        recyclerView.toggleVisibility();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
+        recyclerView.toggleVisibility();
+    }
     /*
     private List<FeedCardInformation> initData() {
         List<FeedCardInformation> list = new ArrayList<>();
@@ -245,7 +319,7 @@ public class TakerMenuActivity extends AppCompatActivity
     }
 
     public void tempFillItems(View view) {
-        List<FeedCardInformation> list = new ArrayList<>();
+    /*    List<FeedCardInformation> list = new ArrayList<>();
         String muffinPhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_muffin.png?alt=media&token=d52abb7a-1763-4c6b-ac74-89ffab4a8714";
         String nightstandURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_nightstand.png?alt=media&token=a3afa089-acaf-4a05-94eb-8cc581121935";
         String pizzaPhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_pizza.png?alt=media&token=6c81b8d3-c4ad-4769-9c82-2f03cd4c55d1";
@@ -254,7 +328,7 @@ public class TakerMenuActivity extends AppCompatActivity
         String umbrellaPhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_umbrella.png?alt=media&token=6638b6a1-b1a4-4e26-926b-3af1532be35c";
         String mcGiverFacePhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_mcgiverface.png?alt=media&token=3fa0c143-34c9-44ce-bcf7-e2888a3880b6";
 
-        for(int i = 0; i<1e3; i++) {
+        for (int i = 0; i < 1e3; i++) {
             list.add(new FeedCardInformation("Yummy Muffins For All!", muffinPhotoURL, mcGiverFacePhotoURL, "Giver McGiverFace", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
             list.add(new FeedCardInformation("Driving to Tel-Aviv at Approx 7pm", hitchhikerPhotoURL, null, "Israel M. Shalom", R.drawable.ic_car_purple, R.drawable.ic_race_purple));
             list.add(new FeedCardInformation("I Found An Umbrella Near Ullman", umbrellaPhotoURL, mcGiverFacePhotoURL, "Giver McGiverFace", R.drawable.ic_lost_and_found_purple, R.drawable.ic_in_person_purple));
@@ -265,7 +339,7 @@ public class TakerMenuActivity extends AppCompatActivity
 
         List<FeedCardInformation> cards = list;
         adapter = new TakerRVAdapter(cards);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(adapter);*/
     }
 
     public void onTakerCardSelected(View view) {
