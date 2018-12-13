@@ -34,7 +34,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -109,34 +112,80 @@ public class TakerMenuActivity extends AppCompatActivity
         recyclerView.setItemViewCacheSize(10);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
 
 
-        Query query = db.collection("items");
+        Query query = db.collection("items").orderBy("timestamp",Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
                 .setQuery(query, FeedCardInformation.class)
                 .build();
 
         adapter = new FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder>(response) {
             @Override
-            protected void onBindViewHolder(@NonNull ItemsViewHolder holder, int position, @NonNull FeedCardInformation model) {
+            protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, int position, @NonNull FeedCardInformation model) {
                 Log.d("harah", "model " + model.getPhoto());
                 holder.itemTitle.setText(model.getTitle());
-                Uri uri = Uri.parse(model.getPhoto());
-                StorageReference ref = FirebaseStorage.getInstance().getReference().child(uri.getPath());
+                //Uri uri = Uri.parse(model.getPhoto());
+                //StorageReference ref = FirebaseStorage.getInstance().getReference().child(uri.getPath());
                 //Log.println(Log.ASSERT,"path", uri.getPath());
                 Glide.with(holder.card).load(model.getPhoto()).into(holder.itemPhoto);
-                //Glide.with(holder.card).load(model.getPhotoURL()).into(holder.itemPhoto);
-                if (model.getPhoto() != null) {
-                    Glide.with(holder.card).load(model.getUserPictureURL()).apply(RequestOptions.circleCropTransform()).into(holder.profilePhoto);
+
+                // category selection
+                int categoryId;
+                if (model.getCategory().equals("Food")) {
+                    categoryId = R.drawable.ic_pizza_slice_purple;
+                } else if (model.getCategory().equals("Study Material")) {
+                    categoryId = R.drawable.ic_book_purple;
+                } else if (model.getCategory().equals("Households")) {
+                    categoryId = R.drawable.ic_lamp_purple;
+                } else if (model.getCategory().equals("Lost & Found")) {
+                    categoryId = R.drawable.ic_lost_and_found_purple;
+                } else if (model.getCategory().equals("Hitchhikes")) {
+                    categoryId = R.drawable.ic_car_purple;
                 } else {
-                    holder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
+                    categoryId = R.drawable.ic_treasure_96_purple_purple;
                 }
+
+                int pickupMethodId;
+                if (model.getPickupMethod().equals("In Person")) {
+                    pickupMethodId = R.drawable.ic_in_person_purple;
+                } else if (model.getPickupMethod().equals("Giveaway")) {
+                    pickupMethodId = R.drawable.ic_giveaway_purple;
+                } else {
+                    pickupMethodId = R.drawable.ic_race_purple;
+                }
+
+                holder.itemPublisher.setText(R.string.user_name);
+                holder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
+                db.collection("users").document(model.getPublisher())
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Log.d("harah", "Found the user: " + documentSnapshot);
+                                String publisherName, publisherPhoto;
+                                publisherName = documentSnapshot.getString("name");
+                                holder.itemPublisher.setText(publisherName);
+                                if (documentSnapshot.getString("profilePicture") != null) {
+                                    Glide.with(holder.card)
+                                            .load(documentSnapshot.getString("profilePicture"))
+                                            .apply(RequestOptions.circleCropTransform())
+                                            .into(holder.profilePhoto);
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                            }
+                        });
+                //Glide.with(holder.card).load(model.getUserPictureURL()).apply(RequestOptions.circleCropTransform()).into(holder.profilePhoto);
                 holder.itemPublisher.setText(model.getPublisher());
-                holder.itemCategory.setImageResource(model.getItemCategoryId());
-                holder.itemPickupMethod.setImageResource(model.getItemPickupMethodId());
-                holder.itemCategory.setTag(model.getItemCategoryId());
-                holder.itemPickupMethod.setTag(model.getItemPickupMethodId());
+                holder.itemCategory.setImageResource(categoryId);
+                holder.itemPickupMethod.setImageResource(pickupMethodId);
+                holder.itemCategory.setTag(categoryId);
+                holder.itemPickupMethod.setTag(pickupMethodId);
             }
 
             @NonNull
@@ -145,6 +194,7 @@ public class TakerMenuActivity extends AppCompatActivity
                 View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card, viewGroup, false);
                 return new ItemsViewHolder(view);
             }
+
             @Override
             public void onError(FirebaseFirestoreException e) {
                 Log.e("error", e.getMessage());
@@ -160,6 +210,7 @@ public class TakerMenuActivity extends AppCompatActivity
 //        //Set the view to be displayed when the FeedRecyclerView is empty!
 //        recyclerView.setEmptyView(emptyFeedView);
     }
+
     @Override
     public void onStart() {
         super.onStart();

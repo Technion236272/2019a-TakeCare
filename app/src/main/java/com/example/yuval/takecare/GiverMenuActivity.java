@@ -67,22 +67,22 @@ public class GiverMenuActivity extends AppCompatActivity {
         String category;
         switch(view.getId()) {
             case R.id.category_food:
-                category = "food";
+                category = "Food";
                 break;
             case R.id.category_study_material:
-                category = "study material";
+                category = "Study Material";
                 break;
             case R.id.category_households:
-                category = "households";
+                category = "Households";
                 break;
             case R.id.category_lost_and_found:
-                category = "lost&found";
+                category = "Lost & Found";
                 break;
             case R.id.category_hitchhike:
-                category = "hitchhike";
+                category = "Hitchhike";
                 break;
             case R.id.category_other:
-                category = "other";
+                category = "Other";
                 break;
             default:
                 category = "ERROR";
