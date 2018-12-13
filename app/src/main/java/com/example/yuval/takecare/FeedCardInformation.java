@@ -10,7 +10,7 @@ public class FeedCardInformation {
     private int itemPickupMethodId;
 
     /**
-     * Empty constructir
+     * Empty constructor for the FirestoreRecyclerAdapter
      */
     public FeedCardInformation(){
 
