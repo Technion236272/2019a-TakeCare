@@ -71,7 +71,7 @@ public class RequestedItemsActivity extends AppCompatActivity {
     }
 
     private void setUpRecyclerView() {
-        recyclerView = (FeedRecyclerView) findViewById(R.id.taker_feed_list);
+     /*   recyclerView = (FeedRecyclerView) findViewById(R.id.taker_feed_list);
         View emptyFeedView = findViewById(R.id.shared_items_empty_feed_view);
         //Optimizing recycler view's performance:
         recyclerView.setHasFixedSize(true);
@@ -88,6 +88,6 @@ public class RequestedItemsActivity extends AppCompatActivity {
         adapter = new TakerRVAdapter(cards); //List is still empty
         recyclerView.setAdapter(adapter);
         //Set the view to be displayed when the FeedRecyclerView is empty!
-        recyclerView.setEmptyView(emptyFeedView);
+        recyclerView.setEmptyView(emptyFeedView);*/
     }
 }

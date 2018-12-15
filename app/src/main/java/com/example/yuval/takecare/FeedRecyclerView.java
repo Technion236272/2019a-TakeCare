@@ -22,7 +22,7 @@ public class FeedRecyclerView extends RecyclerView {
         toggleVisibility();
     }
 
-    private void toggleVisibility() {
+    public void toggleVisibility() {
         if (emptyFeedView != null) {
             //Make the emptyFeedView visible of the adapter has no items (feed is empty)
             emptyFeedView.setVisibility(

@@ -1,20 +1,66 @@
 package com.example.yuval.takecare;
 
 public class FeedCardInformation {
-    String title;
-    String photoURL;
-    int userProfileId;
-    String publisher;
-    int itemCategoryId;
-    int itemPickupMethodId;
+    private String title;
+    private String photo;
+    private String publisher;
+    private String category;
+    private String pickupMethod;
 
-    public FeedCardInformation(String title, String photoURL, int userProfileId, String publisher,
-                               int itemCategoryId, int itemPickupMethodId) {
+    /**
+     * Empty constructor for the FirestoreRecyclerAdapter
+     */
+    public FeedCardInformation(){
+
+    }
+
+    public FeedCardInformation(String title, String photo, String publisher,
+                               String category, String pickupMethod) {
         this.title = title;
-        this.photoURL = photoURL;
-        this.userProfileId = userProfileId;
+        this.photo = photo;
         this.publisher = publisher;
-        this.itemCategoryId = itemCategoryId;
-        this.itemPickupMethodId = itemPickupMethodId;
+        this.category = category;
+        this.pickupMethod = pickupMethod;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getPickupMethod() {
+        return pickupMethod;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setPickupMethod(String pickupMethod) {
+        this.pickupMethod = pickupMethod;
     }
 }
