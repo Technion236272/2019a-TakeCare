@@ -208,10 +208,7 @@ public class LoginActivity extends AppCompatActivity {
         if (email != null)
             userInfo.put("email", email);
         if (profilePicture != null) {
-            String originalUrlSeg = "s96-c/photo.jpg";
-            String newUrlSeg = "s400-c/photo.jpg";
-            profilePicture = profilePicture.replace(originalUrlSeg, newUrlSeg);
-            userInfo.put("profilePicture", profilePicture);
+            userInfo.put("profilePicture", fixImageQuality(profilePicture, user.getProviderId()));
         }
         userInfo.put("rating", 0);
         userInfo.put("ratingCount", 0);
@@ -236,6 +233,18 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "Error writing document " + e);
                     }
                 });
+    }
+
+    private String fixImageQuality(String imagePath, String providerId) {
+        Log.d(TAG, "fixImageQuality: provider id is: " + providerId);
+        if (providerId.contains("google")) {
+            // Google account
+            String originalUrlSeg = "s96-c/photo.jpg";
+            String newUrlSeg = "s400-c/photo.jpg";
+            return imagePath.replace(originalUrlSeg, newUrlSeg);
+        }
+        // Facebook account
+        return imagePath.concat("?type=large");
     }
 
     public void transition(View view) {
