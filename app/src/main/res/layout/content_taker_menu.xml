@@ -13,10 +13,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!--TODO: Change the height of the menu as more items are added-->
         <android.support.constraint.ConstraintLayout
             android:id="@+id/filter_menu_popup"
             android:layout_width="match_parent"
-            android:layout_height="180dp"
+            android:layout_height="100dp"
             android:visibility="gone">
 
             <TextView
@@ -36,7 +37,7 @@
                 style="@style/SecondaryTextHint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Any"
+                android:text="@string/filter_menu_pickup_any"
                 app:layout_constraintBottom_toTopOf="@+id/pickup_any_button"
                 app:layout_constraintEnd_toEndOf="@+id/pickup_any_button"
                 app:layout_constraintStart_toStartOf="@+id/pickup_any_button" />
@@ -60,7 +61,7 @@
                 style="@style/SecondaryTextHint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="In Person"
+                android:text="@string/filter_menu_pickup_in_person"
                 app:layout_constraintBottom_toTopOf="@+id/pickup_in_person_button"
                 app:layout_constraintEnd_toEndOf="@+id/pickup_in_person_button"
                 app:layout_constraintStart_toStartOf="@+id/pickup_in_person_button" />
@@ -84,7 +85,7 @@
                 style="@style/SecondaryTextHint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Giveaway"
+                android:text="@string/filter_menu_pickup_giveaway"
                 app:layout_constraintBottom_toTopOf="@+id/pickup_giveaway_button"
                 app:layout_constraintEnd_toEndOf="@+id/pickup_giveaway_button"
                 app:layout_constraintStart_toStartOf="@+id/pickup_giveaway_button" />
@@ -108,7 +109,7 @@
                 style="@style/SecondaryTextHint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Race"
+                android:text="@string/filter_menu_pickup_race"
                 app:layout_constraintBottom_toTopOf="@+id/pickup_race_button"
                 app:layout_constraintEnd_toEndOf="@+id/pickup_race_button"
                 app:layout_constraintStart_toStartOf="@+id/pickup_race_button" />

@@ -6,8 +6,7 @@
     <item android:title="@string/categories_menu_title">
         <menu>
             <group
-                android:id="@+id/categories_group"
-                android:checkableBehavior="single">
+                android:id="@+id/categories_group">
                 <item
                     android:id="@+id/nav_show_all"
                     android:checkable="true"
@@ -52,7 +51,8 @@
         </menu>
     </item>
 
-    <group android:checkableBehavior="none">
+    <group
+        android:id="@+id/settings_group">
         <item
             android:id="@+id/nav_requested_items"
             android:checkable="true"

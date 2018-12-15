@@ -51,6 +51,8 @@ import java.util.List;
 public class TakerMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final static String TAG = "TAKER";
+
     private FeedRecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -143,6 +145,15 @@ public class TakerMenuActivity extends AppCompatActivity
         setUpRecyclerView();
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START))
+            drawer.closeDrawer(GravityCompat.START);
+    }
+
     private void setUpRecyclerView() {
         recyclerView = (FeedRecyclerView) findViewById(R.id.taker_feed_list);
         View emptyFeedView = findViewById(R.id.empty_feed_view);
@@ -192,7 +203,7 @@ public class TakerMenuActivity extends AppCompatActivity
     }
 
     private void toggleFilterMenu() {
-        if(emptyFeed) {
+        if (emptyFeed) {
             Toast.makeText(getApplicationContext(), "Filter menu is not available when the feed is empty", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -210,17 +221,17 @@ public class TakerMenuActivity extends AppCompatActivity
 
 
     public void onChoosePickupMethod(View view) {
-        if(chosenPickupMethod.equals(view)) {
+        if (chosenPickupMethod.equals(view)) {
             return;
         }
         ViewCompat.setBackgroundTintList(chosenPickupMethod, getResources().getColorStateList(R.color.divider));
         ImageViewCompat.setImageTintList(chosenPickupMethod, getResources().getColorStateList(R.color.secondary_text));
         ViewCompat.setBackgroundTintList(view, getResources().getColorStateList(R.color.colorPrimary));
-        ImageViewCompat.setImageTintList((ImageView)view, getResources().getColorStateList(R.color.icons));
+        ImageViewCompat.setImageTintList((ImageView) view, getResources().getColorStateList(R.color.icons));
         chosenPickupMethod = (AppCompatImageButton) view;
 
         //TODO: handle
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.pickup_any_button:
                 break;
             case R.id.pickup_in_person_button:
@@ -233,58 +244,50 @@ public class TakerMenuActivity extends AppCompatActivity
         filterPopupMenu.setVisibility(View.GONE);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        boolean categoriesFlag = item.getGroupId() == R.id.categories_group;
-        if (categoriesFlag) {
-            currentDrawerChecked = item;
-            //TODO: Implement handlers for each drawer item
-            switch (item.getItemId()) {
-                case R.id.nav_food:
-                    break;
-                case R.id.nav_study_material:
-                    break;
-                case R.id.nav_furniture:
-                    break;
-                case R.id.nav_lost_and_found:
-                    break;
-                case R.id.nav_hitchhike:
-                    break;
-                case R.id.nav_other:
-                    break;
-                case R.id.nav_favorites:
-                    break;
-            }
-            item.setChecked(true);
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawers();
-        } else {
-            currentDrawerChecked.setChecked(true);
+        int id = item.getItemId();
+        Log.d(TAG, "onNavigationItemSelected: selected item id: " + id);
+        Intent intent;
+        if (id == R.id.nav_requested_items) {
+            intent = new Intent(this, RequestedItemsActivity.class);
+            startActivity(intent);
             item.setChecked(false);
-            Intent intent;
-            switch (item.getItemId()) {
-                case R.id.nav_requested_items:
-                    intent = new Intent(this, RequestedItemsActivity.class);
-                    startActivity(intent);
-                    break;
-                case R.id.nav_my_items:
-                    intent = new Intent(this, SharedItemsActivity.class);
-                    startActivity(intent);
-                    break;
-                case R.id.nav_manage_favorites:
-                    intent = new Intent(this, UserFavoritesActivity.class);
-                    startActivity(intent);
-                    break;
-                case R.id.nav_chat:
-                    //TODO: add chat in the future
-                    break;
-                case R.id.nav_user_settings:
-                    intent = new Intent(this, UserProfileActivity.class);
-                    startActivity(intent);
-                    break;
-            }
+            currentDrawerChecked.setChecked(true);
+            return false;
+        } else if (id == R.id.nav_my_items) {
+            intent = new Intent(this, RequestedItemsActivity.class);
+            startActivity(intent);
+            item.setChecked(false);
+            currentDrawerChecked.setChecked(true);
+            return false;
+        } else if (id == R.id.nav_manage_favorites) {
+            intent = new Intent(this, RequestedItemsActivity.class);
+            startActivity(intent);
+            item.setChecked(false);
+            currentDrawerChecked.setChecked(true);
+            return false;
+        } else if (id == R.id.nav_chat) {
+            intent = new Intent(this, RequestedItemsActivity.class);
+            startActivity(intent);
+            item.setChecked(false);
+            currentDrawerChecked.setChecked(true);
+            return false;
+        } else if (id == R.id.nav_user_settings) {
+            intent = new Intent(this, RequestedItemsActivity.class);
+            startActivity(intent);
+            item.setChecked(false);
+            currentDrawerChecked.setChecked(true);
+            return false;
+        } else {
+            currentDrawerChecked.setChecked(false);
+            currentDrawerChecked = item;
+            currentDrawerChecked.setChecked(true);
+            //TODO: implement handler for each filter option
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
         }
+
         return true;
     }
 
@@ -345,7 +348,7 @@ public class TakerMenuActivity extends AppCompatActivity
         String umbrellaPhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_umbrella.png?alt=media&token=6638b6a1-b1a4-4e26-926b-3af1532be35c";
 
 
-        for(int i = 0; i<1e3; i++) {
+        for (int i = 0; i < 1e3; i++) {
             list.add(new FeedCardInformation("Yummy Muffins For All!", muffinPhotoURL, R.drawable.photo_mcgiverface, "Giver McGiverFace", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
             list.add(new FeedCardInformation("Driving to Tel-Aviv at Approx 7pm", hitchhikerPhotoURL, R.drawable.ic_user_purple, "Israel M. Shalom", R.drawable.ic_car_purple, R.drawable.ic_race_purple));
             list.add(new FeedCardInformation("I Found An Umbrella Near Ullman", umbrellaPhotoURL, R.drawable.photo_mcgiverface, "Giver McGiverFace", R.drawable.ic_lost_and_found_purple, R.drawable.ic_in_person_purple));
