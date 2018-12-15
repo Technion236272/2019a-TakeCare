@@ -207,8 +207,12 @@ public class LoginActivity extends AppCompatActivity {
             userInfo.put("name", "user");
         if (email != null)
             userInfo.put("email", email);
-        if (profilePicture != null)
+        if (profilePicture != null) {
+            String originalUrlSeg = "s96-c/photo.jpg";
+            String newUrlSeg = "s400-c/photo.jpg";
+            profilePicture = profilePicture.replace(originalUrlSeg, newUrlSeg);
             userInfo.put("profilePicture", profilePicture);
+        }
         userInfo.put("rating", 0);
         userInfo.put("ratingCount", 0);
 
