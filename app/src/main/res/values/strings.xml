@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">TakeCare</string>
 
+    <!--Facebook elements-->
+    <string name="facebook_app_id">1213943598760666</string>
+    <string name="fb_login_protocol_scheme">fb1213943598760666</string>
+
+
 
     <!--Gateway activity elements-->
     <string name="text_take_role">Need Something?</string>
@@ -61,8 +66,6 @@
 
 
     <!--Login activity elements-->
-    <string name="facebook_app_id">[APP_ID]</string>
-    <string name="fb_login_protocol_scheme">fb[APP_ID]</string>
     <string name="email_signin_text">Sign up using an E-mail address</string>
 
 
