@@ -1,16 +1,10 @@
 package com.example.yuval.takecare;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.AppCompatImageButton;
@@ -18,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SoundEffectConstants;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -29,13 +22,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-//import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -48,20 +39,10 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TakerMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -382,25 +363,25 @@ public class TakerMenuActivity extends AppCompatActivity
             currentDrawerChecked.setChecked(true);
             return false;
         } else if (id == R.id.nav_my_items) {
-            intent = new Intent(this, RequestedItemsActivity.class);
+            intent = new Intent(this, SharedItemsActivity.class);
             startActivity(intent);
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
             return false;
         } else if (id == R.id.nav_manage_favorites) {
-            intent = new Intent(this, RequestedItemsActivity.class);
+            intent = new Intent(this, UserFavoritesActivity.class);
             startActivity(intent);
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
             return false;
         } else if (id == R.id.nav_chat) {
-            intent = new Intent(this, RequestedItemsActivity.class);
-            startActivity(intent);
+            //TODO: change this when chat is implemented
+            Toast.makeText(getApplicationContext(), "Chat will be added in the future", Toast.LENGTH_SHORT).show();
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
             return false;
         } else if (id == R.id.nav_user_settings) {
-            intent = new Intent(this, RequestedItemsActivity.class);
+            intent = new Intent(this, UserProfileActivity.class);
             startActivity(intent);
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
