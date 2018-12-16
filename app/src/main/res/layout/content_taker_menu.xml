@@ -207,14 +207,14 @@
         </android.support.constraint.ConstraintLayout>
     </LinearLayout>
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/jump_button"
         android:layout_width="160dp"
         android:layout_height="40dp"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
         android:layout_marginTop="12dp"
-        android:alpha="0.8"
+        android:alpha="0.9"
         android:background="@drawable/floating_black_button_shape"
         android:onClick="onJumpClick"
         android:shadowColor="#A8A8A8"
@@ -223,6 +223,7 @@
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
+        app:elevation="@dimen/fab_margin"
         android:visibility="gone" />
 
 </RelativeLayout>

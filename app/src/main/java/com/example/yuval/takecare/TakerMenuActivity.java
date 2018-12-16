@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ImageViewCompat;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -60,7 +61,7 @@ public class TakerMenuActivity extends AppCompatActivity
 
     private ConstraintLayout filterPopupMenu;
     private AppCompatImageButton chosenPickupMethod;
-    private Button jumpButton;
+    private AppCompatButton jumpButton;
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
@@ -102,7 +103,7 @@ public class TakerMenuActivity extends AppCompatActivity
 
         filterPopupMenu = (ConstraintLayout) findViewById(R.id.filter_menu_popup);
         chosenPickupMethod = (AppCompatImageButton) findViewById(R.id.pickup_any_button);
-        jumpButton = (Button) findViewById(R.id.jump_button);
+        jumpButton = (AppCompatButton) findViewById(R.id.jump_button);
         View header = navigationView.getHeaderView(0);
         userProfilePicture = (ImageView) header.findViewById(R.id.nav_user_picture);
 
