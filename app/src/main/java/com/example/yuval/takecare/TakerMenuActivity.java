@@ -9,7 +9,6 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,14 +49,11 @@ public class TakerMenuActivity extends AppCompatActivity
     private final static String TAG = "TAKER";
 
     private FeedRecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
     private ImageView userProfilePicture;
     private MenuItem currentDrawerChecked;
 
     private ConstraintLayout filterPopupMenu;
     private AppCompatImageButton chosenPickupMethod;
-
-    private boolean emptyFeed = true;
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
@@ -138,7 +134,6 @@ public class TakerMenuActivity extends AppCompatActivity
 
         setUpRecyclerView();
     }
-
 
     @Override
     protected void onResume() {
@@ -243,16 +238,17 @@ public class TakerMenuActivity extends AppCompatActivity
             public void onError(FirebaseFirestoreException e) {
                 Log.e("error", e.getMessage());
             }
+
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                if(adapter.getItemCount() == 0)
+                    filterPopupMenu.setVisibility(View.GONE);
+            }
         };
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
         recyclerView.setEmptyView(emptyFeedView);
-//
-//        List<FeedCardInformation> cards = new ArrayList<>();
-//        adapter = new TakerRVAdapter(cards); //List is still empty
-//        recyclerView.setAdapter(adapter);
-//        //Set the view to be displayed when the FeedRecyclerView is empty!
-//        recyclerView.setEmptyView(emptyFeedView);
     }
 
     @Override
@@ -268,17 +264,6 @@ public class TakerMenuActivity extends AppCompatActivity
         adapter.stopListening();
         recyclerView.toggleVisibility();
     }
-    /*
-    private List<FeedCardInformation> initData() {
-        List<FeedCardInformation> list = new ArrayList<>();
-        list.add(new FeedCardInformation("Yummy Muffins For All!", R.drawable.photo_muffin, R.drawable.photo_mcgiverface, "Giver McGiverFace", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
-        list.add(new FeedCardInformation("Driving to Tel-Aviv at Approx 7pm", R.drawable.photo_hittchhiker, R.drawable.ic_user_purple, "Israel M. Shalom", R.drawable.ic_car_purple, R.drawable.ic_race_purple));
-        list.add(new FeedCardInformation("I Found An Umbrella Near Ullman", R.drawable.photo_umbrella, R.drawable.ic_user_purple, "Noa", R.drawable.ic_lost_and_found_purple, R.drawable.ic_in_person_purple));
-        list.add(new FeedCardInformation("FREE PIZZAS IN TAUB'S BALCONY!! GET OVER HERE QUICKLY!!", R.drawable.photo_pizza, R.drawable.ic_user_purple, "Yuval", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
-        list.add(new FeedCardInformation("This Cool Nightstand!", R.drawable.photo_nightstand, R.drawable.ic_user_purple, "Tzvika", R.drawable.ic_lamp_purple, R.drawable.ic_race_purple));
-        return list;
-    }*/
-
 
     @Override
     public void onBackPressed() {
@@ -310,7 +295,7 @@ public class TakerMenuActivity extends AppCompatActivity
     }
 
     private void toggleFilterMenu() {
-        if (emptyFeed) {
+        if (adapter.getItemCount() == 0) {
             Toast.makeText(getApplicationContext(), "Filter menu is not available when the feed is empty", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -325,7 +310,6 @@ public class TakerMenuActivity extends AppCompatActivity
         Intent intent = new Intent(this, UserProfileActivity.class);
         startActivity(intent);
     }
-
 
     public void onChoosePickupMethod(View view) {
         if (chosenPickupMethod.equals(view)) {
@@ -443,30 +427,6 @@ public class TakerMenuActivity extends AppCompatActivity
         PopupMenu menu = new PopupMenu(this, view);
         menu.getMenuInflater().inflate(R.menu.report_menu, menu.getMenu());
         menu.show();
-    }
-
-    public void tempFillItems(View view) {
-    /*    List<FeedCardInformation> list = new ArrayList<>();
-        String muffinPhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_muffin.png?alt=media&token=d52abb7a-1763-4c6b-ac74-89ffab4a8714";
-        String nightstandURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_nightstand.png?alt=media&token=a3afa089-acaf-4a05-94eb-8cc581121935";
-        String pizzaPhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_pizza.png?alt=media&token=6c81b8d3-c4ad-4769-9c82-2f03cd4c55d1";
-        String booksPhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_books.png?alt=media&token=1cb30a65-80cc-4957-9254-a7f52234b2ca";
-        String hitchhikerPhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_hittchhiker.png?alt=media&token=f4d2f6ea-9590-4297-a1f5-04c8a2673108";
-        String umbrellaPhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_umbrella.png?alt=media&token=6638b6a1-b1a4-4e26-926b-3af1532be35c";
-        String mcGiverFacePhotoURL = "https://firebasestorage.googleapis.com/v0/b/takecare-81dab.appspot.com/o/photo_mcgiverface.png?alt=media&token=3fa0c143-34c9-44ce-bcf7-e2888a3880b6";
-
-        for (int i = 0; i < 1e3; i++) {
-            list.add(new FeedCardInformation("Yummy Muffins For All!", muffinPhotoURL, mcGiverFacePhotoURL, "Giver McGiverFace", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
-            list.add(new FeedCardInformation("Driving to Tel-Aviv at Approx 7pm", hitchhikerPhotoURL, null, "Israel M. Shalom", R.drawable.ic_car_purple, R.drawable.ic_race_purple));
-            list.add(new FeedCardInformation("I Found An Umbrella Near Ullman", umbrellaPhotoURL, mcGiverFacePhotoURL, "Giver McGiverFace", R.drawable.ic_lost_and_found_purple, R.drawable.ic_in_person_purple));
-            list.add(new FeedCardInformation("FREE PIZZAS IN TAUB'S BALCONY!! GET OVER HERE QUICKLY!!", pizzaPhotoURL, null, "Yuval", R.drawable.ic_pizza_slice_purple, R.drawable.ic_giveaway_purple));
-            list.add(new FeedCardInformation("This Cool Nightstand!", nightstandURL, null, "Tzvika", R.drawable.ic_lamp_purple, R.drawable.ic_race_purple));
-            list.add(new FeedCardInformation("I have lots of MATAM books", booksPhotoURL, mcGiverFacePhotoURL, "Giver McGiverFace", R.drawable.ic_book_purple, R.drawable.ic_race_purple));
-        }
-
-        List<FeedCardInformation> cards = list;
-        adapter = new TakerRVAdapter(cards);
-        recyclerView.setAdapter(adapter);*/
     }
 
     public void onTakerCardSelected(View view) {
