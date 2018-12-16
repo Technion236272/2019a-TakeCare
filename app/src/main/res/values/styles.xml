@@ -28,9 +28,25 @@
         <item name="android:textSize">30sp</item>
     </style>
 
+    <style name="SecondaryText">
+        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/open_sans_light</item>
+    </style>
+
+    <style name="SecondaryTextHint">
+        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/open_sans_light</item>
+    </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ChipText" parent="TextAppearance.MaterialComponents.Chip">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 
 </resources>

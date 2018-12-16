@@ -246,17 +246,6 @@
                 android:padding="10dp"
                 android:text="@string/send_message_from_item_info" />
 
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/map"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="35dp"
-                android:layout_below="@id/send_message_button"
-                android:layout_centerInParent="true"
-                android:enabled="true"/>
-
-
-
             <Button
                 android:id="@+id/report_button"
                 android:layout_width="wrap_content"
@@ -268,7 +257,7 @@
                 android:padding="10dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_below="@id/map"
+                android:layout_below="@id/send_message_button"
                 android:drawableStart="@drawable/alert_circle"
                 android:drawableLeft="@drawable/alert_circle"
                 android:background="@android:color/transparent"

@@ -24,8 +24,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
         android:layout_marginTop="?attr/actionBarSize"
+        android:layout_weight="2"
         android:orientation="vertical">
 
         <TextView
@@ -33,9 +35,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="serif"
             android:gravity="center"
-            android:text="Tags:"
-            android:layout_marginLeft="24dp"
-            android:layout_marginStart="24dp"
+            android:text="@string/favorites_tags_title"
             android:textColor="@color/primary_text"
             android:textSize="22sp" />
 
@@ -43,30 +43,28 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="24dp"
             android:fontFamily="serif"
             android:text="@string/favorites_instruction_text"
-            android:layout_marginTop="12dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginBottom="24dp"
             android:textColor="@color/secondary_text"
             android:textSize="16sp" />
 
-        <EditText
+        <android.support.v7.widget.AppCompatEditText
             android:id="@+id/favorites_tag_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="serif"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="24dp"
             android:background="@drawable/edit_text_box_frame"
-            android:layout_margin="24dp"
+            android:fontFamily="serif"
             android:hint="@string/favorites_tag_hint"
             android:textColor="@color/secondary_text"
             android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:digits="0123456789qwertzuiopasdfghjklyxcvbnm " />
 
     </LinearLayout>
-
 
 </LinearLayout>

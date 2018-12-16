@@ -2,90 +2,82 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
-    <item android:title="@string/display_menu_title">
-        <menu>
-            <group android:id="@+id/display_group">
-                <item
-                    android:id="@+id/nav_feed_display"
-                    android:checkable="true"
-                    android:icon="@drawable/ic_list"
-                    android:title="@string/ic_feed_display_title" />
-                <item
-                    android:id="@+id/nav_map_display"
-                    android:checkable="true"
-                    android:icon="@drawable/ic_menu_map"
-                    android:title="@string/ic_map_display_title" />
-            </group>
-        </menu>
-    </item>
-
 
     <item android:title="@string/categories_menu_title">
         <menu>
-            <group android:id="@+id/categories_group">
+            <group
+                android:id="@+id/categories_group">
                 <item
                     android:id="@+id/nav_show_all"
                     android:checkable="true"
                     android:icon="@drawable/ic_view_module_black_24dp"
-                    android:title="@string/ic_show_all_title" />
+                    android:title="@string/nav_show_all_title" />
                 <item
                     android:id="@+id/nav_food"
                     android:checkable="true"
                     android:icon="@drawable/ic_pizza_slice"
-                    android:title="@string/ic_food_title" />
+                    android:title="@string/nav_food_title" />
                 <item
                     android:id="@+id/nav_study_material"
                     android:checkable="true"
                     android:icon="@drawable/ic_book"
-                    android:title="@string/ic_study_material_title" />
+                    android:title="@string/nav_study_material_title" />
                 <item
                     android:id="@+id/nav_furniture"
                     android:checkable="true"
                     android:icon="@drawable/ic_lamp"
-                    android:title="@string/ic_furniture_title" />
+                    android:title="@string/nav_furniture_title" />
                 <item
                     android:id="@+id/nav_lost_and_found"
                     android:checkable="true"
                     android:icon="@drawable/ic_lost_and_found"
-                    android:title="@string/ic_lost_and_found_title" />
+                    android:title="@string/nav_lost_and_found_title" />
                 <item
                     android:id="@+id/nav_hitchhike"
                     android:checkable="true"
                     android:icon="@drawable/ic_car"
-                    android:title="@string/ic_hitchhike_title" />
+                    android:title="@string/nav_hitchhike_title" />
                 <item
                     android:id="@+id/nav_other"
                     android:checkable="true"
                     android:icon="@drawable/ic_treasure"
-                    android:title="@string/ic_other" />
+                    android:title="@string/nav_other" />
+                <item
+                    android:id="@+id/nav_favorites"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_star"
+                    android:title="@string/nav_favorites" />
             </group>
         </menu>
     </item>
 
-    <item android:title="@string/pickup_menu_title">
-        <menu>
-            <group android:id="@+id/pickup_group">
-                <item
-                    android:id="@+id/nav_any_pickup"
-                    android:checkable="true"
-                    android:icon="@drawable/ic_world"
-                    android:title="@string/ic_any_pickup_title" />
-                <item
-                    android:id="@+id/nav_in_person"
-                    android:checkable="true"
-                    android:icon="@drawable/ic_in_person"
-                    android:title="@string/ic_in_person_title" />
-                <item
-                    android:id="@+id/nav_giveaway"
-                    android:checkable="true"
-                    android:icon="@drawable/ic_giveaway"
-                    android:title="@string/ic_giveaway_title" />
-                <item
-                    android:id="@+id/nav_race"
-                    android:checkable="true"
-                    android:icon="@drawable/ic_race"
-                    android:title="@string/ic_race_title" />
-            </group>
-        </menu>
-    </item>
+    <group
+        android:id="@+id/settings_group">
+        <item
+            android:id="@+id/nav_requested_items"
+            android:checkable="true"
+            android:icon="@drawable/ic_handshake"
+            android:title="@string/nav_requested_items" />
+        <item
+            android:id="@+id/nav_my_items"
+            android:checkable="true"
+            android:icon="@drawable/ic_give"
+            android:title="@string/nav_my_items" />
+        <item
+            android:id="@+id/nav_manage_favorites"
+            android:checkable="true"
+            android:icon="@drawable/ic_add_favorite"
+            android:title="@string/nav_manage_favorites" />
+        <item
+            android:id="@+id/nav_chat"
+            android:checkable="true"
+            android:icon="@drawable/ic_chat"
+            android:title="@string/nav_chat" />
+        <item
+            android:id="@+id/nav_user_settings"
+            android:checkable="true"
+            android:icon="@drawable/ic_user_vector"
+            android:title="@string/nav_user_settings" />
+    </group>
+
 </menu>
