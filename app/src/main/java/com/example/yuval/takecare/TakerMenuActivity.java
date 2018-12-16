@@ -1,14 +1,17 @@
 package com.example.yuval.takecare;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +24,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -47,6 +52,7 @@ public class TakerMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final static String TAG = "TAKER";
+    private static final int LIST_JUMP_THRESHOLD = 4;
 
     private FeedRecyclerView recyclerView;
     private ImageView userProfilePicture;
@@ -54,11 +60,13 @@ public class TakerMenuActivity extends AppCompatActivity
 
     private ConstraintLayout filterPopupMenu;
     private AppCompatImageButton chosenPickupMethod;
+    private Button jumpButton;
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private StorageReference storage;
     FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder> adapter;
+    private int position = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,10 +102,9 @@ public class TakerMenuActivity extends AppCompatActivity
 
         filterPopupMenu = (ConstraintLayout) findViewById(R.id.filter_menu_popup);
         chosenPickupMethod = (AppCompatImageButton) findViewById(R.id.pickup_any_button);
-        Log.d("TAG", "TEMP1");
+        jumpButton = (Button) findViewById(R.id.jump_button);
         View header = navigationView.getHeaderView(0);
         userProfilePicture = (ImageView) header.findViewById(R.id.nav_user_picture);
-        Log.d("TAG", "Temp2");
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -154,7 +161,7 @@ public class TakerMenuActivity extends AppCompatActivity
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
 
 
-        Query query = db.collection("items").orderBy("timestamp",Query.Direction.DESCENDING);
+        Query query = db.collection("items").orderBy("timestamp", Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
                 .setQuery(query, FeedCardInformation.class)
                 .build();
@@ -242,13 +249,30 @@ public class TakerMenuActivity extends AppCompatActivity
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
-                if(adapter.getItemCount() == 0)
+                if (adapter.getItemCount() == 0)
                     filterPopupMenu.setVisibility(View.GONE);
             }
         };
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
         recyclerView.setEmptyView(emptyFeedView);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    updatePosition();
+                }
+            }
+        });
+    }
+
+    private void updatePosition() {
+        position = ((LinearLayoutManager) recyclerView.getLayoutManager())
+                .findFirstVisibleItemPosition();
+        Log.d(TAG, "onScrollStateChanged: POSITION IS: " + position);
+        tryToggleJumpButton();
     }
 
     @Override
@@ -288,7 +312,7 @@ public class TakerMenuActivity extends AppCompatActivity
                 toggleFilterMenu();
                 break;
             case R.id.action_change_display:
-                //TODO; add this in the future
+                makeHighlightedSnackbar("Map display will be added in the future");
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -300,9 +324,11 @@ public class TakerMenuActivity extends AppCompatActivity
             return;
         }
         if (filterPopupMenu.getVisibility() == View.GONE) {
+            jumpButton.setVisibility(View.GONE);
             filterPopupMenu.setVisibility(View.VISIBLE);
         } else {
             filterPopupMenu.setVisibility(View.GONE);
+            tryToggleJumpButton();
         }
     }
 
@@ -335,6 +361,23 @@ public class TakerMenuActivity extends AppCompatActivity
         filterPopupMenu.setVisibility(View.GONE);
     }
 
+    private void tryToggleJumpButton() {
+        if (position >= LIST_JUMP_THRESHOLD && filterPopupMenu.getVisibility() == View.GONE) {
+            jumpButton.setVisibility(View.VISIBLE);
+            Log.d(TAG, "tryToggleJumpButton: jump button is visible");
+        } else {
+            jumpButton.setVisibility(View.GONE);
+        }
+    }
+
+
+    public void onJumpClick(View view) {
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        assert layoutManager != null;
+        recyclerView.smoothScrollToPosition(0);
+        jumpButton.setVisibility(View.GONE);
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
@@ -360,7 +403,7 @@ public class TakerMenuActivity extends AppCompatActivity
             return false;
         } else if (id == R.id.nav_chat) {
             //TODO: change this when chat is implemented
-            Toast.makeText(getApplicationContext(), "Chat will be added in the future", Toast.LENGTH_SHORT).show();
+            makeHighlightedSnackbar("Chat will be added in the future");
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
             return false;
@@ -433,5 +476,14 @@ public class TakerMenuActivity extends AppCompatActivity
         //TODO: add extra information to intent
         Intent intent = new Intent(this, ItemInfoActivity.class);
         startActivity(intent);
+    }
+
+    private void makeHighlightedSnackbar(String str) {
+        Snackbar snackbar = Snackbar
+                .make(findViewById(R.id.taker_root_layout), str, Snackbar.LENGTH_SHORT);
+        View sbView = snackbar.getView();
+        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.YELLOW);
+        snackbar.show();
     }
 }

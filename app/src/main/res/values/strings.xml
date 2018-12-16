@@ -60,14 +60,14 @@
     <string name="action_favorites">Favorites</string>
 
 
-    <!--Taker activity filter popup menu elements-->
+    <!--Taker activity popup elements-->
     <string name="filter_menu_display_mode_text">Display Mode:</string>
     <string name="filter_menu_pickup_method_text">Pickup Method:</string>
     <string name="filter_menu_pickup_any">Any</string>
     <string name="filter_menu_pickup_in_person">In Person</string>
     <string name="filter_menu_pickup_giveaway">Giveaway</string>
     <string name="filter_menu_pickup_race">Race</string>
-
+    <string name="jump_to_top_button">Jump to top</string>
 
 
     <!--Login activity elements-->
