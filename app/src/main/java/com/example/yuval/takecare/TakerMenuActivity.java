@@ -1,5 +1,7 @@
 package com.example.yuval.takecare;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -25,7 +27,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -51,15 +52,19 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TakerMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private final static String TAG = "TAKER";
+    private final static String TAG = "TakerFeed";
     private static final int LIST_JUMP_THRESHOLD = 4;
 
     private FeedRecyclerView recyclerView;
     private ImageView userProfilePicture;
     private MenuItem currentDrawerChecked;
+    private ProgressDialog dialog;
 
     private ConstraintLayout filterPopupMenu;
     private AppCompatImageButton chosenPickupMethod;
@@ -68,8 +73,12 @@ public class TakerMenuActivity extends AppCompatActivity
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private StorageReference storage;
-    FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder> adapter;
     private int position = 0;
+
+    private FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder> currentAdapter = null;
+
+    private String queryCategoriesFilter = null;
+    private String queryPickupMethodFilter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,13 +172,59 @@ public class TakerMenuActivity extends AppCompatActivity
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
 
+        setUpAdapter();
 
-        Query query = db.collection("items").orderBy("timestamp", Query.Direction.DESCENDING);
+        recyclerView.setEmptyView(emptyFeedView);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    updatePosition();
+                }
+            }
+        });
+    }
+
+    private void setUpAdapter() {
+        Log.d(TAG, "setUpAdapter: setting up adapter");
+        if (currentAdapter != null)
+            currentAdapter.stopListening();
+        dialog = new ProgressDialog(TakerMenuActivity.this);
+        dialog.setMessage("Loading data...");
+        dialog.show();
+
+        // Default: no filters
+        Query query = db.collection("items")
+                .orderBy("timestamp", Query.Direction.DESCENDING);
+
+        if (queryCategoriesFilter != null && queryPickupMethodFilter != null) {
+            // Filter by categories and pickup method
+            Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter + " pickup: " + queryPickupMethodFilter);
+            query = db.collection("items")
+                    .whereEqualTo("category", queryCategoriesFilter)
+                    .whereEqualTo("pickupMethod", queryPickupMethodFilter)
+                    .orderBy("timestamp", Query.Direction.DESCENDING);
+        } else if (queryCategoriesFilter != null) {
+            // Filter by categories
+            Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter);
+            query = db.collection("items")
+                    .whereEqualTo("category", queryCategoriesFilter)
+                    .orderBy("timestamp", Query.Direction.DESCENDING);
+        } else if (queryPickupMethodFilter != null) {
+            // Filter by pickup method
+            Log.d(TAG, "setUpAdapter: query has: pickup: " + queryPickupMethodFilter);
+            query = db.collection("items")
+                    .whereEqualTo("pickupMethod", queryPickupMethodFilter)
+                    .orderBy("timestamp", Query.Direction.DESCENDING);
+        }
+
         FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
                 .setQuery(query, FeedCardInformation.class)
                 .build();
 
-        adapter = new FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder>(response) {
+        currentAdapter = new FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder>(response) {
             @Override
             protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, int position, @NonNull FeedCardInformation model) {
                 Log.d(TAG, "model " + model.getPhoto());
@@ -183,27 +238,38 @@ public class TakerMenuActivity extends AppCompatActivity
 
                 // category selection
                 int categoryId;
-                if (model.getCategory().equals("Food")) {
-                    categoryId = R.drawable.ic_pizza_slice_purple;
-                } else if (model.getCategory().equals("Study Material")) {
-                    categoryId = R.drawable.ic_book_purple;
-                } else if (model.getCategory().equals("Households")) {
-                    categoryId = R.drawable.ic_lamp_purple;
-                } else if (model.getCategory().equals("Lost & Found")) {
-                    categoryId = R.drawable.ic_lost_and_found_purple;
-                } else if (model.getCategory().equals("Hitchhikes")) {
-                    categoryId = R.drawable.ic_car_purple;
-                } else {
-                    categoryId = R.drawable.ic_treasure_96_purple_purple;
+                switch (model.getCategory()) {
+                    case "Food":
+                        categoryId = R.drawable.ic_pizza_slice_purple;
+                        break;
+                    case "Study Material":
+                        categoryId = R.drawable.ic_book_purple;
+                        break;
+                    case "Households":
+                        categoryId = R.drawable.ic_lamp_purple;
+                        break;
+                    case "Lost & Found":
+                        categoryId = R.drawable.ic_lost_and_found_purple;
+                        break;
+                    case "Hitchhikes":
+                        categoryId = R.drawable.ic_car_purple;
+                        break;
+                    default:
+                        categoryId = R.drawable.ic_treasure_purple;
+                        break;
                 }
 
                 int pickupMethodId;
-                if (model.getPickupMethod().equals("In Person")) {
-                    pickupMethodId = R.drawable.ic_in_person_purple;
-                } else if (model.getPickupMethod().equals("Giveaway")) {
-                    pickupMethodId = R.drawable.ic_giveaway_purple;
-                } else {
-                    pickupMethodId = R.drawable.ic_race_purple;
+                switch (model.getPickupMethod()) {
+                    case "In Person":
+                        pickupMethodId = R.drawable.ic_in_person_purple;
+                        break;
+                    case "Giveaway":
+                        pickupMethodId = R.drawable.ic_giveaway_purple;
+                        break;
+                    default:
+                        pickupMethodId = R.drawable.ic_race_purple;
+                        break;
                 }
 
                 holder.itemPublisher.setText(R.string.user_name);
@@ -231,7 +297,6 @@ public class TakerMenuActivity extends AppCompatActivity
 
                             }
                         });
-                //Glide.with(holder.card).load(model.getUserPictureURL()).apply(RequestOptions.circleCropTransform()).into(holder.profilePhoto);
                 holder.itemPublisher.setText(model.getPublisher());
                 holder.itemCategory.setImageResource(categoryId);
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
@@ -254,23 +319,17 @@ public class TakerMenuActivity extends AppCompatActivity
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
-                if (adapter.getItemCount() == 0)
+                if (getItemCount() == 0)
                     filterPopupMenu.setVisibility(View.GONE);
             }
         };
-        adapter.notifyDataSetChanged();
-        recyclerView.setAdapter(adapter);
-        recyclerView.setEmptyView(emptyFeedView);
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    updatePosition();
-                }
-            }
-        });
+        Log.d(TAG, "setUpAdapter: created adapter");
+        currentAdapter.notifyDataSetChanged();
+        recyclerView.setAdapter(currentAdapter);
+        currentAdapter.startListening();
+        dialog.dismiss();
+        Log.d(TAG, "setUpAdapter: done");
     }
 
     private void updatePosition() {
@@ -283,14 +342,14 @@ public class TakerMenuActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
+        currentAdapter.startListening();
         recyclerView.toggleVisibility();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        adapter.stopListening();
+        currentAdapter.stopListening();
         recyclerView.toggleVisibility();
     }
 
@@ -324,10 +383,6 @@ public class TakerMenuActivity extends AppCompatActivity
     }
 
     private void toggleFilterMenu() {
-        if (adapter.getItemCount() == 0) {
-            Toast.makeText(getApplicationContext(), "Filter menu is not available when the feed is empty", Toast.LENGTH_SHORT).show();
-            return;
-        }
         if (filterPopupMenu.getVisibility() == View.GONE) {
             jumpButton.setVisibility(View.GONE);
             filterPopupMenu.setVisibility(View.VISIBLE);
@@ -352,17 +407,21 @@ public class TakerMenuActivity extends AppCompatActivity
         ImageViewCompat.setImageTintList((ImageView) view, getResources().getColorStateList(R.color.icons));
         chosenPickupMethod = (AppCompatImageButton) view;
 
-        //TODO: handle
         switch (view.getId()) {
             case R.id.pickup_any_button:
+                queryPickupMethodFilter = null;
                 break;
             case R.id.pickup_in_person_button:
+                queryPickupMethodFilter = "In Person";
                 break;
             case R.id.pickup_giveaway_button:
+                queryPickupMethodFilter = "Giveaway";
                 break;
             case R.id.pickup_race_button:
+                queryPickupMethodFilter = "Race";
                 break;
         }
+        setUpAdapter();
         filterPopupMenu.setVisibility(View.GONE);
     }
 
@@ -419,10 +478,38 @@ public class TakerMenuActivity extends AppCompatActivity
             currentDrawerChecked.setChecked(true);
             return false;
         } else {
+            // Category filtering
             currentDrawerChecked.setChecked(false);
             currentDrawerChecked = item;
             currentDrawerChecked.setChecked(true);
-            //TODO: implement handler for each filter option
+            switch (id) {
+                case R.id.nav_show_all:
+                    queryCategoriesFilter = null;
+                    break;
+                case R.id.nav_food:
+                    queryCategoriesFilter = "Food";
+                    break;
+                case R.id.nav_study_material:
+                    queryCategoriesFilter = "Study Material";
+                    break;
+                case R.id.nav_furniture:
+                    queryCategoriesFilter = "Households";
+                    break;
+                case R.id.nav_lost_and_found:
+                    queryCategoriesFilter = "Lost & Found";
+                    break;
+                case R.id.nav_hitchhike:
+                    queryCategoriesFilter = "Hitchhike";
+                    break;
+                case R.id.nav_other:
+                    queryCategoriesFilter = "Other";
+                    break;
+                case R.id.nav_favorites:
+                    //TODO: add favorites filter in the future. For now we ignore this
+                    makeHighlightedSnackbar("Filtering by favorites will be added in the future");
+                    break;
+            }
+            setUpAdapter();
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
         }
