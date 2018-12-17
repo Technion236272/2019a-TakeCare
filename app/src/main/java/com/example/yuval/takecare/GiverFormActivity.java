@@ -72,10 +72,10 @@ public class GiverFormActivity extends AppCompatActivity {
     String category;
     String[] spinnerNames;
     int[] spinnerIcons;
-    Calendar calander;
 
     EditText title;
     EditText description;
+    EditText pickupDescription;
     Spinner pickup;
     ProgressDialog dialog;
 
@@ -99,7 +99,7 @@ public class GiverFormActivity extends AppCompatActivity {
         ERROR_UNKNOWN,
         ERROR_TITLE,
         ERROR_PICTURE_NOT_INCLUDED,
-        ERROR_OTHER_CATEGORY_NOT_SPECIFIED,
+        ERROR_NO_CATEGORY,
         PICTURE_UPLOADED,
         PICTURE_MISSING
     }
@@ -125,8 +125,7 @@ public class GiverFormActivity extends AppCompatActivity {
         pickup.setAdapter(ita);
         title = (EditText) findViewById(R.id.title_input);
         description = (EditText) findViewById(R.id.item_description);
-
-        calander = Calendar.getInstance();
+        pickupDescription = (EditText) findViewById(R.id.item_time);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.giver_form_toolbar);
         setSupportActionBar(toolbar);
@@ -146,29 +145,6 @@ public class GiverFormActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
-    }
-
-    private void addDeviceFilesPath() {
-        String path = System.getenv("EXTERNAL_STORAGE");
-
-    }
-
-
-    public void pickDate(View view) {
-
-    }
-
-    public void pickTime(View view) {
-        Calendar calander = Calendar.getInstance();
-        int cHour = calander.get(Calendar.HOUR);
-        int cMinute = calander.get(Calendar.MINUTE);
-        TimePickerDialog tpd = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            }
-        }, cHour, cMinute, true);
-        tpd.show();
     }
 
     @Override
@@ -196,7 +172,7 @@ public class GiverFormActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-                break;
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -221,6 +197,10 @@ public class GiverFormActivity extends AppCompatActivity {
             case ERROR_PICTURE_NOT_INCLUDED:
                 dialog.dismiss();
                 showAlertMessage("Please include a picture of the item when posting for pick-up in person");
+                break;
+            case ERROR_NO_CATEGORY:
+                dialog.dismiss();
+                showAlertMessage("Please select the item's category");
                 break;
             case PICTURE_MISSING:
                 assert user != null;
@@ -352,15 +332,18 @@ public class GiverFormActivity extends AppCompatActivity {
         if (user == null) {
             return formResult.ERROR_UNKNOWN;
         }
+        if (category == null) {
+            return formResult.ERROR_NO_CATEGORY;
+        }
         uid = user.getUid();
         itemInfo.put("publisher", uid);
         Log.d(TAG, "filled publisher");
         itemInfo.put("timestamp", timestamp);
         Log.d(TAG, "filled timestamp");
         //Air Time is in hours
-        itemInfo.put("airTime", 72); //TODO: change this when the layout file changes
+        itemInfo.put("airTime", airTime);
         Log.d(TAG, "filled airtime");
-        itemInfo.put("category", category); //TODO: change this when support for "other" category is enabled in the form
+        itemInfo.put("category", category);
         Log.d(TAG, "filled category");
         String pickupMethod;
         switch (pickup.getSelectedItemPosition()) {
@@ -387,7 +370,10 @@ public class GiverFormActivity extends AppCompatActivity {
             itemInfo.put("description", description.getText().toString());
             Log.d(TAG, "filled description");
         }
-        Log.d(TAG, "filled description");
+        if (!pickupDescription.getText().toString().isEmpty()) {
+            itemInfo.put("pickupInformation", pickupDescription.getText().toString());
+            Log.d(TAG, "filled pickup description");
+        }
         if (selectedImage == null)
             return formResult.PICTURE_MISSING;
         return formResult.PICTURE_UPLOADED;
