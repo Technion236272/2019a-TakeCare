@@ -6,13 +6,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -20,20 +19,17 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.method.KeyListener;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -52,17 +48,15 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.w3c.dom.Text;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static android.text.InputType.TYPE_CLASS_TEXT;
-
 public class UserProfileActivity extends AppCompatActivity {
+
+    private final static String TAG = "MyProfile";
 
     private ImageView profilePictureView;
     private ProgressBar picturePB;
@@ -70,17 +64,26 @@ public class UserProfileActivity extends AppCompatActivity {
     private Drawable originalEditTextDrawable;
     private KeyListener originalKeyListener;
     private EditText userDescriptionView;
+    private ImageButton editNameBtn;
+    private ImageButton acceptNameBtn;
+    private ImageButton declineNameBtn;
+    private ImageButton acceptDescriptionBtn;
+    private ImageButton declineDescriptionBtn;
+
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private StorageReference storage;
 
+    private String currentName = "User";
+    private String currentDescription = "";
+
     private File selectedImageFile;
     private Uri selectedImage;
+
     private static int APP_PERMISSION_REQUEST_CAMERA;
     private final static int REQUEST_CAMERA = 1;
     private final static int SELECT_IMAGE = 2;
-    private final static String TAG = "MyProfile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +101,13 @@ public class UserProfileActivity extends AppCompatActivity {
         picturePB = (ProgressBar) findViewById(R.id.profile_pic_progress_bar);
         userNameView = (EditText) findViewById(R.id.user_name);
         userDescriptionView = (EditText) findViewById(R.id.about);
+        editNameBtn = (ImageButton) findViewById(R.id.edit_name_button);
+
+        acceptNameBtn = (ImageButton) findViewById(R.id.accept_name_btn);
+        declineNameBtn = (ImageButton) findViewById(R.id.decline_name_btn);
+        acceptDescriptionBtn = (ImageButton) findViewById(R.id.accept_description_btn);
+        declineDescriptionBtn = (ImageButton) findViewById(R.id.decline_description_btn);
+
         originalEditTextDrawable = userNameView.getBackground();
         originalKeyListener = userNameView.getKeyListener();
         userNameView.setBackground(null);
@@ -106,31 +116,47 @@ public class UserProfileActivity extends AppCompatActivity {
         userNameView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(userNameView.getWindowToken(), 0);
-                    userNameView.setFocusableInTouchMode(false);
-                    userNameView.setKeyListener(null);
-                    userNameView.setBackground(null);
-                    setUserName();
+                Log.d(TAG, "onFocusChange: name");
+                if (hasFocus) {
+                    declineNameBtn.setVisibility(View.VISIBLE);
+                    acceptNameBtn.setVisibility(View.VISIBLE);
+                    editNameBtn.setVisibility(View.GONE);
+                } else {
+                    String newName = ((EditText) v).getText().toString();
+                    if (currentName.equals(newName)) {
+                        disableNameText();
+                        declineNameBtn.setVisibility(View.GONE);
+                        acceptNameBtn.setVisibility(View.GONE);
+                        editNameBtn.setVisibility(View.VISIBLE);
+                    } else {
+                        alertTextChanges(v, currentName,
+                                "Are you sure you want to discard the changes to your name?",
+                                acceptNameBtn, declineNameBtn, true);
+                    }
                 }
             }
         });
 
-        userDescriptionView.addTextChangedListener(new TextWatcher() {
+        userDescriptionView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                setUserDescription();
+            public void onFocusChange(View v, boolean hasFocus) {
+                Log.d(TAG, "onFocusChange: description");
+                if (hasFocus) {
+                    declineDescriptionBtn.setVisibility(View.VISIBLE);
+                    acceptDescriptionBtn.setVisibility(View.VISIBLE);
+                } else {
+                    String newDescription = ((EditText) v).getText().toString();
+                    if (currentDescription.equals(newDescription)) {
+                        declineDescriptionBtn.setVisibility(View.GONE);
+                        acceptDescriptionBtn.setVisibility(View.GONE);
+                        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(userNameView.getWindowToken(), 0);
+                    } else {
+                        alertTextChanges(v, currentDescription,
+                                "Are you sure you want to discard the changes to your profile?",
+                                acceptDescriptionBtn, declineDescriptionBtn, false);
+                    }
+                }
             }
         });
 
@@ -153,7 +179,8 @@ public class UserProfileActivity extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             Log.d("TAG", "DocumentSnapshot data: " + document.getData());
-                            usernameViewRef.setText(document.getString("name"));
+                            currentName = document.getString("name");
+                            usernameViewRef.setText(currentName);
                             if (document.getString("profilePicture") != null) {
                                 Log.d(TAG, "Found profile pic. Fetched picture url: " + Uri.parse(document.getString("profilePicture")));
                                 Glide.with(UserProfileActivity.this)
@@ -163,7 +190,8 @@ public class UserProfileActivity extends AppCompatActivity {
                             }
                             if (document.getString("description") != null) {
                                 Log.d(TAG, "Found description. Writing: ");
-                                userDescriptionRef.setText(document.getString("description"));
+                                currentDescription = document.getString("description");
+                                userDescriptionRef.setText(currentDescription);
                             }
 
                         } else {
@@ -178,13 +206,54 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        View focusView = getCurrentFocus();
+        if (focusView == null) {
+            super.onBackPressed();
+        } else if (focusView.equals(userDescriptionView) &&
+                !userDescriptionView.getText().toString().equals(currentDescription)) {
+            userDescriptionView.clearFocus(); // Invokes the focus change listener
+        } else if (focusView.equals(userNameView) &&
+                !userNameView.getText().toString().equals(currentName)) {
+            userNameView.clearFocus(); // Invokes the focus change listener
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    private void alertTextChanges(final View v, final String backup, final String msg,
+                                  final ImageButton acceptBtn, final ImageButton declineBtn,
+                                  final boolean isName) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(UserProfileActivity.this);
+        builder.setTitle("Discard changes")
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        ((EditText) v).setText(backup);
+                        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+//                        hideKeyboard(UserProfileActivity.this);
+                        acceptBtn.setVisibility(View.GONE);
+                        declineBtn.setVisibility(View.GONE);
+                        if (isName)
+                            editNameBtn.setVisibility(View.VISIBLE);
+
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        v.setFocusableInTouchMode(true);
+                        v.requestFocus();
+                    }
+                })
+                .show();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
         switch (item.getItemId()) {
             case android.R.id.home:
-                intent = new Intent(this, TakerMenuActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
+                onBackPressed();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -199,44 +268,82 @@ public class UserProfileActivity extends AppCompatActivity {
         userNameView.requestFocus();
     }
 
-    private void setUserName() {
+    private void disableNameText() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(userNameView.getWindowToken(), 0);
+        userNameView.setFocusableInTouchMode(false);
+        userNameView.setKeyListener(null);
+        userNameView.setBackground(null);
+    }
+
+    private void setUserName(final String newName, final String restore, final boolean undoable) {
         final FirebaseUser user = auth.getCurrentUser();
         if (user == null) {
             return;
         }
         db.collection("users").document(user.getUid())
-                .update("name", userNameView.getText().toString())
+                .update("name", newName)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "user name updated!");
+                        if(undoable) {
+                            Snackbar override = Snackbar
+                                    .make(findViewById(R.id.user_profile_root), "Name updated!", Snackbar.LENGTH_LONG)
+                                    .setAction("UNDO", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            setUserName(restore, null, false);
+                                        }
+                                    });
+                            override.show();
+                        } else {
+                            Snackbar undo = Snackbar.make(findViewById(R.id.user_profile_root), "Previous name restored", Snackbar.LENGTH_SHORT);
+                            undo.show();
+                        }
+                        userNameView.setText(newName);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        Log.d(TAG, "onFailure: error updating name");
                     }
                 });
     }
 
-    private void setUserDescription() {
+    private void setUserDescription(final String newText, final String restore, final boolean undoable) {
         final FirebaseUser user = auth.getCurrentUser();
         if (user == null) {
             return;
         }
         db.collection("users").document(user.getUid())
-                .update("description", userDescriptionView.getText().toString())
+                .update("description", newText)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "user name updated!");
+                        Log.d(TAG, "user description updated!");
+                        if(undoable) {
+                            Snackbar override = Snackbar
+                                    .make(findViewById(R.id.user_profile_root), "Profile updated!", Snackbar.LENGTH_LONG)
+                                    .setAction("UNDO", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            setUserDescription(restore, null, false);
+                                        }
+                                    });
+                            override.show();
+                        } else {
+                            Snackbar undo = Snackbar.make(findViewById(R.id.user_profile_root), "Previous profile restored", Snackbar.LENGTH_SHORT);
+                            undo.show();
+                        }
+                        userDescriptionView.setText(newText);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        Log.d(TAG, "onFailure: error updating description");
                     }
                 });
     }
@@ -371,6 +478,34 @@ public class UserProfileActivity extends AppCompatActivity {
         resize.execute(imagePath);
     }
 
+    public void onAcceptDescription(View view) {
+        String newDescription = userDescriptionView.getText().toString();
+        if (!currentDescription.equals(newDescription)) {
+            String previousDescription = currentDescription;
+            currentDescription = newDescription;
+            setUserDescription(currentDescription, previousDescription, true);
+        }
+        userDescriptionView.clearFocus();
+    }
+
+    public void onDeclineDescription(View view) {
+        userDescriptionView.clearFocus();
+    }
+
+    public void onAcceptName(View view) {
+        String newName = userNameView.getText().toString();
+        if (!currentName.equals(newName)) {
+            String previousName = currentName;
+            currentName = newName;
+            setUserName(currentName, previousName, true);
+        }
+        userNameView.clearFocus();
+    }
+
+    public void onDeclineName(View view) {
+        userNameView.clearFocus();
+    }
+
     public class ImageCompressTask extends AsyncTask<Uri, Integer, byte[]> {
 
         @Override
@@ -397,13 +532,11 @@ public class UserProfileActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(byte[] bytes) {
             super.onPostExecute(bytes);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             Glide.with(UserProfileActivity.this)
                     .asBitmap()
                     .load(bytes)
                     .apply(RequestOptions.circleCropTransform())
                     .into(profilePictureView);
-//            profilePictureView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, profilePictureView.getWidth(), profilePictureView.getHeight(), false));
             picturePB.setVisibility(View.GONE);
             profilePictureView.setVisibility(View.VISIBLE);
             setUserProfilePic(bytes);

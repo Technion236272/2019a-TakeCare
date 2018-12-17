@@ -247,6 +247,7 @@ public class GiverFormActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
