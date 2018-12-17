@@ -32,6 +32,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -170,12 +172,14 @@ public class TakerMenuActivity extends AppCompatActivity
         adapter = new FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder>(response) {
             @Override
             protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, int position, @NonNull FeedCardInformation model) {
-                Log.d("harah", "model " + model.getPhoto());
+                Log.d(TAG, "model " + model.getPhoto());
                 holder.itemTitle.setText(model.getTitle());
-                //Uri uri = Uri.parse(model.getPhoto());
-                //StorageReference ref = FirebaseStorage.getInstance().getReference().child(uri.getPath());
-                //Log.println(Log.ASSERT,"path", uri.getPath());
-                Glide.with(holder.card).load(model.getPhoto()).into(holder.itemPhoto);
+                RequestOptions requestOptions = new RequestOptions();
+                requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
+                Glide.with(holder.card)
+                        .load(model.getPhoto())
+                        .apply(requestOptions)
+                        .into(holder.itemPhoto);
 
                 // category selection
                 int categoryId;
@@ -209,7 +213,7 @@ public class TakerMenuActivity extends AppCompatActivity
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                Log.d("harah", "Found the user: " + documentSnapshot);
+                                Log.d(TAG, "Found the user: " + documentSnapshot);
                                 String publisherName, publisherPhoto;
                                 publisherName = documentSnapshot.getString("name");
                                 holder.itemPublisher.setText(publisherName);
