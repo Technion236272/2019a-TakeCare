@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    card_view:cardBackgroundColor="@color/colorAccent"
+    card_view:cardCornerRadius="0dp"
+    android:id="@+id/category_card">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/category_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:onClick="onCategorySelect"
+            app:backgroundTint="@color/colorAccent" />
+
+        <ImageView
+            android:id="@+id/category_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginBottom="8dp"
+            android:scaleX="2"
+            android:scaleY="2"
+            android:src="@drawable/ic_pizza_96_big_purple"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toEndOf="@+id/category_button"
+            card_view:layout_constraintStart_toStartOf="@+id/category_button"
+            card_view:layout_constraintTop_toTopOf="@+id/category_button" />
+
+        <TextView
+            style="@style/MenuTitle"
+            android:id="@+id/category_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:text="Food"
+            android:textColor="@color/colorPrimary"
+            android:textSize="25sp"
+            card_view:layout_constraintBottom_toBottomOf="@+id/category_button"
+            card_view:layout_constraintEnd_toEndOf="@+id/category_button"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/category_icon"
+            card_view:layout_constraintVertical_bias="0.75" />
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>

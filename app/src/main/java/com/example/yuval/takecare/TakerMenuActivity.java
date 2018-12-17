@@ -85,7 +85,7 @@ public class TakerMenuActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(TakerMenuActivity.this, GiverMenuActivity.class);
+                Intent intent = new Intent(TakerMenuActivity.this, GiverFormActivity.class);
                 startActivity(intent);
             }
         });

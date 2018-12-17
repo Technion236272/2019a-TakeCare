@@ -26,7 +26,7 @@ public class GatewayActivity extends AppCompatActivity {
 
     public void openGiverForm(View view) {
         //Create intent to navigate to the giver menu
-        Intent intent = new Intent(this, GiverMenuActivity.class);
+        Intent intent = new Intent(this, GiverFormActivity.class);
         startActivity(intent);
     }
 }

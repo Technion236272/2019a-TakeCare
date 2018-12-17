@@ -121,12 +121,7 @@
         </activity>
 
         <activity
-            android:name=".GiverFormActivity">
-        </activity>
-
-        <activity
-            android:name=".GiverMenuActivity"
-            android:label="@string/giver_menu_title"
+            android:name=".GiverFormActivity"
             android:parentActivityName=".GatewayActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

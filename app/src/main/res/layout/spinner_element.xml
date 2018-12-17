@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:layout_height="45dp"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:orientation="horizontal"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <ImageView
-        android:layout_gravity="center"
+    android:layout_height="45dp"
+    android:orientation="horizontal">
+
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/spinner_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="15dp"
-        android:layout_marginLeft="15dp"/>
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_gravity="center"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:tint="@color/colorAccent"
+        app:backgroundTint="@android:color/transparent" />
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/spinner_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:textAlignment="inherit"
         android:textColor="@android:color/black"
-        android:textAlignment="inherit" />
+        android:textSize="14sp" />
 </LinearLayout>
