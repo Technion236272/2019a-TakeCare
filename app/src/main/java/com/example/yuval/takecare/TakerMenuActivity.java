@@ -1,6 +1,5 @@
 package com.example.yuval.takecare;
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -51,9 +50,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class TakerMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -121,35 +117,6 @@ public class TakerMenuActivity extends AppCompatActivity
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
-
-        final FirebaseUser user = auth.getCurrentUser();
-        Log.d("TAG", "Checking for user");
-        if (user != null) {
-            DocumentReference docRef = db.collection("users").document(user.getUid());
-            Log.d("TAG", "User is logged in");
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        Log.d("TAG", "Found user");
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Log.d("TAG", "DocumentSnapshot data: " + document.getData());
-                            if (document.getString("profilePicture") != null) {
-                                Glide.with(TakerMenuActivity.this)
-                                        .load(document.getString("profilePicture"))
-                                        .apply(RequestOptions.circleCropTransform())
-                                        .into(userProfilePicture);
-                            }
-                        } else {
-                            Log.d("TAG", "No such document");
-                        }
-                    } else {
-                        Log.d("TAG", "get failed with ", task.getException());
-                    }
-                }
-            });
-        }
 
         setUpRecyclerView();
     }
@@ -280,9 +247,7 @@ public class TakerMenuActivity extends AppCompatActivity
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                 Log.d(TAG, "Found the user: " + documentSnapshot);
-                                String publisherName, publisherPhoto;
-                                publisherName = documentSnapshot.getString("name");
-                                holder.itemPublisher.setText(publisherName);
+                                holder.itemPublisher.setText(documentSnapshot.getString("name"));
                                 if (documentSnapshot.getString("profilePicture") != null) {
                                     Glide.with(holder.card)
                                             .load(documentSnapshot.getString("profilePicture"))
@@ -347,6 +312,36 @@ public class TakerMenuActivity extends AppCompatActivity
         super.onStart();
         currentAdapter.startListening();
         recyclerView.toggleVisibility();
+
+        // Update user name and picture if necessary (changed via user profile)
+        final FirebaseUser user = auth.getCurrentUser();
+        Log.d("TAG", "Checking for user");
+        if (user != null) {
+            DocumentReference docRef = db.collection("users").document(user.getUid());
+            Log.d("TAG", "User is logged in");
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        Log.d("TAG", "Found user");
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Log.d("TAG", "DocumentSnapshot data: " + document.getData());
+                            if (document.getString("profilePicture") != null) {
+                                Glide.with(TakerMenuActivity.this)
+                                        .load(document.getString("profilePicture"))
+                                        .apply(RequestOptions.circleCropTransform())
+                                        .into(userProfilePicture);
+                            }
+                        } else {
+                            Log.d("TAG", "No such document");
+                        }
+                    } else {
+                        Log.d("TAG", "get failed with ", task.getException());
+                    }
+                }
+            });
+        }
     }
 
     @Override

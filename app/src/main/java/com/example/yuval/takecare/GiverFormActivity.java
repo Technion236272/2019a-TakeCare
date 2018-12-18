@@ -2,14 +2,11 @@ package com.example.yuval.takecare;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
@@ -28,7 +25,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -36,11 +32,9 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.yuval.takecare.utilities.RotateBitmap;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -49,20 +43,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.text.BreakIterator;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 
@@ -266,7 +256,7 @@ public class GiverFormActivity extends AppCompatActivity {
                 break;
             case PICTURE_UPLOADED:
                 assert user != null;
-                uploadItemDataWithPicture(itemInfo, user, timestamp);
+                uploadItemDataWithPicture(itemInfo, user);
                 break;
         }
     }
@@ -315,9 +305,10 @@ public class GiverFormActivity extends AppCompatActivity {
                 });
     }
 
-    private void uploadItemDataWithPicture(final Map<String, Object> itemInfo, final FirebaseUser user, final FieldValue timestamp) {
+    private void uploadItemDataWithPicture(final Map<String, Object> itemInfo, final FirebaseUser user) {
         Log.d(TAG, "uploadItemAndPictureData: starting data upload ");
-        final StorageReference storageRef = storage.child("itemPictures/userUploads/" + user.getUid() + "/" + timestamp.toString());
+        final String  uniqueID = UUID.randomUUID().toString();
+        final StorageReference storageRef = storage.child("itemPictures/userUploads/" + user.getUid() + "/" + uniqueID);
         UploadTask uploadTask = storageRef.putBytes(uploadBytes);
         uploadTask
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -339,7 +330,7 @@ public class GiverFormActivity extends AppCompatActivity {
                                                         Log.d(TAG, "uploadItemAndPictureData: item added successfully ");
                                                         Map<String, Object> itemRef = new HashMap<>();
                                                         itemRef.put("item", documentRef);
-                                                        db.collection("users").document(user.getUid()).collection("publishedItems").document(timestamp.toString())
+                                                        db.collection("users").document(user.getUid()).collection("publishedItems").document(uniqueID)
                                                                 .set(itemRef)
                                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                     @Override
