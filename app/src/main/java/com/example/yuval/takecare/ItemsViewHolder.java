@@ -6,6 +6,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -31,7 +32,5 @@ public class ItemsViewHolder extends RecyclerView.ViewHolder {
         itemPublisher = (TextView) itemView.findViewById(R.id.item_published_name);
         itemCategory = (ImageView) itemView.findViewById(R.id.item_category);
         itemPickupMethod = (ImageView) itemView.findViewById(R.id.item_pickup_method);
-
     }
-
 }

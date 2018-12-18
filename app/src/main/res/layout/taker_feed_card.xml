@@ -28,8 +28,8 @@
             android:clickable="true"
             android:focusable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardCornerRadius="8dp"
-            android:onClick="onTakerCardSelected">
+            android:onClick="onTakerCardSelected"
+            app:cardCornerRadius="8dp">
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
@@ -37,7 +37,7 @@
 
                 <TextView
                     android:id="@+id/item_title"
-                    android:layout_width="290dp"
+                    android:layout_width="280dp"
                     android:layout_height="48dp"
                     android:layout_above="@+id/item_photo"
                     android:layout_alignEnd="@+id/item_photo"
@@ -60,14 +60,15 @@
                     android:layout_height="36dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="onReportPress"
+
                     app:backgroundTint="@android:color/white"
                     app:layout_constraintBottom_toTopOf="@+id/item_photo"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_report"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:onClick="onReportPress"/>
+                    app:srcCompat="@drawable/ic_report" />
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/item_photo"
@@ -100,25 +101,26 @@
                         android:id="@+id/item_publisher_profile"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@drawable/ic_user_purple"
                         android:scaleType="fitXY" />
 
                     <ImageView
                         android:id="@+id/crop_circle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+
                         app:srcCompat="@drawable/circle" />
                 </FrameLayout>
 
                 <TextView
                     android:id="@+id/item_published_name"
-                    android:layout_width="160dp"
+                    android:layout_width="192dp"
                     android:layout_height="21dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
                     android:maxLines="1"
                     android:text=""
                     android:textSize="14sp"
+
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/item_publisher_frame"
                     app:layout_constraintTop_toBottomOf="@+id/item_photo" />
@@ -129,27 +131,29 @@
                     android:layout_height="24dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:src="@drawable/ic_pizza_slice_purple"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/item_photo"
                     android:clickable="true"
                     android:focusable="true"
-                    android:onClick="onItemCategoryPress"/>
+                    android:onClick="onItemCategoryPress"
+                    android:src="@drawable/ic_pizza_slice_purple"
+
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/item_photo" />
 
                 <ImageView
                     android:id="@+id/item_pickup_method"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:src="@drawable/ic_giveaway_purple"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/item_category"
-                    app:layout_constraintTop_toBottomOf="@+id/item_photo"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginRight="14dp"
                     android:clickable="true"
                     android:focusable="true"
-                    android:onClick="onItemCategoryPress"/>
+                    android:onClick="onItemCategoryPress"
+                    android:src="@drawable/ic_giveaway_purple"
+
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/item_category"
+                    app:layout_constraintTop_toBottomOf="@+id/item_photo" />
 
 
             </android.support.constraint.ConstraintLayout>

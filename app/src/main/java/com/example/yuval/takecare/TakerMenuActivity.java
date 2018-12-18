@@ -26,9 +26,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,10 +61,10 @@ public class TakerMenuActivity extends AppCompatActivity
     private final static String TAG = "TakerFeed";
     private static final int LIST_JUMP_THRESHOLD = 4;
 
+    private RelativeLayout rootLayout;
     private FeedRecyclerView recyclerView;
     private ImageView userProfilePicture;
     private MenuItem currentDrawerChecked;
-    private ProgressDialog dialog;
 
     private ConstraintLayout filterPopupMenu;
     private AppCompatImageButton chosenPickupMethod;
@@ -81,7 +84,6 @@ public class TakerMenuActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_taker_menu);
-
         //Set the toolbar as the AppBar for this activity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -95,6 +97,8 @@ public class TakerMenuActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+
+        rootLayout = findViewById(R.id.taker_root_layout);
 
         //Set up the navigation drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -159,9 +163,6 @@ public class TakerMenuActivity extends AppCompatActivity
         Log.d(TAG, "setUpAdapter: setting up adapter");
         if (currentAdapter != null)
             currentAdapter.stopListening();
-        dialog = new ProgressDialog(TakerMenuActivity.this);
-        dialog.setMessage("Loading data...");
-        dialog.show();
 
         // Default: no filters
         Query query = db.collection("items")
@@ -204,7 +205,7 @@ public class TakerMenuActivity extends AppCompatActivity
                         .apply(requestOptions)
                         .into(holder.itemPhoto);
 
-                // category selection
+                // Category selection
                 int categoryId;
                 switch (model.getCategory()) {
                     case "Food":
@@ -285,7 +286,7 @@ public class TakerMenuActivity extends AppCompatActivity
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
-                if(position == 0){
+                if (position == 0) {
                     recyclerView.scrollToPosition(0);
                 }
                 if (getItemCount() == 0)
@@ -297,7 +298,6 @@ public class TakerMenuActivity extends AppCompatActivity
         currentAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(currentAdapter);
         currentAdapter.startListening();
-        dialog.dismiss();
         Log.d(TAG, "setUpAdapter: done");
     }
 
@@ -385,9 +385,15 @@ public class TakerMenuActivity extends AppCompatActivity
         if (filterPopupMenu.getVisibility() == View.GONE) {
             jumpButton.setVisibility(View.GONE);
             filterPopupMenu.setVisibility(View.VISIBLE);
+            if (currentAdapter.getItemCount() == 0) {
+                (findViewById(R.id.empty_feed_arrow)).setVisibility(View.GONE);
+            }
         } else {
             filterPopupMenu.setVisibility(View.GONE);
             tryToggleJumpButton();
+            if (currentAdapter.getItemCount() == 0) {
+                (findViewById(R.id.empty_feed_arrow)).setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -422,6 +428,9 @@ public class TakerMenuActivity extends AppCompatActivity
         }
         setUpAdapter();
         filterPopupMenu.setVisibility(View.GONE);
+        if (currentAdapter.getItemCount() == 0) {
+            ((findViewById(R.id.empty_feed_arrow))).setVisibility(View.VISIBLE);
+        }
     }
 
     private void tryToggleJumpButton() {
@@ -469,6 +478,8 @@ public class TakerMenuActivity extends AppCompatActivity
             makeHighlightedSnackbar("Chat will be added in the future");
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
             return false;
         } else if (id == R.id.nav_user_settings) {
             intent = new Intent(this, UserProfileActivity.class);
@@ -476,7 +487,15 @@ public class TakerMenuActivity extends AppCompatActivity
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
             return false;
-        } else {
+        } else if (id == R.id.nav_favorites) {
+            //TODO: remove this when favorites is implemented
+            makeHighlightedSnackbar("Filtering by favorites will be added in the future");
+            item.setChecked(false);
+            currentDrawerChecked.setChecked(true);
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+            return false;
+        } else{
             // Category filtering
             currentDrawerChecked.setChecked(false);
             currentDrawerChecked = item;
@@ -503,10 +522,7 @@ public class TakerMenuActivity extends AppCompatActivity
                 case R.id.nav_other:
                     queryCategoriesFilter = "Other";
                     break;
-                case R.id.nav_favorites:
                     //TODO: add favorites filter in the future. For now we ignore this
-                    makeHighlightedSnackbar("Filtering by favorites will be added in the future");
-                    break;
             }
             setUpAdapter();
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -571,7 +587,7 @@ public class TakerMenuActivity extends AppCompatActivity
 
     private void makeHighlightedSnackbar(String str) {
         Snackbar snackbar = Snackbar
-                .make(findViewById(R.id.taker_root_layout), str, Snackbar.LENGTH_SHORT);
+                .make(rootLayout, str, Snackbar.LENGTH_SHORT);
         View sbView = snackbar.getView();
         TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.YELLOW);
