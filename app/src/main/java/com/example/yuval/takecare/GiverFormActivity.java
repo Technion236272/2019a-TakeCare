@@ -58,6 +58,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.BreakIterator;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -69,19 +70,22 @@ public class GiverFormActivity extends AppCompatActivity {
 
     private final static String TAG = "GiverTag";
 
-    String category;
-    String[] spinnerNames;
-    int[] spinnerIcons;
+    private String category;
+    private String[] spinnerNames;
+    private int[] spinnerIcons;
 
-    EditText title;
-    EditText description;
-    EditText pickupDescription;
-    Spinner pickup;
-    ProgressDialog dialog;
+    private EditText title;
+    private EditText description;
+    private EditText pickupDescription;
+    private Spinner pickup;
+    private ProgressDialog dialog;
+    private TextView airTimeText;
+    private TextView airTimeToggler;
+    private SeekBar airTimePicker;
 
     private ImageView itemImageView;
-    final static int REQUEST_CAMERA = 1;
-    final static int SELECT_IMAGE = 2;
+    final static private int REQUEST_CAMERA = 1;
+    final static private int SELECT_IMAGE = 2;
     private File selectedImageFile;
     private Uri selectedImage;
     private byte[] uploadBytes;
@@ -90,6 +94,9 @@ public class GiverFormActivity extends AppCompatActivity {
 
     private AppCompatImageButton chosenCategory = null;
     private int airTime = 0;
+    private static final String changeText = "Change";
+    private static final String hideText = "Hide";
+
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
@@ -110,11 +117,11 @@ public class GiverFormActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_giver_form);
-
-        try {
-            category = getIntent().getExtras().getString("CATEGORY");
-        } catch (Throwable e) {
-            category = "ERROR";
+        Toolbar toolbar = (Toolbar) findViewById(R.id.giver_form_toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
         // Pickup method spinner initialization
@@ -123,23 +130,74 @@ public class GiverFormActivity extends AppCompatActivity {
         IconTextAdapter ita = new IconTextAdapter(this, spinnerNames, spinnerIcons);
         pickup = (Spinner) findViewById(R.id.pickup_method_spinner);
         pickup.setAdapter(ita);
+
         title = (EditText) findViewById(R.id.title_input);
         description = (EditText) findViewById(R.id.item_description);
         pickupDescription = (EditText) findViewById(R.id.item_time);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.giver_form_toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-
         itemImageView = (ImageView) findViewById(R.id.item_picture);
+        picturePB = (ProgressBar) findViewById(R.id.picture_pb);
+        airTimeText = (TextView) findViewById(R.id.air_time_text);
+        airTimeToggler = (TextView) findViewById(R.id.air_time_change);
+        airTimePicker = (SeekBar) findViewById(R.id.air_time_seek_bar);
+        airTimePicker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                switch (progress) {
+                    case 0:
+                        airTime = 1;
+                        break;
+                    case 1:
+                        airTime = 3;
+                        break;
+                    case 2:
+                        airTime = 6;
+                        break;
+                    case 3:
+                        airTime = 12;
+                        break;
+                    case 4:
+                        airTime = 24;
+                        break;
+                    case 5:
+                        airTime = 24 * 3;
+                        break;
+                    case 6:
+                        airTime = 24 * 5;
+                        break;
+                    case 7:
+                        airTime = 24 * 7;
+                        break;
+                    case 8:
+                        airTime = 24 * 10;
+                        break;
+                    case 9:
+                        airTime = 24 * 14;
+                        break;
+                    case 10:
+                        airTime = 24 * 21;
+                        break;
+                    case 11:
+                        airTime = 24 * 30;
+                        break;
+                }
+                setPostAirTimeText();
+            }
+        });
+        formBtn = (Button) findViewById(R.id.send_form_button);
+
         selectedImage = null;
         selectedImageFile = null;
-        //formPB = (ProgressBar) findViewById(R.id.form_pb);
-        picturePB = (ProgressBar) findViewById(R.id.picture_pb);
-        formBtn = (Button) findViewById(R.id.send_form_button);
         uploadBytes = null;
 
         db = FirebaseFirestore.getInstance();
@@ -346,15 +404,21 @@ public class GiverFormActivity extends AppCompatActivity {
         itemInfo.put("category", category);
         Log.d(TAG, "filled category");
         String pickupMethod;
+        Log.d(TAG, "pickup method poition: " + pickup.getSelectedItemPosition());
         switch (pickup.getSelectedItemPosition()) {
-            case 2:
+            case 0:
+                pickupMethod = "In Person";
+                break;
+            case 1:
                 pickupMethod = "Giveaway";
                 break;
-            case 3:
+            case 2:
                 pickupMethod = "Race";
                 break;
             default:
-                pickupMethod = "In Person";
+                Log.d(TAG, "formStatus: Error in spinner position: " + pickup.getSelectedItemPosition());
+                pickupMethod = "ERROR";
+                break;
         }
         itemInfo.put("pickupMethod", pickupMethod);
         Log.d(TAG, "filled pickup method");
@@ -480,60 +544,89 @@ public class GiverFormActivity extends AppCompatActivity {
             ImageViewCompat.setImageTintList((ImageView) view, getResources().getColorStateList(R.color.icons));
             chosenCategory = (AppCompatImageButton) view;
         }
+
         //TODO: change form dynamically according to the chosenCategory
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.category_food_btn:
                 airTime = 24 * 3;
+                airTimePicker.setProgress(5);
+                category = "Food";
                 break;
             case R.id.category_study_material_btn:
                 airTime = 24 * 14;
+                airTimePicker.setProgress(9);
+                category = "Study Material";
                 break;
             case R.id.category_households_btn:
                 airTime = 24 * 14;
+                airTimePicker.setProgress(9);
+                category = "Households";
                 break;
             case R.id.category_lost_and_found_btn:
                 airTime = 24 * 5;
+                airTimePicker.setProgress(6);
+                category = "Lost & Found";
                 break;
             case R.id.category_hitchhikes_btn:
                 airTime = 12;
+                airTimePicker.setProgress(2);
+                category = "Hitchhikes";
                 break;
             case R.id.category_other_btn:
                 airTime = 24 * 7;
+                airTimePicker.setProgress(7);
+                category = "Other";
                 break;
         }
         setDefaultAirTime();
     }
 
     private void setDefaultAirTime() {
-        TextView airTimeText = (TextView) findViewById(R.id.air_time_text);
+        setPostAirTimeText();
+        airTimeText.setVisibility(View.VISIBLE);
+        airTimeToggler.setVisibility(View.VISIBLE);
+        airTimeToggler.setText(changeText);
+        airTimePicker.setVisibility(View.GONE);
+    }
+
+    private void setPostAirTimeText() {
         String str = "Listed for ";
-        if(airTime == 1) {
+        if (airTime == 1) {
             str += airTime;
             str += " hour";
-        } else if (airTime%24 != 0) {
+        } else if (airTime % 24 != 0) {
             str += airTime;
-            str+= " hours";
+            str += " hours";
         } else if (airTime == 24) {
-            str += airTime/24;
-            str+= " day";
-        } else if (airTime%24 == 0) {
-            str += airTime/24;
-            str+= " days";
-        } else if (airTime == 24*7) {
-            str += airTime/(24*7);
-            str+= " week";
-        } else if (airTime%24*7 == 0) {
-            str += airTime/(24*7);
-            str+= " weeks";
-        } else if (airTime == 24*30) {
-            str+= "1 month";
+            str += airTime / 24;
+            str += " day";
+        } else if (airTime < 24 * 7 || (airTime % (24 * 7) != 0 && airTime % (24 * 30) != 0)) {
+            str += airTime / 24;
+            str += " days";
+        } else if (airTime == 24 * 7) {
+            str += airTime / (24 * 7);
+            str += " week";
+        } else if (airTime < 24 * 30 || airTime % (24 * 30) != 0) {
+            str += airTime / (24 * 7);
+            str += " weeks";
+        } else if (airTime == 24 * 30) {
+            str += "1 month";
         } else {
-            str+= airTime;
-            str+= " hours";
+            str += airTime;
+            str += " hours";
         }
         airTimeText.setText(str);
-        airTimeText.setVisibility(View.VISIBLE);
-        (findViewById(R.id.air_time_change)).setVisibility(View.VISIBLE);
+    }
+
+    public void onChangeAirTimeClick(View view) {
+        String currentState = ((TextView) view).getText().toString();
+        if (currentState.equals(changeText)) {
+            airTimePicker.setVisibility(View.VISIBLE);
+            airTimeToggler.setText(hideText);
+        } else if (currentState.equals(hideText)) {
+            airTimePicker.setVisibility(View.GONE);
+            airTimeToggler.setText(changeText);
+        }
     }
 
     public class ImageCompressTask extends AsyncTask<Uri, Integer, byte[]> {

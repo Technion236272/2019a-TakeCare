@@ -132,11 +132,15 @@
     <string name="my_items">My Items</string>
     <string name="pending_requests">Pending Requests</string>
     <string name="log_out">Log Out</string>
+
+    <!--GiverForm elements-->
     <string name="giver_form_title_input_hint">Add a title</string>
     <string name="giver_form_add_a_picture_button_text">Add A Picture:</string>
     <string name="enter_description_hint">Enter description</string>
     <string name="enter_time_hint">Specify time for pickup</string>
     <string name="pickup_method_prompt_text">Choose A Pickup Method</string>
     <string name="share_button_text">Share</string>
+    <string name="air_time_clickable_change_text">Change</string>
+
     <!---->
 </resources>
