@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -38,13 +38,12 @@ public class SharedItemsActivity extends AppCompatActivity {
     private static final String TAG = "Shared Items";
     private static final int LIST_JUMP_THRESHOLD = 4;
     private FeedRecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private FirestoreRecyclerAdapter adapter;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private StorageReference storage;
     private int position = 0;
-    private AppCompatButton jumpButton;
+    private Button jumpButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +64,20 @@ public class SharedItemsActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+        recyclerView.toggleVisibility();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
+        recyclerView.toggleVisibility();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
         switch (item.getItemId()) {
@@ -78,8 +91,8 @@ public class SharedItemsActivity extends AppCompatActivity {
     }
 
     private void setUpRecyclerView() {
-        recyclerView = (FeedRecyclerView) findViewById(R.id.taker_feed_list);
-        View emptyFeedView = findViewById(R.id.empty_feed_view);
+        recyclerView = (FeedRecyclerView) findViewById(R.id.shared_feed_list);
+        View emptyFeedView = findViewById(R.id.shared_empty_feed_view);
         //Optimizing recycler view's performance:
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(10);
@@ -90,7 +103,8 @@ public class SharedItemsActivity extends AppCompatActivity {
         final FirebaseUser user = auth.getCurrentUser();
         assert user != null;
 
-        Query query = db.collection("users").document(user.getUid()).collection("publishedItems")
+        Query query = db.collection("items")
+                .whereEqualTo("publisher", user.getUid())
                 .orderBy("timestamp", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
@@ -207,6 +221,16 @@ public class SharedItemsActivity extends AppCompatActivity {
                 }
             }
         });
+
+        adapter.notifyDataSetChanged();
+        adapter.startListening();
+        recyclerView.setAdapter(adapter);
+    }
+
+    public void onTakerCardSelected(View view) {
+        //TODO: add extra information to intent
+        Intent intent = new Intent(this, ItemInfoActivity.class);
+        startActivity(intent);
     }
 
     private void updatePosition() {
@@ -226,6 +250,7 @@ public class SharedItemsActivity extends AppCompatActivity {
     }
 
     public void onJumpClick(View view) {
+        Log.d(TAG, "onJumpClick: invoked");
         LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         assert layoutManager != null;
         recyclerView.smoothScrollToPosition(0);

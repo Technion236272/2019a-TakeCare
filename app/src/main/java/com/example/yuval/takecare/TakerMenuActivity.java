@@ -26,6 +26,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -64,7 +65,7 @@ public class TakerMenuActivity extends AppCompatActivity
 
     private ConstraintLayout filterPopupMenu;
     private AppCompatImageButton chosenPickupMethod;
-    private AppCompatButton jumpButton;
+    private Button jumpButton;
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
@@ -110,7 +111,7 @@ public class TakerMenuActivity extends AppCompatActivity
 
         filterPopupMenu = (ConstraintLayout) findViewById(R.id.filter_menu_popup);
         chosenPickupMethod = (AppCompatImageButton) findViewById(R.id.pickup_any_button);
-        jumpButton = (AppCompatButton) findViewById(R.id.jump_button);
+        jumpButton = (Button) findViewById(R.id.jump_button);
         View header = navigationView.getHeaderView(0);
         userProfilePicture = (ImageView) header.findViewById(R.id.nav_user_picture);
 

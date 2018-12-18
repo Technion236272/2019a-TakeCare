@@ -328,27 +328,11 @@ public class GiverFormActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
                                                         Log.d(TAG, "uploadItemAndPictureData: item added successfully ");
-                                                        Map<String, Object> itemRef = new HashMap<>();
-                                                        itemRef.put("item", documentRef);
-                                                        db.collection("users").document(user.getUid()).collection("publishedItems").document(uniqueID)
-                                                                .set(itemRef)
-                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                    @Override
-                                                                    public void onSuccess(Void aVoid) {
-                                                                        Log.d(TAG, "uploadItemAndPictureData: user's published item reference added successfully ");
-                                                                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
-                                                                                Toast.LENGTH_SHORT).show();
-                                                                        Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
-                                                                        startActivity(intent);
-                                                                        finish();
-                                                                    }
-                                                                })
-                                                                .addOnFailureListener(new OnFailureListener() {
-                                                                    @Override
-                                                                    public void onFailure(@NonNull Exception e) {
-
-                                                                    }
-                                                                });
+                                                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
+                                                                Toast.LENGTH_SHORT).show();
+                                                        Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
+                                                        startActivity(intent);
+                                                        finish();
                                                     }
                                                 })
                                                 .addOnFailureListener(new OnFailureListener() {
