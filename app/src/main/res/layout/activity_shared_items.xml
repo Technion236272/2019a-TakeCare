@@ -7,6 +7,7 @@
     tools:context=".SharedItemsActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -70,4 +71,32 @@
 
     </ScrollView>
 
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/shared_items_jump_button"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:alpha="0.9"
+        android:background="@drawable/floating_button_shape"
+        android:drawableEnd="@drawable/ic_arrow_up"
+        android:drawableRight="@drawable/ic_arrow_up"
+        android:onClick="onJumpClick"
+        android:paddingLeft="12dp"
+        android:paddingEnd="12dp"
+        android:paddingRight="12dp"
+        android:shadowColor="#A8A8A8"
+        android:shadowRadius="10"
+        android:text="@string/jump_to_top_button"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:visibility="visible"
+        app:elevation="@dimen/fab_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 </android.support.constraint.ConstraintLayout>
