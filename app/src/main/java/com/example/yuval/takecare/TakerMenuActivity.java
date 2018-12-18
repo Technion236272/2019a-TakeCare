@@ -319,6 +319,9 @@ public class TakerMenuActivity extends AppCompatActivity
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
+                if(position == 0){
+                    recyclerView.scrollToPosition(0);
+                }
                 if (getItemCount() == 0)
                     filterPopupMenu.setVisibility(View.GONE);
             }
