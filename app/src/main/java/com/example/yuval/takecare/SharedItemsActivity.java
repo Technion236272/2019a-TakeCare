@@ -2,10 +2,8 @@ package com.example.yuval.takecare;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,11 +12,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -40,10 +36,17 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public class SharedItemsActivity extends AppCompatActivity {
 
     private static final String TAG = "TakeCare";
     private static final int LIST_JUMP_THRESHOLD = 4;
+    private static final int ICON_FILL_ITERATIONS = 12;
+    private static final int ICON_FILL_DURATION = 200;
+    private static final int ICON_ACTIVATED_DURATION = 400;
+    ReentrantLock iconLock = new ReentrantLock();
+
     private FeedRecyclerView recyclerView;
     private FirestoreRecyclerAdapter adapter;
     private FirebaseFirestore db;
@@ -260,25 +263,50 @@ public class SharedItemsActivity extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     private void activateViewHolderIcons(final ItemsViewHolder holder, final FeedCardInformation model) {
-        holder.itemCategory.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    v.setAlpha((float)0.9);
-                }
-                if(event.getAction() == MotionEvent.ACTION_UP ||
-                        event.getAction() == MotionEvent.ACTION_CANCEL){
-                    v.setAlpha((float)0.6);
-                }
-                return false;
-            }
-        });
+
 
         holder.itemCategory.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
+                if(iconLock.isLocked()) {
+                    return;
+                }
+
+                new Thread(new Runnable() {
+                    public void run() {
+                        iconLock.lock();
+                        float alpha = (float)0.6;
+                        for(int i = 0; i< ICON_FILL_ITERATIONS; i++) {
+                            v.setAlpha(alpha);
+                            try {
+                                Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            alpha+=(float)(1-0.6)/ICON_FILL_ITERATIONS;
+                        }
+
+                        try {
+                            Thread.sleep(ICON_ACTIVATED_DURATION);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        for(int i = 0; i< ICON_FILL_ITERATIONS; i++) {
+                            v.setAlpha(alpha);
+                            try {
+                                Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            alpha-=(float)(1-0.6)/ICON_FILL_ITERATIONS;
+                        }
+                        iconLock.unlock();
+                    }
+                }).start();
+
                 String str;
-                switch(model.getCategory()) {
+                switch (model.getCategory()) {
                     case "Food":
                         str = "This item's category is food";
                         break;
@@ -298,26 +326,51 @@ public class SharedItemsActivity extends AppCompatActivity {
                         str = "This item is in a category of its own";
                         break;
                 }
+
                 Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
             }
         });
 
-        holder.itemPickupMethod.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    v.setAlpha((float)0.9);
-                }
-                if(event.getAction() == MotionEvent.ACTION_UP ||
-                        event.getAction() == MotionEvent.ACTION_CANCEL){
-                    v.setAlpha((float)0.6);
-                }
-                return false;
-            }
-        });
         holder.itemPickupMethod.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
+                if(iconLock.isLocked()) {
+                    return;
+                }
+
+                new Thread(new Runnable() {
+                    public void run() {
+                        iconLock.lock();
+                        float alpha = (float)0.6;
+                        for(int i = 0; i< ICON_FILL_ITERATIONS; i++) {
+                            v.setAlpha(alpha);
+                            try {
+                                Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            alpha+=(float)(0.9-0.6)/ICON_FILL_ITERATIONS;
+                        }
+
+                        try {
+                            Thread.sleep(ICON_ACTIVATED_DURATION);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        for(int i = 0; i< ICON_FILL_ITERATIONS; i++) {
+                            v.setAlpha(alpha);
+                            try {
+                                Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            alpha-=(float)(0.9-0.6)/ICON_FILL_ITERATIONS;
+                        }
+                        iconLock.unlock();
+                    }
+                }).start();
+
                 String str;
                 switch (model.getPickupMethod()) {
                     case "In Person":
@@ -330,6 +383,7 @@ public class SharedItemsActivity extends AppCompatActivity {
                         str = "Race to get this item before anyone else!";
                         break;
                 }
+
                 Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
             }
         });
