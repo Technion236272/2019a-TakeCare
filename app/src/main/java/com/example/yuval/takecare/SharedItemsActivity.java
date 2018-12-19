@@ -35,7 +35,7 @@ import com.google.firebase.storage.StorageReference;
 
 public class SharedItemsActivity extends AppCompatActivity {
 
-    private static final String TAG = "Shared Items";
+    private static final String TAG = "TakeCare";
     private static final int LIST_JUMP_THRESHOLD = 4;
     private FeedRecyclerView recyclerView;
     private FirestoreRecyclerAdapter adapter;
@@ -105,7 +105,9 @@ public class SharedItemsActivity extends AppCompatActivity {
 
         Query query = db.collection("items")
                 .whereEqualTo("publisher", user.getUid())
+                .orderBy("status")
                 .orderBy("timestamp", Query.Direction.DESCENDING);
+
 
         FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
                 .setQuery(query, FeedCardInformation.class)

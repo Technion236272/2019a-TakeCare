@@ -35,7 +35,7 @@ import com.google.firebase.storage.StorageReference;
 
 public class RequestedItemsActivity extends AppCompatActivity {
 
-    private static final String TAG = "Requested Items";
+    private static final String TAG = "TakeCare";
     private static final int LIST_JUMP_THRESHOLD = 4;
     private FeedRecyclerView recyclerView;
     private FirestoreRecyclerAdapter adapter;

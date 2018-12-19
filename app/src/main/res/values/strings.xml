@@ -6,6 +6,9 @@
     <string name="fb_login_protocol_scheme">fb1213943598760666</string>
 
 
+    <string name="fabric_app_id">7f7506f3cfaf9acbb75e34b8b44d610c12a1dccf</string>
+
+
 
     <!--Gateway activity elements-->
     <string name="text_take_role">Need Something?</string>

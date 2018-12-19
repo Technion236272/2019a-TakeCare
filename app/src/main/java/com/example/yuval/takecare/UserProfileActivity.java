@@ -56,7 +56,7 @@ import java.util.Map;
 
 public class UserProfileActivity extends AppCompatActivity {
 
-    private final static String TAG = "MyProfile";
+    private final static String TAG = "TakeCare";
 
     private ImageView profilePictureView;
     private ProgressBar picturePB;

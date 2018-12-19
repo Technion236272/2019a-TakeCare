@@ -58,7 +58,7 @@ import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 
 public class GiverFormActivity extends AppCompatActivity {
 
-    private final static String TAG = "GiverTag";
+    private final static String TAG = "TakeCare";
 
     private String category;
     private String[] spinnerNames;
@@ -371,13 +371,17 @@ public class GiverFormActivity extends AppCompatActivity {
         uid = user.getUid();
         itemInfo.put("publisher", uid);
         Log.d(TAG, "filled publisher");
+
         itemInfo.put("timestamp", timestamp);
         Log.d(TAG, "filled timestamp");
+
         //Air Time is in hours
         itemInfo.put("airTime", airTime);
         Log.d(TAG, "filled airtime");
+
         itemInfo.put("category", category);
         Log.d(TAG, "filled category");
+
         String pickupMethod;
         Log.d(TAG, "pickup method poition: " + pickup.getSelectedItemPosition());
         switch (pickup.getSelectedItemPosition()) {
@@ -397,22 +401,30 @@ public class GiverFormActivity extends AppCompatActivity {
         }
         itemInfo.put("pickupMethod", pickupMethod);
         Log.d(TAG, "filled pickup method");
+
         if (selectedImage == null && pickupMethod.equals("In Person")) {
             return formResult.ERROR_PICTURE_NOT_INCLUDED;
         }
+
         if (title.getText().toString().isEmpty()) {
             return formResult.ERROR_TITLE;
         }
         itemInfo.put("title", title.getText().toString());
         Log.d(TAG, "filled title");
+
         if (!description.getText().toString().isEmpty()) {
             itemInfo.put("description", description.getText().toString());
             Log.d(TAG, "filled description");
         }
+
         if (!pickupDescription.getText().toString().isEmpty()) {
             itemInfo.put("pickupInformation", pickupDescription.getText().toString());
             Log.d(TAG, "filled pickup description");
         }
+
+        itemInfo.put("status", 1);
+        Log.d(TAG, "filled item's status");
+
         if (selectedImage == null)
             return formResult.PICTURE_MISSING;
         return formResult.PICTURE_UPLOADED;

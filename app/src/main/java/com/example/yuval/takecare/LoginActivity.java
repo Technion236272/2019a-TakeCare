@@ -48,11 +48,11 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private static final String TAG = "TakeCare";
     private static final int REQ_GOOGLE_SIGN_IN = 1;
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private CallbackManager callbackManager;
-    private static final String TAG = "LOGIN";
 
     ProgressDialog dialog;
     private GoogleSignInClient googleSignInClient;

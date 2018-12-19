@@ -39,6 +39,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -47,6 +48,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -58,7 +60,7 @@ import com.google.firebase.firestore.DocumentReference;
 public class TakerMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private final static String TAG = "TakerFeed";
+    private final static String TAG = "TakeCare";
     private static final int LIST_JUMP_THRESHOLD = 4;
 
     private RelativeLayout rootLayout;
@@ -123,6 +125,11 @@ public class TakerMenuActivity extends AppCompatActivity
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
 
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
+
         setUpRecyclerView();
     }
 
@@ -166,6 +173,8 @@ public class TakerMenuActivity extends AppCompatActivity
 
         // Default: no filters
         Query query = db.collection("items")
+                .whereLessThanOrEqualTo("status", 1)
+                .orderBy("status")
                 .orderBy("timestamp", Query.Direction.DESCENDING);
 
         if (queryCategoriesFilter != null && queryPickupMethodFilter != null) {
@@ -174,20 +183,27 @@ public class TakerMenuActivity extends AppCompatActivity
             query = db.collection("items")
                     .whereEqualTo("category", queryCategoriesFilter)
                     .whereEqualTo("pickupMethod", queryPickupMethodFilter)
+                    .whereLessThanOrEqualTo("status", 1)
+                    .orderBy("status")
                     .orderBy("timestamp", Query.Direction.DESCENDING);
         } else if (queryCategoriesFilter != null) {
             // Filter by categories
             Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter);
             query = db.collection("items")
                     .whereEqualTo("category", queryCategoriesFilter)
+                    .whereLessThanOrEqualTo("status", 1)
+                    .orderBy("status")
                     .orderBy("timestamp", Query.Direction.DESCENDING);
         } else if (queryPickupMethodFilter != null) {
             // Filter by pickup method
             Log.d(TAG, "setUpAdapter: query has: pickup: " + queryPickupMethodFilter);
             query = db.collection("items")
                     .whereEqualTo("pickupMethod", queryPickupMethodFilter)
+                    .whereLessThanOrEqualTo("status", 1)
+                    .orderBy("status")
                     .orderBy("timestamp", Query.Direction.DESCENDING);
         }
+
 
         FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
                 .setQuery(query, FeedCardInformation.class)
