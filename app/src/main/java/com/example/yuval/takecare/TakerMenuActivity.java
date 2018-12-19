@@ -175,8 +175,7 @@ public class TakerMenuActivity extends AppCompatActivity
 
         // Default: no filters
         Query query = db.collection("items")
-                .whereLessThanOrEqualTo("status", 1)
-                .orderBy("status")
+                .whereEqualTo("status", 1)
                 .orderBy("timestamp", Query.Direction.DESCENDING);
 
         if (queryCategoriesFilter != null && queryPickupMethodFilter != null) {
@@ -185,24 +184,21 @@ public class TakerMenuActivity extends AppCompatActivity
             query = db.collection("items")
                     .whereEqualTo("category", queryCategoriesFilter)
                     .whereEqualTo("pickupMethod", queryPickupMethodFilter)
-                    .whereLessThanOrEqualTo("status", 1)
-                    .orderBy("status")
+                    .whereEqualTo("status", 1)
                     .orderBy("timestamp", Query.Direction.DESCENDING);
         } else if (queryCategoriesFilter != null) {
             // Filter by categories
             Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter);
             query = db.collection("items")
                     .whereEqualTo("category", queryCategoriesFilter)
-                    .whereLessThanOrEqualTo("status", 1)
-                    .orderBy("status")
+                    .whereEqualTo("status", 1)
                     .orderBy("timestamp", Query.Direction.DESCENDING);
         } else if (queryPickupMethodFilter != null) {
             // Filter by pickup method
             Log.d(TAG, "setUpAdapter: query has: pickup: " + queryPickupMethodFilter);
             query = db.collection("items")
                     .whereEqualTo("pickupMethod", queryPickupMethodFilter)
-                    .whereLessThanOrEqualTo("status", 1)
-                    .orderBy("status")
+                    .whereEqualTo("status", 1)
                     .orderBy("timestamp", Query.Direction.DESCENDING);
         }
 
