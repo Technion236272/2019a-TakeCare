@@ -1,7 +1,11 @@
 package com.example.yuval.takecare;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,9 +14,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -184,11 +191,33 @@ public class SharedItemsActivity extends AppCompatActivity {
 
                             }
                         });
+                switch(model.getStatus()) {
+                    case 0:
+                        Log.d(TAG, "card in position " + position + " is REQUESTED");
+                        holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorAccentLite));
+                        break;
+                    case 1:
+                        Log.d(TAG, "card in position " + position + " is AVAILABLE");
+                        holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorCardDefault));
+                        break;
+                    case 2:
+                        Log.d(TAG, "card in position " + position + " is TAKEN");
+                        holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryLite));
+                        break;
+                    case 3:
+                        Log.d(TAG, "card in position " + position + " is TIMED OUT");
+                        holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorRedLite));
+                        ViewCompat.setBackgroundTintList(holder.itemCategory, getResources().getColorStateList(R.color.secondary_text));
+                        ViewCompat.setBackgroundTintList(holder.itemPickupMethod, getResources().getColorStateList(R.color.secondary_text));
+                        break;
+                }
                 holder.itemPublisher.setText(model.getPublisher());
                 holder.itemCategory.setImageResource(categoryId);
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
                 holder.itemCategory.setTag(categoryId);
                 holder.itemPickupMethod.setTag(pickupMethodId);
+
+                activateViewHolderIcons(holder, model);
             }
 
             @NonNull
@@ -227,6 +256,83 @@ public class SharedItemsActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         adapter.startListening();
         recyclerView.setAdapter(adapter);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void activateViewHolderIcons(final ItemsViewHolder holder, final FeedCardInformation model) {
+        holder.itemCategory.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    v.setAlpha((float)0.9);
+                }
+                if(event.getAction() == MotionEvent.ACTION_UP ||
+                        event.getAction() == MotionEvent.ACTION_CANCEL){
+                    v.setAlpha((float)0.6);
+                }
+                return false;
+            }
+        });
+
+        holder.itemCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String str;
+                switch(model.getCategory()) {
+                    case "Food":
+                        str = "This item's category is food";
+                        break;
+                    case "Study Material":
+                        str = "This item's category is study material";
+                        break;
+                    case "Households":
+                        str = "This item's category is household objects";
+                        break;
+                    case "Lost & Found":
+                        str = "This item's category is lost&founds";
+                        break;
+                    case "Hitchhikes":
+                        str = "This item's category is hitchhiking";
+                        break;
+                    default:
+                        str = "This item is in a category of its own";
+                        break;
+                }
+                Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        holder.itemPickupMethod.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    v.setAlpha((float)0.9);
+                }
+                if(event.getAction() == MotionEvent.ACTION_UP ||
+                        event.getAction() == MotionEvent.ACTION_CANCEL){
+                    v.setAlpha((float)0.6);
+                }
+                return false;
+            }
+        });
+        holder.itemPickupMethod.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String str;
+                switch (model.getPickupMethod()) {
+                    case "In Person":
+                        str = "This item is available for pick-up in person";
+                        break;
+                    case "Giveaway":
+                        str = "This item is available in a public giveaway";
+                        break;
+                    default:
+                        str = "Race to get this item before anyone else!";
+                        break;
+                }
+                Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void onTakerCardSelected(View view) {

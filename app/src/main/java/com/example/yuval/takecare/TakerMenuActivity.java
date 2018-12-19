@@ -1,5 +1,6 @@
 package com.example.yuval.takecare;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -16,6 +17,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -210,8 +212,9 @@ public class TakerMenuActivity extends AppCompatActivity
                 .build();
 
         currentAdapter = new FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder>(response) {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
-            protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, int position, @NonNull FeedCardInformation model) {
+            protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, int position, @NonNull final FeedCardInformation model) {
                 Log.d(TAG, "model " + model.getPhoto());
                 holder.itemTitle.setText(model.getTitle());
                 RequestOptions requestOptions = new RequestOptions();
@@ -280,11 +283,23 @@ public class TakerMenuActivity extends AppCompatActivity
 
                             }
                         });
+
+                switch (model.getStatus()) {
+                    case 0:
+                        Log.d(TAG, "card in position " + position + " is REQUESTED");
+                        holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorAccent));
+                        break;
+                    case 1:
+                        Log.d(TAG, "card in position " + position + " is AVAILABLE");
+                        holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorCardDefault));
+                        break;
+                }
+
                 holder.itemPublisher.setText(model.getPublisher());
                 holder.itemCategory.setImageResource(categoryId);
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
-                holder.itemCategory.setTag(categoryId);
-                holder.itemPickupMethod.setTag(pickupMethodId);
+
+                activateViewHolderIcons(holder, model);
             }
 
             @NonNull
@@ -315,6 +330,83 @@ public class TakerMenuActivity extends AppCompatActivity
         recyclerView.setAdapter(currentAdapter);
         currentAdapter.startListening();
         Log.d(TAG, "setUpAdapter: done");
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void activateViewHolderIcons(final ItemsViewHolder holder, final FeedCardInformation model) {
+        holder.itemCategory.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    v.setAlpha((float)0.9);
+                }
+                if(event.getAction() == MotionEvent.ACTION_UP ||
+                        event.getAction() == MotionEvent.ACTION_CANCEL){
+                    v.setAlpha((float)0.6);
+                }
+                return false;
+            }
+        });
+
+        holder.itemCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String str;
+                switch(model.getCategory()) {
+                    case "Food":
+                        str = "This item's category is food";
+                        break;
+                    case "Study Material":
+                        str = "This item's category is study material";
+                        break;
+                    case "Households":
+                        str = "This item's category is household objects";
+                        break;
+                    case "Lost & Found":
+                        str = "This item's category is lost&founds";
+                        break;
+                    case "Hitchhikes":
+                        str = "This item's category is hitchhiking";
+                        break;
+                    default:
+                        str = "This item is in a category of its own";
+                        break;
+                }
+                Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        holder.itemPickupMethod.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    v.setAlpha((float)0.9);
+                }
+                if(event.getAction() == MotionEvent.ACTION_UP ||
+                        event.getAction() == MotionEvent.ACTION_CANCEL){
+                    v.setAlpha((float)0.6);
+                }
+                return false;
+            }
+        });
+        holder.itemPickupMethod.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String str;
+                switch (model.getPickupMethod()) {
+                    case "In Person":
+                        str = "This item is available for pick-up in person";
+                        break;
+                    case "Giveaway":
+                        str = "This item is available in a public giveaway";
+                        break;
+                    default:
+                        str = "Race to get this item before anyone else!";
+                        break;
+                }
+                Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void updatePosition() {
@@ -511,7 +603,7 @@ public class TakerMenuActivity extends AppCompatActivity
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
             return false;
-        } else{
+        } else {
             // Category filtering
             currentDrawerChecked.setChecked(false);
             currentDrawerChecked = item;
@@ -538,7 +630,7 @@ public class TakerMenuActivity extends AppCompatActivity
                 case R.id.nav_other:
                     queryCategoriesFilter = "Other";
                     break;
-                    //TODO: add favorites filter in the future. For now we ignore this
+                //TODO: add favorites filter in the future. For now we ignore this
             }
             setUpAdapter();
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -546,47 +638,6 @@ public class TakerMenuActivity extends AppCompatActivity
         }
 
         return true;
-    }
-
-    public void onItemCategoryPress(View view) {
-        String str = "";
-        if (view.getId() == R.id.item_category) {
-            switch ((int) view.getTag()) {
-                case R.drawable.ic_pizza_slice_purple:
-                    str = "This item's category is food";
-                    break;
-                case R.drawable.ic_book_purple:
-                    str = "This item's category is study material";
-                    break;
-                case R.drawable.ic_lamp_purple:
-                    str = "This item's category is household objects";
-                    break;
-                case R.drawable.ic_lost_and_found_purple:
-                    str = "This item's category is lost&founds";
-                    break;
-                case R.drawable.ic_car_purple:
-                    str = "This item's category is hitchhiking";
-                    break;
-                default:
-                    str = "This item is in a category of its own";
-                    break;
-            }
-        } else {
-            switch ((int) view.getTag()) {
-                case R.drawable.ic_in_person_purple:
-                    str = "This item is available for pick-up in person";
-                    break;
-                case R.drawable.ic_giveaway_purple:
-                    str = "This item is available in a public giveaway";
-                    break;
-                case R.drawable.ic_race_purple:
-                    str = "Race to get this item before anyone else!";
-                    break;
-                default:
-                    break;
-            }
-        }
-        Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
     }
 
     public void onReportPress(View view) {

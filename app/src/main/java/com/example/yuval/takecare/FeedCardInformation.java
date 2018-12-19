@@ -6,6 +6,7 @@ public class FeedCardInformation {
     private String publisher;
     private String category;
     private String pickupMethod;
+    private int status;
 
     /**
      * Empty constructor for the FirestoreRecyclerAdapter
@@ -15,12 +16,13 @@ public class FeedCardInformation {
     }
 
     public FeedCardInformation(String title, String photo, String publisher,
-                               String category, String pickupMethod) {
+                               String category, String pickupMethod, int status) {
         this.title = title;
         this.photo = photo;
         this.publisher = publisher;
         this.category = category;
         this.pickupMethod = pickupMethod;
+        this.status = status;
     }
 
     public String getTitle() {
@@ -42,6 +44,10 @@ public class FeedCardInformation {
 
     public String getPickupMethod() {
         return pickupMethod;
+    }
+
+    public int getStatus() {
+        return status;
     }
 
     public void setTitle(String title) {
