@@ -214,7 +214,6 @@ public class SharedItemsActivity extends AppCompatActivity {
                         ViewCompat.setBackgroundTintList(holder.itemPickupMethod, getResources().getColorStateList(R.color.secondary_text));
                         break;
                 }
-                holder.itemPublisher.setText(model.getPublisher());
                 holder.itemCategory.setImageResource(categoryId);
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
                 holder.itemCategory.setTag(categoryId);

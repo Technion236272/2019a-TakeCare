@@ -291,7 +291,6 @@ public class TakerMenuActivity extends AppCompatActivity
                         break;
                 }
 
-                holder.itemPublisher.setText(model.getPublisher());
                 holder.itemCategory.setImageResource(categoryId);
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
 

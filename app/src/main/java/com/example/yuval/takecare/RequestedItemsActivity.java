@@ -190,7 +190,6 @@ public class RequestedItemsActivity extends AppCompatActivity {
 
                             }
                         });
-                holder.itemPublisher.setText(model.getPublisher());
                 holder.itemCategory.setImageResource(categoryId);
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
                 holder.itemCategory.setTag(categoryId);
