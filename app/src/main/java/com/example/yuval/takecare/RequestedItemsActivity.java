@@ -167,7 +167,6 @@ public class RequestedItemsActivity extends AppCompatActivity {
                         break;
                 }
 
-                holder.itemPublisher.setText(R.string.user_name);
                 holder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
                 db.collection("users").document(model.getPublisher())
                         .get()
@@ -190,7 +189,6 @@ public class RequestedItemsActivity extends AppCompatActivity {
 
                             }
                         });
-                holder.itemPublisher.setText(model.getPublisher());
                 holder.itemCategory.setImageResource(categoryId);
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
                 holder.itemCategory.setTag(categoryId);
@@ -214,7 +212,7 @@ public class RequestedItemsActivity extends AppCompatActivity {
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
-                if (position == 0) {
+                if (position == 0 && recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
                     recyclerView.scrollToPosition(0);
                 }
             }
