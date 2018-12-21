@@ -23,7 +23,7 @@
     <string name="requested_items_menu_title">Requested Items</string>
     <string name="user_favorites_menu_title">My Favorites</string>
     <string name="user_profile_menu_title">My Profile</string>
-    <string name="item_info_title">Pick-up Information</string>
+    <string name="item_info_title">Item Information</string>
     <string name="title_activity_giver_menu">GiverMenu</string>
     <string name="title_activity_sign_up">Sign in</string>
 
@@ -140,10 +140,14 @@
     <string name="giver_form_title_input_hint">Add a title</string>
     <string name="giver_form_add_a_picture_button_text">Add A Picture:</string>
     <string name="enter_description_hint">Enter description</string>
-    <string name="enter_time_hint">Specify time for pickup</string>
-    <string name="pickup_method_prompt_text">Choose A Pickup Method</string>
+    <string name="enter_time_hint">Specify time</string>
+    <string name="pickup_method_prompt_text">Pickup Type</string>
     <string name="share_button_text">Share</string>
     <string name="air_time_clickable_change_text">Change</string>
+    <string name="enter_location_hint">Enter location</string>
+    <string name="picture_prompt">Add a picture</string>
+    <string name="pickup_information_prompt_text">Pickup Information</string>
+    <string name="select_category_prompt">Select a category:</string>
 
     <!---->
 </resources>

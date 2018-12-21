@@ -2,7 +2,9 @@
 <resources>
     <array name="preloaded_fonts" translatable="false">
         <item>@font/acme</item>
+        <item>@font/amaranth</item>
         <item>@font/asap_italic</item>
+        <item>@font/imprima</item>
         <item>@font/open_sans_light</item>
     </array>
 </resources>

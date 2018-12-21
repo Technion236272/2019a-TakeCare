@@ -36,16 +36,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginRight="16dp"
                 app:cardBackgroundColor="@color/colorCards"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="3dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/categories_buttons_2">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
@@ -57,11 +57,11 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginLeft="8dp"
-                        android:layout_marginTop="8dp"
-                        android:text="Add A Picture:"
+                        android:layout_marginTop="16dp"
+
+                        android:text="@string/picture_prompt"
                         android:textColor="@color/primary_text"
                         android:textSize="20sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/upload_picture_button"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -86,6 +86,7 @@
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_marginBottom="16dp"
+                        android:background="@null"
                         android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -113,43 +114,33 @@
                 </android.support.constraint.ConstraintLayout>
             </android.support.v7.widget.CardView>
 
-            <EditText
-                android:id="@+id/title_input"
+            <TextView
+                android:id="@+id/pick_category_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
+                android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
-                android:ems="10"
-                android:hint="@string/giver_form_title_input_hint"
-                android:inputType="textPersonName"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/pick_category_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:text="Please select a category:"
+                android:gravity="left"
+                android:fontFamily="sans-serif"
+                android:text="@string/select_category_prompt"
                 android:textColor="@color/primary_text"
                 android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/title_input" />
+                app:layout_constraintTop_toBottomOf="@id/item_image_card" />
 
             <LinearLayout
                 android:id="@+id/categories_buttons_1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
                 android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginRight="16dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/pick_category_text">
+                app:layout_constraintTop_toBottomOf="@id/pick_category_text">
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="0dp"
@@ -242,13 +233,13 @@
                 android:id="@+id/categories_buttons_2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
                 android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginRight="16dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/categories_buttons_1">
+                app:layout_constraintTop_toBottomOf="@id/categories_buttons_1">
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="0dp"
@@ -343,37 +334,83 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
+                android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginRight="16dp"
                 app:cardBackgroundColor="@color/colorCards"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="3dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/item_image_card">
+                app:layout_constraintTop_toBottomOf="@id/categories_buttons_2">
 
-                <android.support.design.widget.TextInputLayout
+                <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/item_image_card">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/item_description"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/item_information_prompt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:hint="@string/enter_description_hint"
-                        android:paddingBottom="20dp" />
-                </android.support.design.widget.TextInputLayout>
+                        android:text="@string/item_info_title"
+                        android:textSize="20sp"
+                        android:textColor="@color/primary_text"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                    <EditText
+                        android:id="@+id/title_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:ems="10"
+                        android:layout_marginBottom="8dp"
+                        android:paddingBottom="8dp"
+                        android:hint="@string/giver_form_title_input_hint"
+                        android:inputType="textPersonName"
+                        android:background="@drawable/edit_text_box_frame"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/item_information_prompt"
+                         />
+                    <View
+                        android:id="@+id/title_description_separator"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@color/divider"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/title_input" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/title_input">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/item_description"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/enter_description_hint"
+                            android:paddingBottom="10dp"
+                            android:layout_marginBottom="8dp"/>
+                    </android.support.design.widget.TextInputLayout>
+                </android.support.constraint.ConstraintLayout>
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
@@ -381,10 +418,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
+                android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginRight="16dp"
                 app:cardBackgroundColor="@color/colorCards"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="3dp"
@@ -397,13 +434,13 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/pickup_method_prompt"
+                        android:id="@+id/pickup_information_prompt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginLeft="8dp"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/pickup_method_prompt_text"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/pickup_information_prompt_text"
                         android:textColor="@color/primary_text"
                         android:textSize="20sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -414,9 +451,23 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/pickup_method_prompt" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/pickup_information_prompt"
+                        tools:layout_editor_absoluteY="35dp" />
+
+                    <View
+                        android:id="@+id/type_time_separator"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@color/divider"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/pickup_method_spinner" />
 
                     <android.support.design.widget.TextInputLayout
+                        android:id="@+id/text_input_layout_time"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -426,7 +477,7 @@
                         android:layout_marginRight="8dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/pickup_method_spinner">
+                        app:layout_constraintTop_toBottomOf="@id/type_time_separator">
 
                         <android.support.design.widget.TextInputEditText
                             android:id="@+id/item_time"
@@ -434,6 +485,40 @@
                             android:layout_height="wrap_content"
                             android:background="@null"
                             android:hint="@string/enter_time_hint"
+                            android:paddingBottom="20dp" />
+                    </android.support.design.widget.TextInputLayout>
+
+                    <View
+                        android:id="@+id/time_location_separator"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@color/divider"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/text_input_layout_time" />
+
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/text_input_layout_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/time_location_separator">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/item_location"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:hint="@string/enter_location_hint"
                             android:paddingBottom="20dp" />
                     </android.support.design.widget.TextInputLayout>
                 </android.support.constraint.ConstraintLayout>
