@@ -158,7 +158,7 @@
                         android:padding="8dp">
 
                         <ImageView
-                            android:id="@+id/profile_pic"
+                            android:id="@+id/item_profile_pic"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_centerInParent="true"
@@ -173,7 +173,7 @@
                             app:layout_constraintStart_toStartOf="parent"/>
 
                         <TextView
-                            android:id="@+id/giver_name"
+                            android:id="@+id/item_giver_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
@@ -185,7 +185,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.497"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/profile_pic" />
+                            app:layout_constraintTop_toBottomOf="@+id/item_profile_pic" />
 
 
                         <RatingBar
@@ -195,14 +195,14 @@
                             android:layout_centerInParent="true"
                             android:isIndicator="true"
                             android:numStars="5"
-                            android:rating="4.5"
+                            android:rating="0"
                             android:scaleX="0.7"
                             android:scaleY="0.7"
                             android:stepSize="0.5"
                             style="@style/Widget.AppCompat.RatingBar.Indicator"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/giver_name" />
+                            app:layout_constraintTop_toBottomOf="@+id/item_giver_name" />
 
                     </android.support.constraint.ConstraintLayout>
                 </android.support.v7.widget.CardView>
@@ -356,7 +356,7 @@
                     </RelativeLayout>
 
                 </android.support.v7.widget.CardView>
-                
+
                 <Button
                     android:id="@+id/send_message_button"
                     android:layout_width="250dp"
