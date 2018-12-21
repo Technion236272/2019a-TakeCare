@@ -294,6 +294,14 @@ public class TakerMenuActivity extends AppCompatActivity
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
 
                 activateViewHolderIcons(holder, model);
+                holder.card.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getApplicationContext(), ItemInfoActivity.class);
+                        intent.putExtra(Intent.EXTRA_UID, getSnapshots().getSnapshot(holder.getAdapterPosition()).getId());
+                        startActivity(intent);
+                    }
+                });
             }
 
             @NonNull
@@ -689,12 +697,6 @@ public class TakerMenuActivity extends AppCompatActivity
         PopupMenu menu = new PopupMenu(this, view);
         menu.getMenuInflater().inflate(R.menu.report_menu, menu.getMenu());
         menu.show();
-    }
-
-    public void onTakerCardSelected(View view) {
-        //TODO: add extra information to intent
-        Intent intent = new Intent(this, ItemInfoActivity.class);
-        startActivity(intent);
     }
 
     private void makeHighlightedSnackbar(String str) {

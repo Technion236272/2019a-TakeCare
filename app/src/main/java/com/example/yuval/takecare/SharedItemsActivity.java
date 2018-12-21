@@ -387,12 +387,6 @@ public class SharedItemsActivity extends AppCompatActivity {
         });
     }
 
-    public void onTakerCardSelected(View view) {
-        //TODO: add extra information to intent
-        Intent intent = new Intent(this, ItemInfoActivity.class);
-        startActivity(intent);
-    }
-
     private void updatePosition() {
         position = ((LinearLayoutManager) recyclerView.getLayoutManager())
                 .findFirstVisibleItemPosition();

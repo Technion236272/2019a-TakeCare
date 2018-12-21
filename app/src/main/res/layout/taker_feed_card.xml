@@ -28,7 +28,6 @@
             android:clickable="true"
             android:focusable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            android:onClick="onTakerCardSelected"
             app:cardCornerRadius="8dp">
 
             <android.support.constraint.ConstraintLayout
