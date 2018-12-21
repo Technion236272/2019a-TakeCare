@@ -27,9 +27,7 @@
         android:layout_height="360dp"
         android:layout_below="@+id/item_info_toolbar_layout"
         android:background="@color/primary_light"
-        android:padding="50dp"
-        android:scaleType="center"
-        android:src="@drawable/photo_muffin" />
+        android:scaleType="center" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -60,7 +58,6 @@
                     android:id="@+id/item_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Yummy Muffins For All!"
                     android:textColor="@color/primary_text"
                     android:layout_marginTop="20dp"
                     android:textSize="25sp"
@@ -95,7 +92,7 @@
                     app:cardBackgroundColor="@color/colorCards"
                     app:cardCornerRadius="10dp"
                     app:cardElevation="3dp"
-                    app:layout_constraintTop_toBottomOf="@+id/divider">
+                    app:layout_constraintTop_toBottomOf="@+id/profile_card">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -125,8 +122,8 @@
                             android:id="@+id/item_description"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="This is a small but lovely muffin, that can't wait to be eaten by a nice and caring muffin lover. Made with care and love."
                             android:textColor="@color/primary_text"
+                            android:text="@string/no_description"
                             android:textSize="18sp"
                             android:layout_marginStart="8dp"
                             android:layout_marginLeft="8dp"
@@ -150,7 +147,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.501"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/item_description_card">
+                    app:layout_constraintTop_toBottomOf="@+id/divider" >
 
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="wrap_content"
@@ -167,7 +164,7 @@
                             android:layout_marginEnd="8dp"
                             android:layout_marginRight="8dp"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/photo_mcgiverface"
+                            android:src="@drawable/ic_user_vector"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.501"
                             app:layout_constraintStart_toStartOf="parent"/>
@@ -178,7 +175,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="8dp"
-                            android:text="Giver McGiverface"
+                            android:text="User"
                             android:textAlignment="center"
                             android:textColor="@color/primary_text"
                             android:textSize="16sp"
@@ -219,7 +216,7 @@
                     app:cardBackgroundColor="@color/colorCards"
                     app:cardCornerRadius="10dp"
                     app:cardElevation="3dp"
-                    app:layout_constraintTop_toBottomOf="@+id/profile_card">
+                    app:layout_constraintTop_toBottomOf="@+id/item_description_card">
 
                     <RelativeLayout
                         android:id="@+id/pickup_time_layout"
@@ -245,7 +242,7 @@
                             android:layout_marginLeft="10dp"
                             android:layout_marginEnd="15dp"
                             android:layout_marginRight="15dp"
-                            android:text="Wednesdays at 12:00-15:00, also maybe Tuesdays but not too late because I like to dance Cha-Cha alone in the night when no one watches"
+                            android:layout_centerVertical="true"
                             android:textColor="@color/primary_text"
                             android:textSize="16sp"
                             app:layout_constraintStart_toEndOf="@+id/pickup_time_clock"/>
@@ -308,7 +305,6 @@
                             android:layout_marginLeft="10dp"
                             android:layout_weight="3"
                             android:layout_gravity="center_vertical"
-                            android:text="East Dormitories, Technion, Haifa"
                             android:textColor="@color/primary_text"
                             android:textSize="16sp" />
                     </LinearLayout>
@@ -348,7 +344,6 @@
                             android:layout_marginStart="10dp"
                             android:layout_marginLeft="10dp"
                             android:layout_toRightOf="@id/phone_image"
-                            android:text="05212345687"
                             android:layout_centerVertical="true"
                             android:textColor="@color/primary_text"
                             android:textSize="16sp" />
@@ -367,7 +362,7 @@
                     android:layout_marginTop="40dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:background="@drawable/round_button_purple"
+                    android:background="@color/colorPrimary"
                     android:drawableStart="@drawable/message_text_outline"
                     android:drawableLeft="@drawable/message_text_outline"
                     android:padding="12dp"
