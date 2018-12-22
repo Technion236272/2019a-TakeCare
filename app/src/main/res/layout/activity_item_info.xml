@@ -164,7 +164,7 @@
                             android:layout_marginEnd="8dp"
                             android:layout_marginRight="8dp"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/ic_user_vector"
+                            app:srcCompat="@drawable/ic_user_vector"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.501"
                             app:layout_constraintStart_toStartOf="parent"/>
@@ -370,6 +370,7 @@
                     android:textAllCaps="false"
                     android:textColor="@color/icons"
                     android:textSize="20sp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/phone_card" />
@@ -391,6 +392,7 @@
                     android:text="@string/report"
                     android:textAllCaps="false"
                     android:textColor="@color/report"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="1.0"
@@ -409,6 +411,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
+        android:visibility="gone"
         tools:layout_editor_absoluteY="490dp">
 
         <Button
