@@ -71,6 +71,7 @@
     <string name="filter_menu_pickup_giveaway">Giveaway</string>
     <string name="filter_menu_pickup_race">Race</string>
     <string name="jump_to_top_button">Jump to top</string>
+    <string name="jump_to_top_button_landscape">Scroll to start</string>
 
 
     <!--Login activity elements-->

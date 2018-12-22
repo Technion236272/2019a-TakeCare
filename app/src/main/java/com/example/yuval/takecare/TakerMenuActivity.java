@@ -2,6 +2,7 @@ package com.example.yuval.takecare;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -25,6 +27,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -32,6 +35,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.azoft.carousellayoutmanager.CarouselLayoutManager;
+import com.azoft.carousellayoutmanager.CenterScrollListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -84,6 +89,8 @@ public class TakerMenuActivity extends AppCompatActivity
     private String queryCategoriesFilter = null;
     private String queryPickupMethodFilter = null;
 
+    private int orientation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,6 +139,8 @@ public class TakerMenuActivity extends AppCompatActivity
                 .build();
         db.setFirestoreSettings(settings);
 
+        Log.d(TAG, "onCreate: getting screen orientation");
+        orientation = getResources().getConfiguration().orientation;
         setUpRecyclerView();
     }
 
@@ -146,12 +155,19 @@ public class TakerMenuActivity extends AppCompatActivity
     private void setUpRecyclerView() {
         recyclerView = (FeedRecyclerView) findViewById(R.id.taker_feed_list);
         View emptyFeedView = findViewById(R.id.empty_feed_view);
+        Log.d(TAG, "setUpRecyclerView: setting layout manager for the current orientation");
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            recyclerView.setLayoutManager(new CarouselLayoutManager(CarouselLayoutManager.HORIZONTAL, false));
+            recyclerView.addOnScrollListener(new CenterScrollListener());
+
+        } else {
+            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+        }
         //Optimizing recycler view's performance:
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(10);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
 
         setUpAdapter();
 
@@ -163,6 +179,8 @@ public class TakerMenuActivity extends AppCompatActivity
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     updatePosition();
+                } else {
+                    jumpButton.setVisibility(View.GONE);
                 }
             }
         });
@@ -208,6 +226,47 @@ public class TakerMenuActivity extends AppCompatActivity
                 .build();
 
         currentAdapter = new FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder>(response) {
+
+            private int focusedItem = 0;
+
+            @Override
+            public void onAttachedToRecyclerView(final RecyclerView recyclerView) {
+                super.onAttachedToRecyclerView(recyclerView);
+
+                // Handle key up and key down and attempt to move selection
+                recyclerView.setOnKeyListener(new View.OnKeyListener() {
+                    @Override
+                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+                        RecyclerView.LayoutManager lm = recyclerView.getLayoutManager();
+
+                        // Return false if scrolled to the bounds and allow focus to move off the list
+                        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                                return tryMoveSelection(lm, 1);
+                            } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                                return tryMoveSelection(lm, -1);
+                            }
+                        }
+
+                        return false;
+                    }
+                });
+            }
+
+            private boolean tryMoveSelection(RecyclerView.LayoutManager layoutManager, int direction) {
+                int tryFocusItem = focusedItem + direction;
+
+                // If still within valid bounds, move the selection, notify to redraw, and scroll
+                if (tryFocusItem >= 0 && tryFocusItem < getItemCount()) {
+                    notifyItemChanged(focusedItem);
+                    focusedItem = tryFocusItem;
+                    notifyItemChanged(focusedItem);
+                    layoutManager.scrollToPosition(focusedItem);
+                    return true;
+                }
+                return false;
+            }
+
             @SuppressLint("ClickableViewAccessibility")
             @Override
             protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, int position, @NonNull final FeedCardInformation model) {
@@ -215,7 +274,7 @@ public class TakerMenuActivity extends AppCompatActivity
                 holder.itemTitle.setText(model.getTitle());
                 RequestOptions requestOptions = new RequestOptions();
                 requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
-                Glide.with(holder.card)
+                Glide.with(getApplicationContext())
                         .load(model.getPhoto())
                         .apply(requestOptions)
                         .into(holder.itemPhoto);
@@ -265,7 +324,7 @@ public class TakerMenuActivity extends AppCompatActivity
                                 Log.d(TAG, "Found the user: " + documentSnapshot);
                                 holder.itemPublisher.setText(documentSnapshot.getString("name"));
                                 if (documentSnapshot.getString("profilePicture") != null) {
-                                    Glide.with(holder.card)
+                                    Glide.with(getApplicationContext())
                                             .load(documentSnapshot.getString("profilePicture"))
                                             .apply(RequestOptions.circleCropTransform())
                                             .into(holder.profilePhoto);
@@ -302,12 +361,20 @@ public class TakerMenuActivity extends AppCompatActivity
                         startActivity(intent);
                     }
                 });
+
+                holder.itemView.setSelected(focusedItem == position);
             }
 
             @NonNull
             @Override
             public ItemsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-                View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card, viewGroup, false);
+                View view = null;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card_carousel, viewGroup, false);
+
+                } else {
+                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card, viewGroup, false);
+                }
                 return new ItemsViewHolder(view);
             }
 
@@ -325,6 +392,23 @@ public class TakerMenuActivity extends AppCompatActivity
                 if (getItemCount() == 0)
                     filterPopupMenu.setVisibility(View.GONE);
             }
+
+            class AdapterViewHolder extends ItemsViewHolder {
+                public AdapterViewHolder(View itemView) {
+                    super(itemView);
+
+                    // Handle item click and set the selection
+                    itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Redraw the old selection and the new
+                            notifyItemChanged(focusedItem);
+                            focusedItem = getLayoutPosition();
+                            notifyItemChanged(focusedItem);
+                        }
+                    });
+                }
+            }
         };
 
         Log.d(TAG, "setUpAdapter: created adapter");
@@ -341,22 +425,22 @@ public class TakerMenuActivity extends AppCompatActivity
         holder.itemCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if(iconLock.isLocked()) {
+                if (iconLock.isLocked()) {
                     return;
                 }
 
                 new Thread(new Runnable() {
                     public void run() {
                         iconLock.lock();
-                        float alpha = (float)0.6;
-                        for(int i = 0; i< ICON_FILL_ITERATIONS; i++) {
+                        float alpha = (float) 0.6;
+                        for (int i = 0; i < ICON_FILL_ITERATIONS; i++) {
                             v.setAlpha(alpha);
                             try {
                                 Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            alpha+=(float)(1-0.6)/ICON_FILL_ITERATIONS;
+                            alpha += (float) (1 - 0.6) / ICON_FILL_ITERATIONS;
                         }
 
                         try {
@@ -365,14 +449,14 @@ public class TakerMenuActivity extends AppCompatActivity
                             e.printStackTrace();
                         }
 
-                        for(int i = 0; i< ICON_FILL_ITERATIONS; i++) {
+                        for (int i = 0; i < ICON_FILL_ITERATIONS; i++) {
                             v.setAlpha(alpha);
                             try {
                                 Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            alpha-=(float)(1-0.6)/ICON_FILL_ITERATIONS;
+                            alpha -= (float) (1 - 0.6) / ICON_FILL_ITERATIONS;
                         }
                         iconLock.unlock();
                     }
@@ -407,22 +491,22 @@ public class TakerMenuActivity extends AppCompatActivity
         holder.itemPickupMethod.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if(iconLock.isLocked()) {
+                if (iconLock.isLocked()) {
                     return;
                 }
 
                 new Thread(new Runnable() {
                     public void run() {
                         iconLock.lock();
-                        float alpha = (float)0.6;
-                        for(int i = 0; i< ICON_FILL_ITERATIONS; i++) {
+                        float alpha = (float) 0.6;
+                        for (int i = 0; i < ICON_FILL_ITERATIONS; i++) {
                             v.setAlpha(alpha);
                             try {
                                 Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            alpha+=(float)(0.9-0.6)/ICON_FILL_ITERATIONS;
+                            alpha += (float) (0.9 - 0.6) / ICON_FILL_ITERATIONS;
                         }
 
                         try {
@@ -431,14 +515,14 @@ public class TakerMenuActivity extends AppCompatActivity
                             e.printStackTrace();
                         }
 
-                        for(int i = 0; i< ICON_FILL_ITERATIONS; i++) {
+                        for (int i = 0; i < ICON_FILL_ITERATIONS; i++) {
                             v.setAlpha(alpha);
                             try {
                                 Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            alpha-=(float)(0.9-0.6)/ICON_FILL_ITERATIONS;
+                            alpha -= (float) (0.9 - 0.6) / ICON_FILL_ITERATIONS;
                         }
                         iconLock.unlock();
                     }
@@ -463,8 +547,11 @@ public class TakerMenuActivity extends AppCompatActivity
     }
 
     private void updatePosition() {
-        position = ((LinearLayoutManager) recyclerView.getLayoutManager())
-                .findFirstVisibleItemPosition();
+        position = (orientation == Configuration.ORIENTATION_LANDSCAPE) ?
+                ((CarouselLayoutManager) recyclerView.getLayoutManager()).getCenterItemPosition() :
+                ((LinearLayoutManager) recyclerView.getLayoutManager())
+                        .findFirstVisibleItemPosition();
+
         Log.d(TAG, "onScrollStateChanged: POSITION IS: " + position);
         tryToggleJumpButton();
     }
@@ -490,7 +577,7 @@ public class TakerMenuActivity extends AppCompatActivity
                         if (document.exists()) {
                             Log.d("TAG", "DocumentSnapshot data: " + document.getData());
                             if (document.getString("profilePicture") != null) {
-                                Glide.with(TakerMenuActivity.this)
+                                Glide.with(getApplicationContext())
                                         .load(document.getString("profilePicture"))
                                         .apply(RequestOptions.circleCropTransform())
                                         .into(userProfilePicture);
@@ -605,8 +692,6 @@ public class TakerMenuActivity extends AppCompatActivity
 
 
     public void onJumpClick(View view) {
-        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        assert layoutManager != null;
         recyclerView.smoothScrollToPosition(0);
         jumpButton.setVisibility(View.GONE);
     }
