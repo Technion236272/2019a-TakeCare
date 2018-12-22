@@ -277,6 +277,7 @@ public class GiverFormActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Log.d(TAG, "Item reference added successfully");
+                                        dialog.dismiss();
                                         Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
                                                 Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
@@ -288,6 +289,7 @@ public class GiverFormActivity extends AppCompatActivity {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         Log.d(TAG, "Error adding item reference");
+                                        dialog.dismiss();
                                         Toast.makeText(GiverFormActivity.this, "An error has occurred. Please try again",
                                                 Toast.LENGTH_SHORT).show();
                                         ref.delete();
@@ -299,6 +301,7 @@ public class GiverFormActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d(TAG, "Error adding document");
+                        dialog.dismiss();
                         Toast.makeText(GiverFormActivity.this, "An error has occurred. Please try again",
                                 Toast.LENGTH_SHORT).show();
                     }
@@ -328,6 +331,7 @@ public class GiverFormActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
                                                         Log.d(TAG, "uploadItemAndPictureData: item added successfully ");
+                                                        dialog.dismiss();
                                                         Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
                                                                 Toast.LENGTH_SHORT).show();
                                                         Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
@@ -338,7 +342,7 @@ public class GiverFormActivity extends AppCompatActivity {
                                                 .addOnFailureListener(new OnFailureListener() {
                                                     @Override
                                                     public void onFailure(@NonNull Exception e) {
-
+                                                        dialog.dismiss();
                                                     }
                                                 });
                                     }
@@ -346,7 +350,7 @@ public class GiverFormActivity extends AppCompatActivity {
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-
+                                        dialog.dismiss();
                                     }
                                 });
                     }
@@ -354,7 +358,7 @@ public class GiverFormActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        dialog.dismiss();
                     }
                 });
     }
