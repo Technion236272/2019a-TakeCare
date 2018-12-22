@@ -542,6 +542,7 @@ public class TakerMenuActivity extends AppCompatActivity
     }
 
     private void updatePosition() {
+        assert recyclerView.getLayoutManager() != null;
         position = (orientation == Configuration.ORIENTATION_LANDSCAPE) ?
                 ((CarouselLayoutManager) recyclerView.getLayoutManager()).getCenterItemPosition() :
                 ((LinearLayoutManager) recyclerView.getLayoutManager())
