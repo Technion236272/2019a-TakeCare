@@ -106,8 +106,11 @@ public class ItemInfoActivity extends AppCompatActivity {
                                 if (document.getString("publisher").equals(currentUser.getUid())) {
                                     request_button_layout = (RelativeLayout) findViewById(R.id.request_button_layout);
                                     request_button_layout.setVisibility(View.GONE);
-                                    messageButton.setVisibility(View.GONE);
-                                    reportButton.setVisibility(View.GONE);
+                                } else {
+                                    RelativeLayout requestButton = (RelativeLayout) findViewById(R.id.request_button_layout);
+                                    requestButton.setVisibility(View.VISIBLE);
+                                    messageButton.setVisibility(View.VISIBLE);
+                                    reportButton.setVisibility(View.VISIBLE);
                                 }
                                 fillPublisherInfo(document.getString("publisher"),
                                         uploaderNameView, uploaderProfilePictureView,

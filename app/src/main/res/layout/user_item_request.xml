@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/requester_profile_pic"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:padding="4dp"
+                app:srcCompat="@drawable/ic_user_vector" />
+
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/requester_info_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/requester_profile_pic"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/requester_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="User"
+                    android:maxLength="15"
+                    android:textColor="@color/primary_text"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toTopOf="@+id/requester_rating"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <RatingBar
+                    android:id="@+id/requester_rating"
+                    style="@style/Widget.AppCompat.RatingBar.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:numStars="5"
+                    android:rating="4.5"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/request_timestamp_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:text="Requested at:"
+                android:textColor="@color/primary_text"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toTopOf="@+id/request_date"
+                app:layout_constraintEnd_toStartOf="@+id/accept_request_button"
+                app:layout_constraintStart_toEndOf="@+id/requester_info_layout"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/request_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="22/12/18"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toTopOf="@+id/request_time"
+                app:layout_constraintEnd_toStartOf="@+id/accept_request_button"
+                app:layout_constraintStart_toEndOf="@+id/requester_info_layout"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <TextView
+                android:id="@+id/request_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="14:20"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/accept_request_button"
+                app:layout_constraintStart_toEndOf="@+id/requester_info_layout" />
+
+
+            <ImageButton
+                android:id="@+id/accept_request_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/decline_request_button"
+                app:layout_constraintTop_toTopOf="parent"
+                app:backgroundTint="@android:color/holo_green_light"
+                app:srcCompat="@drawable/ic_check"/>
+
+            <ImageButton
+                android:id="@+id/decline_request_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:backgroundTint="@android:color/holo_red_light"
+                app:srcCompat="@drawable/ic_close"/>
+
+
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+</android.support.constraint.ConstraintLayout>
