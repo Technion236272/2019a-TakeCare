@@ -127,11 +127,6 @@ public class TakerMenuActivity extends AppCompatActivity
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
 
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setTimestampsInSnapshotsEnabled(true)
-                .build();
-        db.setFirestoreSettings(settings);
-
         setUpRecyclerView();
     }
 
