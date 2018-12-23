@@ -1,5 +1,6 @@
 package com.example.yuval.takecare;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -92,6 +93,7 @@ public class ItemInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onBindViewHolder: ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_info);
         Toolbar toolbar = (Toolbar) findViewById(R.id.item_info_toolbar);
@@ -126,8 +128,11 @@ public class ItemInfoActivity extends AppCompatActivity {
 
         recyclerView = (FeedRecyclerView) findViewById(R.id.requested_by_list);
         recyclerView.setEmptyView(findViewById(R.id.empty_feed_view));
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
+        //recyclerView.setHasFixedSize(true);
+        recyclerView.setItemViewCacheSize(10);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
 
         Query query = db.collection("items")
                 .document(itemID).collection("requestedBy").orderBy("timestamp", Query.Direction.ASCENDING);
@@ -137,6 +142,7 @@ public class ItemInfoActivity extends AppCompatActivity {
         adapter = new FirestoreRecyclerAdapter<RequesterCardInformation, RequestedByCardHolder>(response) {
             @Override
             protected void onBindViewHolder(@NonNull final RequestedByCardHolder holder, int position, @NonNull RequesterCardInformation model) {
+                Log.d(TAG, "onBindViewHolder: ");
                 holder.requeterRating.setRating(model.getRating());
                 holder.requesterProfilePicture.setImageResource(R.drawable.ic_user_purple);
                 db.collection("users").document(model.getUserID())
@@ -161,7 +167,7 @@ public class ItemInfoActivity extends AppCompatActivity {
                             }
                         });
 
-                Calendar cal = Calendar. getInstance();
+                Calendar cal = Calendar.getInstance();
                 Date today = cal.getTime();
                 DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
                 holder.requestDate.setText(dateFormat.format(today));
@@ -176,12 +182,17 @@ public class ItemInfoActivity extends AppCompatActivity {
                 View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.user_item_request, viewGroup, false);
                 return new RequestedByCardHolder(view);
             }
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                Log.d(TAG, "onDataChanged: changed the data in the requesters list");
+            }
         };
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
         adapter.startListening();
 
-        phoneCard.setVisibility(View.GONE);     // FOR NOW
+        //phoneCard.setVisibility(View.GONE);     // FOR NOW
 
         if (currentUser != null) {
             DocumentReference docRef = db.collection("items").document(itemID);
@@ -234,7 +245,7 @@ public class ItemInfoActivity extends AppCompatActivity {
                                 itemLocationView.setText(document.getString("pickupLocation"));
                             } else {
                                 locationCard = (CardView) findViewById(R.id.location_card);
-                                locationCard.setVisibility(View.GONE);
+                                //locationCard.setVisibility(View.GONE);
                             }
                         } else {
                             Log.d("TAG", "No such document");
@@ -278,7 +289,7 @@ public class ItemInfoActivity extends AppCompatActivity {
                             long publisherRatingSum = document.getLong("rating");
                             long publisherRatingCount = document.getLong("ratingCount");
                             float publisherRating = (publisherRatingCount == 0) ? 0 :
-                                    publisherRatingSum/publisherRatingCount;
+                                    publisherRatingSum / publisherRatingCount;
                             uploaderRatingBar.setRating(publisherRating);
                         }
                     } else {
@@ -291,7 +302,7 @@ public class ItemInfoActivity extends AppCompatActivity {
         });
     }
 
-        @Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -301,9 +312,49 @@ public class ItemInfoActivity extends AppCompatActivity {
     }
 
     public void requestItem(View view) {
-        DocumentReference itemRef = db.collection("items").document(itemID);
-        itemRef.update("hideFrom", FieldValue.arrayUnion(auth.getUid()));
-        //Map<String, Object> to
-        //itemRef.collection("requestedBy").ad
+        final String userId = auth.getCurrentUser().getUid();
+        final DocumentReference itemRef = db.collection("items").document(itemID);
+        final DocumentReference userRef = db.collection("users").document(userId);
+        itemRef.update("hideFrom", FieldValue.arrayUnion(userId)); // upload to hideFrom
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @SuppressLint("Assert")
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    String userName = "user";
+                    String userPicture = "";
+                    FieldValue timestamp;
+                    long rating = 0;
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        if (document.getString("name") != null) {
+                            userName = document.getString("name");
+                        }
+                        if (document.getString("profilePicture") != null) {
+                            userPicture = document.getString("name");
+                        }
+                        try {
+                            rating = document.getLong("rating");
+                        } catch (NullPointerException e) {
+                            Log.d(TAG, "Error: rating doesn't exist");
+                        }
+                        timestamp = FieldValue.serverTimestamp();
+                        Map<String, Object> userToAdd = new HashMap<String, Object>();
+                        userToAdd.put("name", userName);
+                        userToAdd.put("picture", userPicture);
+                        userToAdd.put("timestamp", timestamp);
+                        userToAdd.put("rating", rating);
+                        itemRef.collection("requestedBy").document(userId).set(userToAdd);
+                        //userRef.collection("requestedItems").add(itemRef);
+                    } else {
+                        Log.d("TAG", "No such document");
+                    }
+                } else {
+                    Log.d("TAG", "get failed with ", task.getException());
+                }
+            }
+        });
+
+
     }
 }
