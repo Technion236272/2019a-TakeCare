@@ -352,6 +352,14 @@
 
                 </android.support.v7.widget.CardView>
 
+                <com.example.yuval.takecare.FeedRecyclerView
+                    android:id="@+id/requested_by_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    app:layout_constraintTop_toBottomOf="@id/phone_card">
+
+                </com.example.yuval.takecare.FeedRecyclerView>
+
                 <Button
                     android:id="@+id/send_message_button"
                     android:layout_width="250dp"
@@ -373,7 +381,7 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/phone_card" />
+                    app:layout_constraintTop_toBottomOf="@id/requested_by_list" />
 
                 <Button
                     android:id="@+id/report_button"
@@ -416,6 +424,7 @@
 
         <Button
             android:id="@+id/request_button"
+            android:onClick="requestItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorAccent"

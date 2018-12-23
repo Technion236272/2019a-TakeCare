@@ -6,10 +6,14 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -18,15 +22,28 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ItemInfoActivity extends AppCompatActivity {
 
@@ -48,10 +65,30 @@ public class ItemInfoActivity extends AppCompatActivity {
     private CardView phoneCard;
     private RelativeLayout request_button_layout;
 
+    private FeedRecyclerView recyclerView;
+    private FirestoreRecyclerAdapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private StorageReference storage;
 
+    private String itemID;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+        recyclerView.toggleVisibility();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+        recyclerView.toggleVisibility();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +96,7 @@ public class ItemInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_item_info);
         Toolbar toolbar = (Toolbar) findViewById(R.id.item_info_toolbar);
         setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
@@ -85,8 +122,64 @@ public class ItemInfoActivity extends AppCompatActivity {
         final FirebaseUser currentUser = auth.getCurrentUser();
         final FirebaseUser publisher;
         Intent intent = getIntent();
-        final String itemID = intent.getStringExtra(Intent.EXTRA_UID);
+        itemID = intent.getStringExtra(Intent.EXTRA_UID);
 
+        recyclerView = (FeedRecyclerView) findViewById(R.id.requested_by_list);
+        recyclerView.setEmptyView(findViewById(R.id.empty_feed_view));
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+
+        Query query = db.collection("items")
+                .document(itemID).collection("requestedBy").orderBy("timestamp", Query.Direction.ASCENDING);
+        FirestoreRecyclerOptions<RequesterCardInformation> response = new FirestoreRecyclerOptions.Builder<RequesterCardInformation>()
+                .setQuery(query, RequesterCardInformation.class)
+                .build();
+        adapter = new FirestoreRecyclerAdapter<RequesterCardInformation, RequestedByCardHolder>(response) {
+            @Override
+            protected void onBindViewHolder(@NonNull final RequestedByCardHolder holder, int position, @NonNull RequesterCardInformation model) {
+                holder.requeterRating.setRating(model.getRating());
+                holder.requesterProfilePicture.setImageResource(R.drawable.ic_user_purple);
+                db.collection("users").document(model.getUserID())
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Log.d(TAG, "Found the user: " + documentSnapshot);
+                                holder.requesterName.setText(documentSnapshot.getString("name"));
+                                if (documentSnapshot.getString("profilePicture") != null) {
+                                    Glide.with(holder.card)
+                                            .load(documentSnapshot.getString("profilePicture"))
+                                            .apply(RequestOptions.circleCropTransform())
+                                            .into(holder.requesterProfilePicture);
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                            }
+                        });
+
+                Calendar cal = Calendar. getInstance();
+                Date today = cal.getTime();
+                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                holder.requestDate.setText(dateFormat.format(today));
+                String timeOfDay = cal.get(Calendar.HOUR) + ":" + cal.get(Calendar.MINUTE);
+                holder.requestTime.setText(timeOfDay);
+
+            }
+
+            @NonNull
+            @Override
+            public RequestedByCardHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.user_item_request, viewGroup, false);
+                return new RequestedByCardHolder(view);
+            }
+        };
+        adapter.notifyDataSetChanged();
+        recyclerView.setAdapter(adapter);
+        adapter.startListening();
 
         phoneCard.setVisibility(View.GONE);     // FOR NOW
 
@@ -205,5 +298,12 @@ public class ItemInfoActivity extends AppCompatActivity {
                 finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void requestItem(View view) {
+        DocumentReference itemRef = db.collection("items").document(itemID);
+        itemRef.update("hideFrom", FieldValue.arrayUnion(auth.getUid()));
+        //Map<String, Object> to
+        //itemRef.collection("requestedBy").ad
     }
 }
