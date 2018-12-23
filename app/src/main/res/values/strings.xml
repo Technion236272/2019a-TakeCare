@@ -83,6 +83,11 @@
     <string name="report_no_fit_text">Does not fit description</string>
     <string name="report_spam_text">Spam</string>
     <string name="report_hide_text">Hide</string>
+    <string name="report_inappropriate_alert">Are you sure you want to report this item for being inappropriate?</string>
+    <string name="report_not_fit_description_alert">Are you sure you want to report this item for not fitting its description?</string>
+    <string name="report_spam_alert">Are you sure you want to report this item for being spam?</string>
+    <string name="report_hide_alert">Are you sure you want to permanently remove the item from your feed?</string>
+    <string name="report_alert_warning">This will permanently remove the item from your feed</string>
 
 
     <!--Image upload elements-->

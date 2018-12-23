@@ -1,20 +1,25 @@
 package com.example.yuval.takecare;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ImageViewCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -42,12 +47,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -58,6 +65,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class TakerMenuActivity extends AppCompatActivity
@@ -71,7 +80,7 @@ public class TakerMenuActivity extends AppCompatActivity
     private static final String RECYCLER_STATE_POSITION_KEY = "RECYCLER POSITION";
     private static final String FILTER_CATEGORY_KEY = "CATEGORY FILTER";
     private static final String FILTER_PICKUP_KEY = "PICKUP FILTER";
-    ReentrantLock iconLock = new ReentrantLock();
+    private ReentrantLock iconLock = new ReentrantLock();
 
     private RelativeLayout rootLayout;
     private FeedRecyclerView recyclerView;
@@ -85,6 +94,7 @@ public class TakerMenuActivity extends AppCompatActivity
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private StorageReference storage;
+    private FirebaseUser user;
     private int position = 0;
 
     private FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder> currentAdapter = null;
@@ -137,6 +147,7 @@ public class TakerMenuActivity extends AppCompatActivity
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
+        user = auth.getCurrentUser();
 
         Log.d(TAG, "onCreate: getting screen orientation");
         orientation = getResources().getConfiguration().orientation;
@@ -367,7 +378,36 @@ public class TakerMenuActivity extends AppCompatActivity
 
             @SuppressLint("ClickableViewAccessibility")
             @Override
-            protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, int position, @NonNull final FeedCardInformation model) {
+            protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, final int position, @NonNull final FeedCardInformation model) {
+                // Attempt to remove item from feed if reported by the user
+                final String itemId = getSnapshots().getSnapshot(holder.getAdapterPosition()).getId();
+
+                /*
+                Log.d(TAG, "onBindViewHolder: checking if item is blocked");
+                db.collection("items").document(itemId)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if(task.isSuccessful()) {
+                                    Log.d(TAG, "found item. checking if needs to block");
+                                    DocumentSnapshot documentSnapshot = task.getResult();
+                                    List<String> blocked = (List<String>) documentSnapshot.get("hideFrom");
+                                    Log.d(TAG, "blocked list: " + blocked);
+                                    if(blocked == null) {
+                                        return;
+                                    }
+                                    if(blocked.contains(user.getUid())) {
+                                        Log.d(TAG, "item should be blocked");
+                                        holder.hideLayout();
+                                        recyclerView.getLayoutManager().removeViewAt(position);
+                                    }
+                                } else {
+                                    Log.d(TAG, "could not find item");
+                                }
+                            }
+                        });*/
+
                 holder.itemTitle.setText(model.getTitle());
                 RequestOptions requestOptions = new RequestOptions();
                 requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
@@ -447,12 +487,61 @@ public class TakerMenuActivity extends AppCompatActivity
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
 
                 activateViewHolderIcons(holder, model);
+
                 holder.card.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getApplicationContext(), ItemInfoActivity.class);
-                        intent.putExtra(Intent.EXTRA_UID, getSnapshots().getSnapshot(holder.getAdapterPosition()).getId());
+                        intent.putExtra(Intent.EXTRA_UID, itemId);
                         startActivity(intent);
+                    }
+                });
+
+                holder.itemReport.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PopupMenu menu = new PopupMenu(getApplicationContext(), v);
+                        menu.getMenuInflater().inflate(R.menu.report_menu, menu.getMenu());
+                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                // Using HTML tags for bold substrings inside the alert message
+                                String msg, warning;
+                                Spanned alertMsg;
+                                switch (item.getItemId()) {
+                                    case R.id.report_inappropriate:
+                                        //TODO: add logic to this report reason
+                                        msg = getString(R.string.report_inappropriate_alert);
+                                        warning = "<b><small><i>" + getString(R.string.report_alert_warning) + "</i></small></b>";
+                                        alertMsg = Html.fromHtml(msg + "<br><br>" + warning);
+                                        showBlockAlertMessage(alertMsg, itemId, item.getItemId());
+                                        break;
+                                    case R.id.report_no_fit:
+                                        //TODO: add logic to this report reason
+                                        msg = getString(R.string.report_inappropriate_alert);
+                                        warning = "<b><small>" + getString(R.string.report_alert_warning) + "</small></b>";
+                                        alertMsg = Html.fromHtml(msg + "<br><br>" + warning);
+                                        showBlockAlertMessage(alertMsg, itemId, item.getItemId());
+                                        break;
+                                    case R.id.report_spam:
+                                        //TODO: add logic to this report reason
+                                        msg = getString(R.string.report_spam_alert);
+                                        warning = "<b><small>" + getString(R.string.report_alert_warning) + "</small></b>";
+                                        alertMsg = Html.fromHtml(msg + "<br><br>" + warning);
+                                        showBlockAlertMessage(alertMsg, itemId, item.getItemId());
+                                        break;
+                                    case R.id.report_hide:
+                                        msg = getString(R.string.report_hide_alert);
+                                        alertMsg = Html.fromHtml(msg);
+                                        showBlockAlertMessage(alertMsg, itemId, item.getItemId());
+                                        break;
+                                    default:
+                                        return false;
+                                }
+                                return true;
+                            }
+                        });
+                        menu.show();
                     }
                 });
 
@@ -657,7 +746,6 @@ public class TakerMenuActivity extends AppCompatActivity
         recyclerView.toggleVisibility();
 
         // Update user name and picture if necessary (changed via user profile)
-        final FirebaseUser user = auth.getCurrentUser();
         Log.d("TAG", "Checking for user");
         if (user != null) {
             DocumentReference docRef = db.collection("users").document(user.getUid());
@@ -874,10 +962,46 @@ public class TakerMenuActivity extends AppCompatActivity
         return true;
     }
 
-    public void onReportPress(View view) {
-        PopupMenu menu = new PopupMenu(this, view);
-        menu.getMenuInflater().inflate(R.menu.report_menu, menu.getMenu());
-        menu.show();
+    private void showBlockAlertMessage(final Spanned msg, final String itemId, final int cause) {
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(this);
+        builder.setTitle("Block Item")
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        hideItem(itemId);
+                        switch (cause) {
+                            //TODO: add
+                            case R.id.report_inappropriate:
+                                break;
+                            case R.id.report_no_fit:
+                                break;
+                            case R.id.report_spam:
+                                break;
+                            default:
+                                // User hides item - do nothing
+                                break;
+                        }
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing
+                    }
+                })
+                .show();
+    }
+
+    private void hideItem(final String itemId) {
+        if (user == null) {
+            return;
+        }
+        // Atomic operation - no need for transactions!
+        Log.d(TAG, "hideItem: hiding item from user");
+        db.collection("items").document(itemId)
+                .update("hideFrom", FieldValue.arrayUnion(user.getUid()));
     }
 
     private void makeHighlightedSnackbar(String str) {

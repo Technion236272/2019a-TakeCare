@@ -3,13 +3,17 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class ItemsViewHolder extends RecyclerView.ViewHolder {
+class ItemsViewHolder extends RecyclerView.ViewHolder {
 
-    private static final String TAG = "ViewHolder";
+    private static final String TAG = "TakeCare";
+
+//    private LinearLayout itemRoot;
+//    private ViewGroup.LayoutParams params;
 
     CardView card;
     TextView itemTitle;
@@ -18,11 +22,16 @@ public class ItemsViewHolder extends RecyclerView.ViewHolder {
     TextView itemPublisher;
     ImageView itemCategory;
     ImageView itemPickupMethod;
+    ImageView itemReport;
+    View itemView;
 
     private LinearLayout scaleLayout;
 
     ItemsViewHolder(View itemView) {
         super(itemView);
+//        itemRoot = itemView.findViewById(R.id.card_root);
+//        params = itemRoot.getLayoutParams();
+
         card = (CardView) itemView.findViewById(R.id.taker_feed_card);
         itemTitle = (TextView) itemView.findViewById(R.id.item_title);
         itemPhoto = (ImageView) itemView.findViewById(R.id.item_photo);
@@ -30,18 +39,17 @@ public class ItemsViewHolder extends RecyclerView.ViewHolder {
         itemPublisher = (TextView) itemView.findViewById(R.id.item_published_name);
         itemCategory = (ImageView) itemView.findViewById(R.id.item_category);
         itemPickupMethod = (ImageView) itemView.findViewById(R.id.item_pickup_method);
+        itemReport = (ImageView) itemView.findViewById(R.id.item_report);
+        this.itemView = itemView;
 
         scaleLayout = itemView.findViewById(R.id.card_scale);
-        Log.d(TAG, "ItemsViewHolder: scaleLayout: " + scaleLayout);
 
         itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    Log.d(TAG, "onFocusChange: got focus");
                     card.setCardElevation((float)8.0);
                     if(scaleLayout != null) {
-                        Log.d(TAG, "onFocusChange: scaling bigger");
                         LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT,
                                 0,
@@ -50,10 +58,8 @@ public class ItemsViewHolder extends RecyclerView.ViewHolder {
                         scaleLayout.setLayoutParams(param);
                     }
                 } else {
-                    Log.d(TAG, "onFocusChange: lost focus");
                     card.setCardElevation((float)1.0);
                     if(scaleLayout != null) {
-                        Log.d(TAG, "onFocusChange: scaling smaller");
                         LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT,
                                 0,
@@ -65,4 +71,13 @@ public class ItemsViewHolder extends RecyclerView.ViewHolder {
             }
         });
     }
+
+    /*
+    void hideLayout() {
+        params.height = 0;
+        params.width = 0;
+        //itemView.setLayoutParams(params); //This One.
+        itemRoot.setLayoutParams(params);
+        itemRoot.setVisibility(View.GONE);
+    }*/
 }
