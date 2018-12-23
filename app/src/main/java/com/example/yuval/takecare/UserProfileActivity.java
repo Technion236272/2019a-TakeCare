@@ -433,12 +433,7 @@ public class UserProfileActivity extends AppCompatActivity {
                                     new String[]{Manifest.permission.CAMERA},
                                     APP_PERMISSION_REQUEST_CAMERA);
                         } else {
-                            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            selectedImageFile = new File(getExternalCacheDir(),
-                                    String.valueOf(System.currentTimeMillis()) + ".jpg");
-                            selectedImage = FileProvider.getUriForFile(UserProfileActivity.this, getPackageName() + ".provider", selectedImageFile);
-                            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, selectedImage);
-                            startActivityForResult(intent, REQUEST_CAMERA);
+                            startCameraActivity();
                         }
                         break;
                     case R.id.upload_gallery:
@@ -453,6 +448,26 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
         menu.show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == APP_PERMISSION_REQUEST_CAMERA) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startCameraActivity();
+            }
+        }
+    }
+
+    private void startCameraActivity() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        selectedImageFile = new File(getExternalCacheDir(),
+                String.valueOf(System.currentTimeMillis()) + ".jpg");
+        selectedImage = FileProvider.getUriForFile(UserProfileActivity.this, getPackageName() + ".provider", selectedImageFile);
+        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, selectedImage);
+        Log.d(TAG, "Activating camera");
+        startActivityForResult(intent, REQUEST_CAMERA);
     }
 
     @Override
