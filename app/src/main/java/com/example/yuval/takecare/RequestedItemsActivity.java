@@ -2,6 +2,8 @@ package com.example.yuval.takecare;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.azoft.carousellayoutmanager.CarouselLayoutManager;
+import com.azoft.carousellayoutmanager.CenterScrollListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -44,6 +48,7 @@ public class RequestedItemsActivity extends AppCompatActivity {
     private static final int ICON_FILL_ITERATIONS = 12;
     private static final int ICON_FILL_DURATION = 200;
     private static final int ICON_ACTIVATED_DURATION = 400;
+    private static final String RECYCLER_STATE_POSITION_KEY = "RECYCLER POSITION";
     ReentrantLock iconLock = new ReentrantLock();
 
     private FeedRecyclerView recyclerView;
@@ -53,6 +58,11 @@ public class RequestedItemsActivity extends AppCompatActivity {
     private StorageReference storage;
     private int position = 0;
     private Button jumpButton;
+
+
+    private int orientation;
+    private int absolutePosition;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +79,9 @@ public class RequestedItemsActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
+
+        orientation = getResources().getConfiguration().orientation;
+
         setUpRecyclerView();
     }
 
@@ -87,6 +100,30 @@ public class RequestedItemsActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onSaveInstanceState: writing position " + absolutePosition);
+        savedInstanceState.putInt(RECYCLER_STATE_POSITION_KEY, absolutePosition);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onRestoreInstanceState: started");
+        if (savedInstanceState.containsKey(RECYCLER_STATE_POSITION_KEY)) {
+            absolutePosition = savedInstanceState.getInt(RECYCLER_STATE_POSITION_KEY);
+            Log.d(TAG, "onRestoreInstanceState: fetched position: " + absolutePosition);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "thread run: moving to " + absolutePosition);
+                    recyclerView.scrollToPosition(absolutePosition);
+                }
+            }, 300);
+        }
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
         switch (item.getItemId()) {
@@ -102,12 +139,19 @@ public class RequestedItemsActivity extends AppCompatActivity {
     private void setUpRecyclerView() {
         recyclerView = (FeedRecyclerView) findViewById(R.id.requested_feed_list);
         View emptyFeedView = findViewById(R.id.requested_items_empty_feed_view);
+        Log.d(TAG, "setUpRecyclerView: setting layout manager for the current orientation");
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            recyclerView.setLayoutManager(new CarouselLayoutManager(CarouselLayoutManager.HORIZONTAL, false));
+            recyclerView.addOnScrollListener(new CenterScrollListener());
+        } else {
+            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+        }
         //Optimizing recycler view's performance:
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(10);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+        recyclerView.setEmptyView(emptyFeedView);
 
         final FirebaseUser user = auth.getCurrentUser();
         assert user != null;
@@ -195,12 +239,26 @@ public class RequestedItemsActivity extends AppCompatActivity {
                 holder.itemPickupMethod.setTag(pickupMethodId);
 
                 activateViewHolderIcons(holder, model);
+                holder.card.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getApplicationContext(), ItemInfoActivity.class);
+                        intent.putExtra(Intent.EXTRA_UID, getSnapshots().getSnapshot(holder.getAdapterPosition()).getId());
+                        startActivity(intent);
+                    }
+                });
             }
 
             @NonNull
             @Override
             public ItemsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-                View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card, viewGroup, false);
+                View view = null;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card_carousel, viewGroup, false);
+
+                } else {
+                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card, viewGroup, false);
+                }
                 return new ItemsViewHolder(view);
             }
 
@@ -226,7 +284,13 @@ public class RequestedItemsActivity extends AppCompatActivity {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     updatePosition();
+                } else {
+                    jumpButton.setVisibility(View.GONE);
                 }
+                absolutePosition = (orientation == Configuration.ORIENTATION_LANDSCAPE) ?
+                        ((CarouselLayoutManager) recyclerView.getLayoutManager()).getCenterItemPosition() :
+                        ((LinearLayoutManager) recyclerView.getLayoutManager())
+                                .findFirstVisibleItemPosition();
             }
         });
 
@@ -242,22 +306,22 @@ public class RequestedItemsActivity extends AppCompatActivity {
         holder.itemCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if(iconLock.isLocked()) {
+                if (iconLock.isLocked()) {
                     return;
                 }
 
                 new Thread(new Runnable() {
                     public void run() {
                         iconLock.lock();
-                        float alpha = (float)0.6;
-                        for(int i = 0; i< ICON_FILL_ITERATIONS; i++) {
+                        float alpha = (float) 0.6;
+                        for (int i = 0; i < ICON_FILL_ITERATIONS; i++) {
                             v.setAlpha(alpha);
                             try {
                                 Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            alpha+=(float)(1-0.6)/ICON_FILL_ITERATIONS;
+                            alpha += (float) (1 - 0.6) / ICON_FILL_ITERATIONS;
                         }
 
                         try {
@@ -266,14 +330,14 @@ public class RequestedItemsActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
-                        for(int i = 0; i< ICON_FILL_ITERATIONS; i++) {
+                        for (int i = 0; i < ICON_FILL_ITERATIONS; i++) {
                             v.setAlpha(alpha);
                             try {
                                 Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            alpha-=(float)(1-0.6)/ICON_FILL_ITERATIONS;
+                            alpha -= (float) (1 - 0.6) / ICON_FILL_ITERATIONS;
                         }
                         iconLock.unlock();
                     }
@@ -308,22 +372,22 @@ public class RequestedItemsActivity extends AppCompatActivity {
         holder.itemPickupMethod.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if(iconLock.isLocked()) {
+                if (iconLock.isLocked()) {
                     return;
                 }
 
                 new Thread(new Runnable() {
                     public void run() {
                         iconLock.lock();
-                        float alpha = (float)0.6;
-                        for(int i = 0; i< ICON_FILL_ITERATIONS; i++) {
+                        float alpha = (float) 0.6;
+                        for (int i = 0; i < ICON_FILL_ITERATIONS; i++) {
                             v.setAlpha(alpha);
                             try {
                                 Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            alpha+=(float)(0.9-0.6)/ICON_FILL_ITERATIONS;
+                            alpha += (float) (0.9 - 0.6) / ICON_FILL_ITERATIONS;
                         }
 
                         try {
@@ -332,14 +396,14 @@ public class RequestedItemsActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
-                        for(int i = 0; i< ICON_FILL_ITERATIONS; i++) {
+                        for (int i = 0; i < ICON_FILL_ITERATIONS; i++) {
                             v.setAlpha(alpha);
                             try {
                                 Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            alpha-=(float)(0.9-0.6)/ICON_FILL_ITERATIONS;
+                            alpha -= (float) (0.9 - 0.6) / ICON_FILL_ITERATIONS;
                         }
                         iconLock.unlock();
                     }
@@ -364,8 +428,12 @@ public class RequestedItemsActivity extends AppCompatActivity {
     }
 
     private void updatePosition() {
-        position = ((LinearLayoutManager) recyclerView.getLayoutManager())
-                .findFirstVisibleItemPosition();
+        assert recyclerView.getLayoutManager() != null;
+        position = (orientation == Configuration.ORIENTATION_LANDSCAPE) ?
+                ((CarouselLayoutManager) recyclerView.getLayoutManager()).getCenterItemPosition() :
+                ((LinearLayoutManager) recyclerView.getLayoutManager())
+                        .findFirstVisibleItemPosition();
+
         Log.d(TAG, "onScrollStateChanged: POSITION IS: " + position);
         tryToggleJumpButton();
     }
@@ -380,9 +448,6 @@ public class RequestedItemsActivity extends AppCompatActivity {
     }
 
     public void onJumpClick(View view) {
-        Log.d(TAG, "onJumpClick: invoked");
-        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        assert layoutManager != null;
         recyclerView.smoothScrollToPosition(0);
         jumpButton.setVisibility(View.GONE);
     }

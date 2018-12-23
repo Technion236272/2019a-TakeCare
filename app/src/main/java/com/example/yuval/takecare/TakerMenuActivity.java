@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -27,7 +28,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -49,7 +49,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -68,6 +67,9 @@ public class TakerMenuActivity extends AppCompatActivity
     private static final int ICON_FILL_ITERATIONS = 12;
     private static final int ICON_FILL_DURATION = 200;
     private static final int ICON_ACTIVATED_DURATION = 400;
+    private static final String RECYCLER_STATE_POSITION_KEY = "RECYCLER POSITION";
+    private static final String FILTER_CATEGORY_KEY = "CATEGORY FILTER";
+    private static final String FILTER_PICKUP_KEY = "PICKUP FILTER";
     ReentrantLock iconLock = new ReentrantLock();
 
     private RelativeLayout rootLayout;
@@ -90,6 +92,7 @@ public class TakerMenuActivity extends AppCompatActivity
     private String queryPickupMethodFilter = null;
 
     private int orientation;
+    private int absolutePosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +139,7 @@ public class TakerMenuActivity extends AppCompatActivity
 
         Log.d(TAG, "onCreate: getting screen orientation");
         orientation = getResources().getConfiguration().orientation;
+
         setUpRecyclerView();
     }
 
@@ -147,6 +151,99 @@ public class TakerMenuActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onSaveInstanceState: writing position " + absolutePosition);
+        savedInstanceState.putInt(RECYCLER_STATE_POSITION_KEY, absolutePosition);
+        savedInstanceState.putString(FILTER_CATEGORY_KEY, queryCategoriesFilter);
+        savedInstanceState.putString(FILTER_PICKUP_KEY, queryPickupMethodFilter);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onRestoreInstanceState: started");
+        if (savedInstanceState.containsKey(RECYCLER_STATE_POSITION_KEY)) {
+            absolutePosition = savedInstanceState.getInt(RECYCLER_STATE_POSITION_KEY);
+            queryCategoriesFilter = savedInstanceState.getString(FILTER_CATEGORY_KEY);
+            queryPickupMethodFilter = savedInstanceState.getString(FILTER_PICKUP_KEY);
+            setDrawerItem();
+            setPickupItem();
+            Log.d(TAG, "onRestoreInstanceState: fetched position: " + absolutePosition);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "thread run: moving to " + absolutePosition);
+                    recyclerView.scrollToPosition(absolutePosition);
+                    updatePosition();
+                }
+            }, 300);
+        }
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    private void setDrawerItem() {
+        if (queryCategoriesFilter == null) {
+            return;
+        }
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        MenuItem item;
+        switch (queryCategoriesFilter) {
+            case "Food":
+                item = (MenuItem) navigationView.getMenu().findItem(R.id.nav_food);
+                break;
+            case "Study Material":
+                item = (MenuItem) navigationView.getMenu().findItem(R.id.nav_study_material);
+                break;
+            case "Households":
+                item = (MenuItem) navigationView.getMenu().findItem(R.id.nav_furniture);
+                break;
+            case "Lost & Found":
+                item = (MenuItem) navigationView.getMenu().findItem(R.id.nav_lost_and_found);
+                break;
+            case "Hitchhiking":
+                item = (MenuItem) navigationView.getMenu().findItem(R.id.nav_hitchhike);
+                break;
+            case "Other":
+                item = (MenuItem) navigationView.getMenu().findItem(R.id.nav_other);
+                break;
+            default:
+                item = (MenuItem) navigationView.getMenu().findItem(R.id.nav_show_all);
+                break;
+        }
+        onNavigationItemSelected(item);
+    }
+
+    private void setPickupItem() {
+        if (queryPickupMethodFilter == null) {
+            return;
+        }
+
+        // Invalidate currently chosen pickup method
+        ViewCompat.setBackgroundTintList(chosenPickupMethod, getResources().getColorStateList(R.color.divider));
+        ImageViewCompat.setImageTintList(chosenPickupMethod, getResources().getColorStateList(R.color.secondary_text));
+        chosenPickupMethod = null;
+
+        View pickupButton = null;
+        switch (queryPickupMethodFilter) {
+            case "In Person":
+                pickupButton = findViewById(R.id.pickup_in_person_button);
+                break;
+            case "Giveaway":
+                pickupButton = findViewById(R.id.pickup_giveaway_button);
+                break;
+            case "Race":
+                pickupButton = findViewById(R.id.pickup_race_button);
+                break;
+            default:
+                pickupButton = findViewById(R.id.pickup_any_button);
+                break;
+        }
+        onChoosePickupMethod(pickupButton);
+    }
+
+
     private void setUpRecyclerView() {
         recyclerView = (FeedRecyclerView) findViewById(R.id.taker_feed_list);
         View emptyFeedView = findViewById(R.id.empty_feed_view);
@@ -154,7 +251,6 @@ public class TakerMenuActivity extends AppCompatActivity
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             recyclerView.setLayoutManager(new CarouselLayoutManager(CarouselLayoutManager.HORIZONTAL, false));
             recyclerView.addOnScrollListener(new CenterScrollListener());
-
         } else {
             recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
         }
@@ -177,6 +273,10 @@ public class TakerMenuActivity extends AppCompatActivity
                 } else {
                     jumpButton.setVisibility(View.GONE);
                 }
+                absolutePosition = (orientation == Configuration.ORIENTATION_LANDSCAPE) ?
+                        ((CarouselLayoutManager) recyclerView.getLayoutManager()).getCenterItemPosition() :
+                        ((LinearLayoutManager) recyclerView.getLayoutManager())
+                                .findFirstVisibleItemPosition();
             }
         });
     }
@@ -265,7 +365,6 @@ public class TakerMenuActivity extends AppCompatActivity
             @SuppressLint("ClickableViewAccessibility")
             @Override
             protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, int position, @NonNull final FeedCardInformation model) {
-                Log.d(TAG, "model " + model.getPhoto());
                 holder.itemTitle.setText(model.getTitle());
                 RequestOptions requestOptions = new RequestOptions();
                 requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
@@ -316,7 +415,6 @@ public class TakerMenuActivity extends AppCompatActivity
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                Log.d(TAG, "Found the user: " + documentSnapshot);
                                 holder.itemPublisher.setText(documentSnapshot.getString("name"));
                                 if (documentSnapshot.getString("profilePicture") != null) {
                                     Glide.with(getApplicationContext())
@@ -335,11 +433,9 @@ public class TakerMenuActivity extends AppCompatActivity
 
                 switch (model.getStatus()) {
                     case 0:
-                        Log.d(TAG, "card in position " + position + " is REQUESTED");
                         holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorAccent));
                         break;
                     case 1:
-                        Log.d(TAG, "card in position " + position + " is AVAILABLE");
                         holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorCardDefault));
                         break;
                 }
@@ -415,7 +511,6 @@ public class TakerMenuActivity extends AppCompatActivity
 
     @SuppressLint("ClickableViewAccessibility")
     private void activateViewHolderIcons(final ItemsViewHolder holder, final FeedCardInformation model) {
-
 
         holder.itemCategory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -629,13 +724,13 @@ public class TakerMenuActivity extends AppCompatActivity
         if (filterPopupMenu.getVisibility() == View.GONE) {
             jumpButton.setVisibility(View.GONE);
             filterPopupMenu.setVisibility(View.VISIBLE);
-            if (currentAdapter.getItemCount() == 0) {
+            if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
                 (findViewById(R.id.empty_feed_arrow)).setVisibility(View.GONE);
             }
         } else {
             filterPopupMenu.setVisibility(View.GONE);
             tryToggleJumpButton();
-            if (currentAdapter.getItemCount() == 0) {
+            if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
                 (findViewById(R.id.empty_feed_arrow)).setVisibility(View.VISIBLE);
             }
         }
@@ -647,11 +742,13 @@ public class TakerMenuActivity extends AppCompatActivity
     }
 
     public void onChoosePickupMethod(View view) {
-        if (chosenPickupMethod.equals(view)) {
+        if (chosenPickupMethod != null && chosenPickupMethod.equals(view)) {
             return;
         }
-        ViewCompat.setBackgroundTintList(chosenPickupMethod, getResources().getColorStateList(R.color.divider));
-        ImageViewCompat.setImageTintList(chosenPickupMethod, getResources().getColorStateList(R.color.secondary_text));
+        if (chosenPickupMethod != null) {
+            ViewCompat.setBackgroundTintList(chosenPickupMethod, getResources().getColorStateList(R.color.divider));
+            ImageViewCompat.setImageTintList(chosenPickupMethod, getResources().getColorStateList(R.color.secondary_text));
+        }
         ViewCompat.setBackgroundTintList(view, getResources().getColorStateList(R.color.colorPrimary));
         ImageViewCompat.setImageTintList((ImageView) view, getResources().getColorStateList(R.color.icons));
         chosenPickupMethod = (AppCompatImageButton) view;
@@ -672,7 +769,7 @@ public class TakerMenuActivity extends AppCompatActivity
         }
         setUpAdapter();
         filterPopupMenu.setVisibility(View.GONE);
-        if (currentAdapter.getItemCount() == 0) {
+        if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
             ((findViewById(R.id.empty_feed_arrow))).setVisibility(View.VISIBLE);
         }
     }
