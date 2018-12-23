@@ -28,6 +28,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -140,6 +141,8 @@ public class TakerMenuActivity extends AppCompatActivity
         Log.d(TAG, "onCreate: getting screen orientation");
         orientation = getResources().getConfiguration().orientation;
 
+        Log.d(TAG, "onCreate: getting screen orientation");
+        orientation = getResources().getConfiguration().orientation;
         setUpRecyclerView();
     }
 
