@@ -668,7 +668,7 @@ public class GiverFormActivity extends AppCompatActivity {
             Log.d(TAG, "onPostExecute: starting");
             super.onPostExecute(bytes);
             uploadBytes = bytes;
-            Glide.with(GiverFormActivity.this)
+            Glide.with(getApplicationContext())
                     .asBitmap()
                     .load(bytes)
                     .into(itemImageView);

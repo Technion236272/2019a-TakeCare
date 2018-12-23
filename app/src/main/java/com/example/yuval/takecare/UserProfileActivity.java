@@ -183,7 +183,7 @@ public class UserProfileActivity extends AppCompatActivity {
                             usernameViewRef.setText(currentName);
                             if (document.getString("profilePicture") != null) {
                                 Log.d(TAG, "Found profile pic. Fetched picture url: " + Uri.parse(document.getString("profilePicture")));
-                                Glide.with(UserProfileActivity.this)
+                                Glide.with(getApplicationContext())
                                         .load(document.getString("profilePicture"))
                                         .apply(RequestOptions.circleCropTransform())
                                         .into(profilePictureView);
@@ -547,7 +547,7 @@ public class UserProfileActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(byte[] bytes) {
             super.onPostExecute(bytes);
-            Glide.with(UserProfileActivity.this)
+            Glide.with(getApplicationContext())
                     .asBitmap()
                     .load(bytes)
                     .apply(RequestOptions.circleCropTransform())
