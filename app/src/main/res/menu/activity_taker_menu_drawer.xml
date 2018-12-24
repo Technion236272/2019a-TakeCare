@@ -78,6 +78,11 @@
             android:checkable="true"
             android:icon="@drawable/ic_user_vector"
             android:title="@string/nav_user_settings" />
+        <item
+            android:id="@+id/nav_about"
+            android:checkable="true"
+            android:icon="@drawable/ic_heart_muffin"
+            android:title="@string/nav_about" />
     </group>
 
 </menu>

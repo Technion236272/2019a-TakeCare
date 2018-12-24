@@ -67,8 +67,9 @@ public class LoginScreenFragment extends Fragment {
 
         // Note: this is the OAUth 2.0 client ID for our app:
         // 738513157372-ktkd6jopc3rqlsherd7c5759tv79eina.apps.googleusercontent.com
+        // "1093192580078-lh7kjnjl4obk75nv49edosvfd16g5ffs.apps.googleusercontent.com/" (Current)
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("1093192580078-b5dgbk1rhnn5sb395se8s3b8dv8o28g8.apps.googleusercontent.com")
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
