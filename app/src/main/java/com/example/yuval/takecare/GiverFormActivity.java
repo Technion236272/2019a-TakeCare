@@ -67,6 +67,7 @@ public class GiverFormActivity extends AppCompatActivity {
     private EditText title;
     private EditText description;
     private EditText pickupDescription;
+    private EditText pickupLocation;
     private Spinner pickup;
     private ProgressDialog dialog;
     private TextView airTimeText;
@@ -124,6 +125,7 @@ public class GiverFormActivity extends AppCompatActivity {
         title = (EditText) findViewById(R.id.title_input);
         description = (EditText) findViewById(R.id.item_description);
         pickupDescription = (EditText) findViewById(R.id.item_time);
+        pickupLocation = (EditText) findViewById(R.id.item_location);
         itemImageView = (ImageView) findViewById(R.id.item_picture);
         picturePB = (ProgressBar) findViewById(R.id.picture_pb);
         airTimeText = (TextView) findViewById(R.id.air_time_text);
@@ -244,7 +246,8 @@ public class GiverFormActivity extends AppCompatActivity {
                 break;
             case ERROR_PICTURE_NOT_INCLUDED:
                 dialog.dismiss();
-                showAlertMessage("Please include a picture of the item when posting for pick-up in person");
+                showAlertMessage("Please include a picture of the item");
+//                showAlertMessage("Please include a picture of the item when posting for pick-up in person");
                 break;
             case ERROR_NO_CATEGORY:
                 dialog.dismiss();
@@ -406,7 +409,8 @@ public class GiverFormActivity extends AppCompatActivity {
         itemInfo.put("pickupMethod", pickupMethod);
         Log.d(TAG, "filled pickup method");
 
-        if (selectedImage == null && pickupMethod.equals("In Person")) {
+        //TODO: allow users to not upload a picture under some circumstances
+        if (selectedImage == null) {
             return formResult.ERROR_PICTURE_NOT_INCLUDED;
         }
 
@@ -426,10 +430,16 @@ public class GiverFormActivity extends AppCompatActivity {
             Log.d(TAG, "filled pickup description");
         }
 
+        if (!pickupLocation.getText().toString().isEmpty()) {
+            itemInfo.put("pickupLocation", pickupLocation.getText().toString());
+            Log.d(TAG, "filled pickup location");
+        }
+
         // Status 1 = available
         itemInfo.put("status", 1);
         Log.d(TAG, "filled item's status");
 
+        // We don't get here for now
         if (selectedImage == null)
             return formResult.PICTURE_MISSING;
         return formResult.PICTURE_UPLOADED;
