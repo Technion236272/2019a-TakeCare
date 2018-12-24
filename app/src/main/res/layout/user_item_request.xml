@@ -25,13 +25,14 @@
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/requester_info_layout"
-                android:layout_width="wrap_content"
+                android:layout_width="80dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/request_timestamp_title"
                 app:layout_constraintStart_toEndOf="@+id/requester_profile_pic"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -45,8 +46,10 @@
                     android:layout_marginEnd="4dp"
                     android:layout_marginRight="4dp"
                     android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:maxLength="12"
+                    android:maxLines="2"
                     android:text="User"
-                    android:maxLength="15"
                     android:textColor="@color/primary_text"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toTopOf="@+id/requester_rating"
@@ -73,8 +76,6 @@
                 android:id="@+id/request_timestamp_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
@@ -83,7 +84,6 @@
                 android:textSize="10sp"
                 app:layout_constraintBottom_toTopOf="@+id/request_date"
                 app:layout_constraintEnd_toStartOf="@+id/accept_request_button"
-                app:layout_constraintStart_toEndOf="@+id/requester_info_layout"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -93,8 +93,8 @@
                 android:text="22/12/18"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toTopOf="@+id/request_time"
-                app:layout_constraintEnd_toStartOf="@+id/accept_request_button"
-                app:layout_constraintStart_toEndOf="@+id/requester_info_layout"
+                app:layout_constraintEnd_toEndOf="@+id/request_timestamp_title"
+                app:layout_constraintStart_toStartOf="@+id/request_timestamp_title"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0" />
 
@@ -106,8 +106,8 @@
                 android:text="14:20"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/accept_request_button"
-                app:layout_constraintStart_toEndOf="@+id/requester_info_layout" />
+                app:layout_constraintEnd_toEndOf="@+id/request_timestamp_title"
+                app:layout_constraintStart_toStartOf="@+id/request_timestamp_title" />
 
 
             <ImageButton
