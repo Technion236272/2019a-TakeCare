@@ -81,7 +81,7 @@ public class TakerMenuActivity extends AppCompatActivity
     private static final String FILTER_CATEGORY_KEY = "CATEGORY FILTER";
     private static final String FILTER_PICKUP_KEY = "PICKUP FILTER";
     private ReentrantLock iconLock = new ReentrantLock();
-
+    private static final String EXTRA_ITEM_ID = "Item Id";
     private RelativeLayout rootLayout;
     private FeedRecyclerView recyclerView;
     private ImageView userProfilePicture;
@@ -494,7 +494,8 @@ public class TakerMenuActivity extends AppCompatActivity
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getApplicationContext(), ItemInfoActivity.class);
-                        intent.putExtra(Intent.EXTRA_UID, itemId);
+                        intent.putExtra(EXTRA_ITEM_ID, itemId);
+                        intent.putExtra(Intent.EXTRA_UID, user.getUid());
                         startActivity(intent);
                     }
                 });
