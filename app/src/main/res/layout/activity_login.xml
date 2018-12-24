@@ -1,113 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/login_screen_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
     android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
     tools:context=".LoginActivity">
 
-    <ImageView
-        android:id="@+id/faded_image"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/login_screen_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/background_image_blurred_mq" />
-
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/background_image_mq"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/facebook_login_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/google_login_button"
-        app:layout_constraintEnd_toEndOf="@+id/sign_up_button"
-        app:layout_constraintStart_toStartOf="@+id/sign_up_button" />
-
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/google_login_button"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/sign_up_button"
-        app:layout_constraintEnd_toEndOf="@+id/sign_up_button"
-        app:layout_constraintStart_toStartOf="@+id/sign_up_button" />
-
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/sign_up_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/invisible_button"
-        android:fontFamily="@font/asap_italic"
-        android:onClick="onSignUpClick"
-        android:padding="12dp"
-        android:text="@string/email_signin_text"
-        android:textColor="@color/primary_text"
-        android:textSize="12sp"
-        app:backgroundTint="@color/secondary_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enter your Email and Password:"
-        android:textColor="@color/primary_text"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="@+id/login_button"
-        app:layout_constraintStart_toStartOf="@+id/editText"
-        app:layout_constraintTop_toTopOf="@+id/login_button" />
-
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="E-mail"
-        android:inputType="textPersonName"
-        android:textColor="@color/primary_text"
-        app:layout_constraintBottom_toBottomOf="@+id/google_login_button"
-        app:layout_constraintStart_toStartOf="@+id/editText2"
-        app:layout_constraintTop_toTopOf="@+id/google_login_button" />
-
-    <EditText
-        android:id="@+id/editText2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPersonName"
-        android:textColor="@color/primary_text"
-        app:layout_constraintBottom_toBottomOf="@+id/sign_up_button"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/sign_up_button"
-        app:layout_constraintVertical_bias="0.0" />
-
+        android:layout_height="match_parent">
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

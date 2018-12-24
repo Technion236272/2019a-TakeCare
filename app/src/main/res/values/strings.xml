@@ -75,7 +75,7 @@
 
 
     <!--Login activity elements-->
-    <string name="email_signin_text">Sign up using an E-mail address</string>
+    <string name="email_signin_text">Sign up with E-mail</string>
 
 
     <!--Report option elements-->
