@@ -163,6 +163,7 @@ public class ItemInfoActivity extends AppCompatActivity {
                                 if (document.getString("publisher").equals(currentUser.getUid())) {
                                     request_button_layout = (RelativeLayout) findViewById(R.id.request_button_layout);
                                     request_button_layout.setVisibility(View.GONE);
+                                    recyclerView.setVisibility(View.VISIBLE);
                                 } else {
                                     RelativeLayout requestButton = (RelativeLayout) findViewById(R.id.request_button_layout);
                                     requestButton.setVisibility(View.VISIBLE);
@@ -218,7 +219,6 @@ public class ItemInfoActivity extends AppCompatActivity {
     private void setUpRecyclerView() {
         Log.d(TAG, "setUpRecyclerView: started");
         recyclerView = (FeedRecyclerView) findViewById(R.id.requested_by_list);
-        recyclerView.setVisibility(View.VISIBLE);
         recyclerView.setEmptyView(findViewById(R.id.empty_feed_view));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(10);
