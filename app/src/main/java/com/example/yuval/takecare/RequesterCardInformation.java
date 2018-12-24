@@ -29,4 +29,3 @@ public class RequesterCardInformation {
         return userRef;
     }
 }
-
