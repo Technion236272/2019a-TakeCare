@@ -229,18 +229,16 @@ public class LoginScreenFragment extends Fragment {
 
     private String fixImageQuality(String imagePath, String providerId) {
         Log.d(TAG, "fixImageQuality: provider id is: " + providerId);
-        if (providerId.contains("google")) {
-            // Google account
-            String originalUrlSeg = "s96-c/photo.jpg";
-            String newUrlSeg = "s400-c/photo.jpg";
-            return imagePath.replace(originalUrlSeg, newUrlSeg);
-        }
-        // Facebook account
+        String originalUrlSeg = "s96-c/photo.jpg";
+        String newUrlSeg = "s400-c/photo.jpg";
+        imagePath = imagePath.replace(originalUrlSeg, newUrlSeg);
         return imagePath.concat("?type=large");
     }
 
-    public void onSignUpClick(View view) { }
+    public void onSignUpClick(View view) {
+    }
 
-    public void onSignInClick(View view) { }
+    public void onSignInClick(View view) {
+    }
 
 }
