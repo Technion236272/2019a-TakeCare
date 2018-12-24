@@ -63,6 +63,7 @@ public class TakerMenuActivity extends AppCompatActivity
     private static final int ICON_FILL_ITERATIONS = 12;
     private static final int ICON_FILL_DURATION = 200;
     private static final int ICON_ACTIVATED_DURATION = 400;
+    private static final String EXTRA_ITEM_ID = "Item Id";
     ReentrantLock iconLock = new ReentrantLock();
 
     private RelativeLayout rootLayout;
@@ -293,7 +294,8 @@ public class TakerMenuActivity extends AppCompatActivity
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getApplicationContext(), ItemInfoActivity.class);
-                        intent.putExtra(Intent.EXTRA_UID, getSnapshots().getSnapshot(holder.getAdapterPosition()).getId());
+                        intent.putExtra(EXTRA_ITEM_ID, getSnapshots().getSnapshot(holder.getAdapterPosition()).getId());
+                        intent.putExtra(Intent.EXTRA_UID, model.getPublisher());
                         startActivity(intent);
                     }
                 });
@@ -673,7 +675,7 @@ public class TakerMenuActivity extends AppCompatActivity
                     queryCategoriesFilter = "Lost & Found";
                     break;
                 case R.id.nav_hitchhike:
-                    queryCategoriesFilter = "Hitchhike";
+                    queryCategoriesFilter = "Hitchhikes";
                     break;
                 case R.id.nav_other:
                     queryCategoriesFilter = "Other";

@@ -36,17 +36,17 @@
         android:layout_below="@id/item_info_toolbar_layout">
 
         <RelativeLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <Space
-            android:id="@+id/image_space"
-            android:layout_width="match_parent"
-            android:layout_height="320dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            <Space
+                android:id="@+id/image_space"
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
@@ -58,8 +58,8 @@
                     android:id="@+id/item_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primary_text"
                     android:layout_marginTop="20dp"
+                    android:textColor="@color/primary_text"
                     android:textSize="25sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -86,6 +86,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
+                    android:layout_marginTop="30dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
                     app:cardBackgroundColor="@color/colorCards"
@@ -94,7 +95,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/profile_card"
-                    android:layout_marginTop="30dp"
                     tools:layout_editor_absoluteY="275dp">
 
                     <RelativeLayout
@@ -118,7 +118,7 @@
                             android:layout_height="1dp"
                             android:layout_below="@id/description_title"
                             android:layout_margin="8dp"
-                            android:background="@color/divider"></View>
+                            android:background="@color/divider" />
 
                         <TextView
                             android:id="@+id/item_description"
@@ -138,9 +138,9 @@
                     android:id="@+id/profile_card"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
                     android:layout_marginStart="15dp"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginEnd="15dp"
                     android:layout_marginRight="15dp"
                     app:cardBackgroundColor="@color/colorCards"
@@ -148,7 +148,7 @@
                     app:cardElevation="3dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/divider" >
+                    app:layout_constraintTop_toBottomOf="@+id/divider">
 
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="wrap_content"
@@ -165,10 +165,10 @@
                             android:layout_marginEnd="8dp"
                             android:layout_marginRight="8dp"
                             android:scaleType="centerCrop"
-                            app:srcCompat="@drawable/ic_user_vector"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.501"
-                            app:layout_constraintStart_toStartOf="parent"/>
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:srcCompat="@drawable/ic_user_vector" />
 
                         <TextView
                             android:id="@+id/item_giver_name"
@@ -188,6 +188,7 @@
 
                         <RatingBar
                             android:id="@+id/ratingBar"
+                            style="@style/Widget.AppCompat.RatingBar.Indicator"
                             android:layout_width="180dp"
                             android:layout_height="40dp"
                             android:layout_centerInParent="true"
@@ -197,7 +198,6 @@
                             android:scaleX="0.7"
                             android:scaleY="0.7"
                             android:stepSize="0.5"
-                            style="@style/Widget.AppCompat.RatingBar.Indicator"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/item_giver_name" />
@@ -346,11 +346,13 @@
 
                         <TextView
                             android:id="@+id/phone_number"
-                            android:layout_width="155dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_marginStart="10dp"
                             android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_toEndOf="@id/phone_image"
                             android:layout_toRightOf="@id/phone_image"
                             android:textColor="@color/primary_text"
                             android:textSize="16sp" />
@@ -364,11 +366,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:layout_marginStart="8dp"
-
                     android:layout_marginLeft="8dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
                     android:scrollbars="vertical"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/phone_card">
@@ -439,10 +442,14 @@
 
         <Button
             android:id="@+id/request_button"
-            android:onClick="requestItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorAccent"
+            android:drawableStart="@drawable/ic_heart_outline"
+            android:drawableLeft="@drawable/ic_heart_outline"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:onClick="requestItem"
             android:padding="15dp"
             android:text="@string/request_item"
             android:textAllCaps="false"
@@ -450,11 +457,7 @@
             android:textSize="25sp"
             android:textStyle="italic"
             tools:layout_editor_absoluteX="115dp"
-            tools:layout_editor_absoluteY="1047dp"
-            android:drawableStart="@drawable/ic_heart_outline"
-            android:drawableLeft="@drawable/ic_heart_outline"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground" />
+            tools:layout_editor_absoluteY="1047dp" />
     </RelativeLayout>
 
 
