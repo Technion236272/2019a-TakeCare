@@ -25,7 +25,7 @@ Join the sharing revolution: help brighten someone's day, and also help the worl
 * [Facebook Login](https://developers.facebook.com/docs/facebook-login/android) - Integration with Facebook accounts
 * [Gradle](https://gradle.org/) - Dependency Management
 
-## Authros
+## Authors
 
 [Sahar Cohen](https://github.com/Saharco), [Yuval Nahon](https://github.com/YuvalNahon2) and [Victor Banyas](https://github.com/victorbanyas).
 
