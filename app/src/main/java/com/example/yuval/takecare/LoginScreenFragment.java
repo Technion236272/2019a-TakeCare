@@ -68,7 +68,7 @@ public class LoginScreenFragment extends Fragment {
         // Note: this is the OAUth 2.0 client ID for our app:
         // 738513157372-ktkd6jopc3rqlsherd7c5759tv79eina.apps.googleusercontent.com
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestIdToken("1093192580078-b5dgbk1rhnn5sb395se8s3b8dv8o28g8.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
 
@@ -78,7 +78,7 @@ public class LoginScreenFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent signInIntent = googleSignInClient.getSignInIntent();
-                startActivityForResult(signInIntent, REQ_GOOGLE_SIGN_IN);
+                getActivity().startActivityForResult(signInIntent, REQ_GOOGLE_SIGN_IN);
             }
         });
 
@@ -116,18 +116,30 @@ public class LoginScreenFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (data == null) {
+            Log.w(TAG, "Intent is null");
+            return;
+        }
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_GOOGLE_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            if (!task.isSuccessful()) {
+                Log.w(TAG, "Failed to get account from intent");
+            }
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
+                String idToken = account.getIdToken();
+                if (idToken == null)
+                    Log.w(TAG, "ID Token is null");
                 // Successful google sign in
                 handleGoogleAccount(account);
             } catch (ApiException e) {
                 Log.w(TAG, "Google sign in failed", e);
+            } catch (Exception ex) {
+                Log.w(TAG, "Some other exception caught: " + ex.toString());
             }
         }
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        //callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
 
