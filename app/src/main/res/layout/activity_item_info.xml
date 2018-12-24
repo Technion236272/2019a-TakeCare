@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_root"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     tools:context=".ItemInfoActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/item_info_toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -20,254 +23,446 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <ImageView
+        android:id="@+id/item_image"
+        android:layout_width="match_parent"
+        android:layout_height="360dp"
+        android:layout_below="@+id/item_info_toolbar_layout"
+        android:scaleType="center" />
 
     <ScrollView
+        android:id="@+id/item_info_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:fillViewport="true">
+        android:layout_above="@id/request_button_layout"
+        android:layout_below="@id/item_info_toolbar_layout">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/item_title"
+            <Space
+                android:id="@+id/image_space"
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="25dp"
-                android:layout_marginLeft="25dp"
-                android:layout_marginTop="25dp"
-                android:layout_marginEnd="25dp"
-                android:layout_marginRight="25dp"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                android:textColor="@color/primary_text"
-                android:text="Yummy Muffins For All!"/>
-
-            <ImageView
-                android:id="@+id/item_image"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_below="@id/item_title"
-                android:layout_alignParentTop="false"
-                android:layout_marginTop="15dp"
-                android:padding="50dp"
-                android:background="@color/primary_light"
-                android:src="@drawable/photo_muffin"
-                android:scaleType="center"/>
-
-            <TextView
-                android:id="@+id/item_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginLeft="25dp"
-                android:layout_marginTop="25sp"
-                android:layout_marginEnd="25dp"
-                android:layout_marginRight="25dp"
-                android:textSize="22sp"
-                android:layout_below="@id/item_image"
-                android:textColor="@color/primary_text"
-                android:text="This is a small but lovely muffin, that can't wait to be eaten by a nice and caring muffin lover. Made with care and love."/>
-
-            <Button
-                android:id="@+id/request_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/item_description"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:layout_marginTop="35dp"
-                android:background="@color/colorAccent"
-                android:padding="15dp"
-                android:text="@string/request_item"
-                android:textAllCaps="false"
-                android:textColor="@color/icons"
-                android:textSize="25sp"
-                android:textStyle="italic" />
-
-            <ImageView
-                android:id="@+id/profile_pic"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_below="@id/request_button"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="50dp"
-                 android:src="@drawable/photo_mcgiverface"
-                android:scaleType="centerCrop"/>
-
-            <TextView
-                android:id="@+id/giver_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="50dp"
-                android:layout_marginLeft="50dp"
-                android:layout_marginEnd="50dp"
-                android:layout_marginRight="50dp"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:layout_below="@id/profile_pic"
-                android:textColor="@color/primary_text"
-                android:text="Giver McGiverface"/>
-
-
-            <RatingBar
-                android:id="@+id/ratingBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/giver_name"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="-4dp"
-                android:isIndicator="true"
-                android:numStars="5"
-                android:rating="4.5"
-                android:scaleX="0.5"
-                android:scaleY="0.5"
-                android:stepSize="0.5" />
-
-            <ImageView
-                android:id="@+id/pickup_time_clock"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="25dp"
-                android:layout_marginStart="25dp"
-                android:layout_marginLeft="25dp"
-                android:layout_below="@id/ratingBar"
-                app:srcCompat="@drawable/clock_outline" />
-
-            <TextView
-                android:id="@+id/pickup_time_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_centerInParent="true"
-                android:layout_below="@id/ratingBar"
-                android:layout_toEndOf="@id/pickup_time_clock"
-                android:layout_toRightOf="@id/pickup_time_clock"
-                android:textSize="20sp"
-                android:textColor="@color/secondary_text"
-                android:text="27 Nov 2018, 10:00-14:00\n28 Nov 2018, 13:00-16:00\n30 Nov 2018, 13:00-16:00" />
-            <LinearLayout
-                android:id="@+id/location"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_below="@id/pickup_time_text">
-
-                <ImageView
-                    android:id="@+id/distance_image"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginStart="25dp"
-                    android:layout_marginLeft="25dp"
-                    android:layout_marginTop="30dp"
-                    app:srcCompat="@drawable/routes" />
+                android:layout_below="@id/image_space"
+                android:background="@android:color/white">
 
                 <TextView
-                    android:layout_weight="1"
-                    android:id="@+id/distance_text"
-                    android:layout_width="0dp"
+                    android:id="@+id/item_title"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="30dp"
-                    android:text="0.4 km"
-                    android:textColor="@color/secondary_text"
-                    android:textSize="20sp" />
+                    android:layout_marginTop="20dp"
+                    android:textColor="@color/primary_text"
+                    android:textSize="25sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:id="@+id/location_image"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginTop="30dp"
-                    app:srcCompat="@drawable/map_marker" />
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="50dp"
+                    android:layout_marginRight="50dp"
+                    android:background="@color/divider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/item_title" />
 
-                <TextView
-                    android:layout_weight="3"
-                    android:id="@+id/location_text"
-                    android:layout_width="0dp"
+                <android.support.v7.widget.CardView
+                    android:id="@+id/item_description_card"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="30dp"
-                    android:layout_marginEnd="25dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="25dp"
-                    android:text="Ullman Building, Technion City, Haifa"
-                    android:textColor="@color/secondary_text"
-                    android:textSize="20sp" />
-            </LinearLayout>
-            <ImageView
-                android:id="@+id/phone_image"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_below="@id/location"
-                android:layout_marginTop="30dp"
-                android:layout_marginStart="25dp"
-                android:layout_marginLeft="25dp"
-                app:srcCompat="@drawable/phone" />
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    app:cardBackgroundColor="@color/colorCards"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="3dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/profile_card"
+                    tools:layout_editor_absoluteY="275dp">
 
-            <TextView
-                android:id="@+id/phone_number"
-                android:layout_width="155dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_below="@id/location"
-                android:layout_toEndOf="@id/pickup_time_clock"
-                android:layout_toRightOf="@id/pickup_time_clock"
-                android:textSize="20sp"
-                android:textColor="@color/secondary_text"
-                android:text="+972521234567" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="8dp">
 
-            <Button
-                android:id="@+id/send_message_button"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/phone_number"
-                android:layout_marginTop="35dp"
-                android:layout_centerInParent="true"
-                android:textAllCaps="false"
-                android:drawableStart="@drawable/message_text_outline"
-                android:drawableLeft="@drawable/message_text_outline"
-                android:textSize="20sp"
-                android:textColor="@color/icons"
-                android:background="@color/colorPrimary"
-                android:padding="10dp"
-                android:text="@string/send_message_from_item_info" />
+                        <TextView
+                            android:id="@+id/description_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginLeft="8dp"
+                            android:text="Description"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="18sp" />
 
-            <Button
-                android:id="@+id/report_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="20dp"
-                android:layout_marginEnd="25dp"
-                android:layout_marginRight="25dp"
-                android:padding="10dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_below="@id/send_message_button"
-                android:drawableStart="@drawable/alert_circle"
-                android:drawableLeft="@drawable/alert_circle"
-                android:background="@android:color/transparent"
-                android:textColor="@color/report"
-                android:textAllCaps="false"
-                android:text="@string/report" />
+                        <View
+                            android:id="@+id/description_divider"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_below="@id/description_title"
+                            android:layout_margin="8dp"
+                            android:background="@color/divider" />
+
+                        <TextView
+                            android:id="@+id/item_description"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/description_divider"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginLeft="8dp"
+                            android:text="@string/no_description"
+                            android:textColor="@color/primary_text"
+                            android:textSize="18sp" />
+
+                    </RelativeLayout>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/profile_card"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginRight="15dp"
+                    app:cardBackgroundColor="@color/colorCards"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="3dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/divider">
+
+                    <android.support.constraint.ConstraintLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp">
+
+                        <ImageView
+                            android:id="@+id/item_profile_pic"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_centerInParent="true"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginRight="8dp"
+                            android:scaleType="centerCrop"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.501"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:srcCompat="@drawable/ic_user_vector" />
+
+                        <TextView
+                            android:id="@+id/item_giver_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="8dp"
+                            android:text="User"
+                            android:textAlignment="center"
+                            android:textColor="@color/primary_text"
+                            android:textSize="16sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.497"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/item_profile_pic" />
+
+
+                        <RatingBar
+                            android:id="@+id/ratingBar"
+                            style="@style/Widget.AppCompat.RatingBar.Indicator"
+                            android:layout_width="180dp"
+                            android:layout_height="40dp"
+                            android:layout_centerInParent="true"
+                            android:isIndicator="true"
+                            android:numStars="5"
+                            android:rating="0"
+                            android:scaleX="0.7"
+                            android:scaleY="0.7"
+                            android:stepSize="0.5"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/item_giver_name" />
+
+                    </android.support.constraint.ConstraintLayout>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/pickup_time_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    app:cardBackgroundColor="@color/colorCards"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="3dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/item_description_card">
+
+                    <RelativeLayout
+                        android:id="@+id/pickup_time_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="8dp"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <ImageView
+                            android:id="@+id/pickup_time_clock"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:srcCompat="@drawable/clock_outline" />
+
+                        <TextView
+                            android:id="@+id/pickup_time_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginEnd="15dp"
+                            android:layout_marginRight="15dp"
+                            android:layout_toEndOf="@id/pickup_time_clock"
+                            android:layout_toRightOf="@id/pickup_time_clock"
+                            android:textColor="@color/primary_text"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toEndOf="@+id/pickup_time_clock" />
+
+                    </RelativeLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/location_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    app:cardBackgroundColor="@color/colorCards"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="3dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/pickup_time_card">
+
+                    <LinearLayout
+                        android:id="@+id/location"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:padding="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                        <ImageView
+                            android:id="@+id/distance_image"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:visibility="gone"
+                            app:srcCompat="@drawable/routes" />
+
+                        <TextView
+                            android:id="@+id/distance_text"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="0.4 km"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="20sp"
+                            android:visibility="gone" />
+
+                        <ImageView
+                            android:id="@+id/location_image"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            app:srcCompat="@drawable/map_marker" />
+
+                        <TextView
+                            android:id="@+id/location_text"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_weight="3"
+                            android:textColor="@color/primary_text"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/phone_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    app:cardBackgroundColor="@color/colorCards"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="3dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/location_card">
+
+                    <RelativeLayout
+                        android:id="@+id/phone_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="8dp">
+
+                        <ImageView
+                            android:id="@+id/phone_image"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:srcCompat="@drawable/phone" />
+
+                        <TextView
+                            android:id="@+id/phone_number"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_toEndOf="@id/phone_image"
+                            android:layout_toRightOf="@id/phone_image"
+                            android:textColor="@color/primary_text"
+                            android:textSize="16sp" />
+
+                    </RelativeLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <com.example.yuval.takecare.FeedRecyclerView
+                    android:id="@+id/requested_by_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="240dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="20dp"
+                    android:scrollbars="vertical"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/phone_card"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                </com.example.yuval.takecare.FeedRecyclerView>
+
+                <Button
+                    android:id="@+id/send_message_button"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@color/colorPrimary"
+                    android:drawableStart="@drawable/message_text_outline"
+                    android:drawableLeft="@drawable/message_text_outline"
+                    android:padding="12dp"
+                    android:text="@string/send_message_from_item_info"
+                    android:textAllCaps="false"
+                    android:textColor="@color/icons"
+                    android:textSize="20sp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/requested_by_list" />
+
+                <Button
+                    android:id="@+id/report_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@android:color/transparent"
+                    android:drawableStart="@drawable/alert_circle"
+                    android:drawableLeft="@drawable/alert_circle"
+                    android:padding="10dp"
+                    android:text="@string/report"
+                    android:textAllCaps="false"
+                    android:textColor="@color/report"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/send_message_button" />
+
+            </android.support.constraint.ConstraintLayout>
 
         </RelativeLayout>
 
     </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/request_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:layout_editor_absoluteY="490dp">
+
+        <Button
+            android:id="@+id/request_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:drawableStart="@drawable/ic_heart_outline"
+            android:drawableLeft="@drawable/ic_heart_outline"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:onClick="requestItem"
+            android:padding="15dp"
+            android:text="@string/request_item"
+            android:textAllCaps="false"
+            android:textColor="@color/icons"
+            android:textSize="25sp"
+            android:textStyle="italic"
+            tools:layout_editor_absoluteX="115dp"
+            tools:layout_editor_absoluteY="1047dp" />
+    </RelativeLayout>
 
 
 </RelativeLayout>
