@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_root"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     tools:context=".ItemInfoActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -26,10 +28,10 @@
         android:layout_width="match_parent"
         android:layout_height="360dp"
         android:layout_below="@+id/item_info_toolbar_layout"
-        android:background="@color/primary_light"
         android:scaleType="center" />
 
     <ScrollView
+        android:id="@+id/item_info_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/request_button_layout"

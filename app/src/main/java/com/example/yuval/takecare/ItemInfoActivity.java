@@ -15,10 +15,12 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -53,6 +55,8 @@ public class ItemInfoActivity extends AppCompatActivity {
 
     private final static String TAG = "TakeCare";
     private static final String EXTRA_ITEM_ID = "Item Id";
+
+    private final int imageY = 360; //Item ImageView height in dp
 
     private ImageView itemImageView;
     private TextView itemTitleView;
