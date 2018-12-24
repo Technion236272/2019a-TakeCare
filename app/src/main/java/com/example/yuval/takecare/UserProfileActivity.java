@@ -563,4 +563,14 @@ public class UserProfileActivity extends AppCompatActivity {
             return stream.toByteArray();
         }
     }
+
+    public void onMyItemsPressed(View view) {
+        Intent intent = new Intent(this, SharedItemsActivity.class);
+        startActivity(intent);
+    }
+
+    public void onPendingRequestsPressed(View view) {
+        Intent intent = new Intent(this, RequestedItemsActivity.class);
+        startActivity(intent);
+    }
 }

@@ -85,6 +85,7 @@ public class TakerMenuActivity extends AppCompatActivity
     private RelativeLayout rootLayout;
     private FeedRecyclerView recyclerView;
     private ImageView userProfilePicture;
+    private TextView userName;
     private MenuItem currentDrawerChecked;
 
     private ConstraintLayout filterPopupMenu;
@@ -143,6 +144,7 @@ public class TakerMenuActivity extends AppCompatActivity
         jumpButton = (Button) findViewById(R.id.jump_button);
         View header = navigationView.getHeaderView(0);
         userProfilePicture = (ImageView) header.findViewById(R.id.nav_user_picture);
+        userName = (TextView) header.findViewById(R.id.nav_user_name);
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -758,6 +760,7 @@ public class TakerMenuActivity extends AppCompatActivity
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             Log.d("TAG", "DocumentSnapshot data: " + document.getData());
+                            userName.setText(document.getString("name"));
                             if (document.getString("profilePicture") != null) {
                                 Glide.with(getApplicationContext())
                                         .load(document.getString("profilePicture"))

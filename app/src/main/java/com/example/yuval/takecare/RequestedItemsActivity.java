@@ -128,8 +128,6 @@ public class RequestedItemsActivity extends AppCompatActivity {
         Intent intent;
         switch (item.getItemId()) {
             case android.R.id.home:
-                intent = new Intent(this, TakerMenuActivity.class);
-                startActivity(intent);
                 finish();
                 break;
         }

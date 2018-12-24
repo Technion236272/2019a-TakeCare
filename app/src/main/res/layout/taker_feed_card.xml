@@ -31,22 +31,22 @@
 
                 <TextView
                     android:id="@+id/item_title"
-                    android:layout_width="280dp"
+                    android:layout_width="330dp"
                     android:layout_height="48dp"
                     android:layout_above="@+id/item_photo"
                     android:layout_alignEnd="@+id/item_photo"
                     android:layout_alignRight="@+id/item_photo"
                     android:layout_alignParentTop="true"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:maxLines="2"
                     android:textColor="@color/primary_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@+id/item_photo"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintEnd_toStartOf="@id/item_report"
+                    app:layout_constraintStart_toStartOf="@id/item_photo"
+                    app:layout_constraintTop_toTopOf="parent"
+                    card_view:layout_constraintHorizontal_bias="0.0"/>
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/item_report"

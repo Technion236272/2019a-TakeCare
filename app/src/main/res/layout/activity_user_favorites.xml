@@ -45,6 +45,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="24dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="12dp"
             android:fontFamily="serif"
             android:text="@string/favorites_instruction_text"
             android:textColor="@color/secondary_text"
