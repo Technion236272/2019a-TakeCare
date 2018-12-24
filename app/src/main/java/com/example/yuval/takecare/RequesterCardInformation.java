@@ -1,10 +1,14 @@
 package com.example.yuval.takecare;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.ServerTimestamp;
+
+import java.util.Date;
+
 public class RequesterCardInformation {
-    private String userID;
-    private String timestamp;
-    private String photoURL;
-    private float rating;
+    @ServerTimestamp
+    Date timestamp;
+    DocumentReference userRef;
 
     /**
      * Empty constructor for the FirestoreRecyclerAdapter
@@ -12,27 +16,17 @@ public class RequesterCardInformation {
     public RequesterCardInformation(){
 
     }
-    public RequesterCardInformation(String userName, String timestamp, String photoID, float rating) {
-        this.userID = userName;
+    public RequesterCardInformation(Date timestamp, DocumentReference userRef) {
         this.timestamp = timestamp;
-        this.photoURL = photoID;
-        this.rating = rating;
+        this.userRef = userRef;
     }
 
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public String getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public String getPhotoURL() {
-        return photoURL;
-    }
-
-    public float getRating() {
-        return rating;
+    public DocumentReference getUserRef() {
+        return userRef;
     }
 }
+

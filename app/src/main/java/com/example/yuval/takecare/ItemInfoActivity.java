@@ -15,13 +15,17 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -29,6 +33,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -48,7 +53,10 @@ import java.util.Map;
 
 public class ItemInfoActivity extends AppCompatActivity {
 
-    private final static String TAG = "ItemInfoActivity";
+    private final static String TAG = "TakeCare";
+    private static final String EXTRA_ITEM_ID = "Item Id";
+
+    private final int imageY = 360; //Item ImageView height in dp
 
     private ImageView itemImageView;
     private TextView itemTitleView;
@@ -67,33 +75,36 @@ public class ItemInfoActivity extends AppCompatActivity {
     private RelativeLayout request_button_layout;
 
     private FeedRecyclerView recyclerView;
-    private FirestoreRecyclerAdapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private FirestoreRecyclerAdapter adapter = null;
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private StorageReference storage;
 
     private String itemID;
+    private String publisherID;
+    private boolean isPublisher = false;
 
     @Override
     protected void onStart() {
         super.onStart();
-        adapter.startListening();
-        recyclerView.toggleVisibility();
-
+        if (isPublisher) {
+            adapter.startListening();
+            recyclerView.toggleVisibility();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        adapter.stopListening();
-        recyclerView.toggleVisibility();
+        if (isPublisher) {
+            adapter.stopListening();
+            recyclerView.toggleVisibility();
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onBindViewHolder: ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_info);
         Toolbar toolbar = (Toolbar) findViewById(R.id.item_info_toolbar);
@@ -124,73 +135,14 @@ public class ItemInfoActivity extends AppCompatActivity {
         final FirebaseUser currentUser = auth.getCurrentUser();
         final FirebaseUser publisher;
         Intent intent = getIntent();
-        itemID = intent.getStringExtra(Intent.EXTRA_UID);
+        itemID = intent.getStringExtra(EXTRA_ITEM_ID);
+        publisherID = intent.getStringExtra(Intent.EXTRA_UID);
 
-        recyclerView = (FeedRecyclerView) findViewById(R.id.requested_by_list);
-        recyclerView.setEmptyView(findViewById(R.id.empty_feed_view));
-        //recyclerView.setHasFixedSize(true);
-        recyclerView.setItemViewCacheSize(10);
-        recyclerView.setDrawingCacheEnabled(true);
-        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-
-        Query query = db.collection("items")
-                .document(itemID).collection("requestedBy").orderBy("timestamp", Query.Direction.ASCENDING);
-        FirestoreRecyclerOptions<RequesterCardInformation> response = new FirestoreRecyclerOptions.Builder<RequesterCardInformation>()
-                .setQuery(query, RequesterCardInformation.class)
-                .build();
-        adapter = new FirestoreRecyclerAdapter<RequesterCardInformation, RequestedByCardHolder>(response) {
-            @Override
-            protected void onBindViewHolder(@NonNull final RequestedByCardHolder holder, int position, @NonNull RequesterCardInformation model) {
-                Log.d(TAG, "onBindViewHolder: ");
-                holder.requeterRating.setRating(model.getRating());
-                holder.requesterProfilePicture.setImageResource(R.drawable.ic_user_purple);
-                db.collection("users").document(model.getUserID())
-                        .get()
-                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                Log.d(TAG, "Found the user: " + documentSnapshot);
-                                holder.requesterName.setText(documentSnapshot.getString("name"));
-                                if (documentSnapshot.getString("profilePicture") != null) {
-                                    Glide.with(holder.card)
-                                            .load(documentSnapshot.getString("profilePicture"))
-                                            .apply(RequestOptions.circleCropTransform())
-                                            .into(holder.requesterProfilePicture);
-                                }
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-
-                            }
-                        });
-
-                Calendar cal = Calendar.getInstance();
-                Date today = cal.getTime();
-                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                holder.requestDate.setText(dateFormat.format(today));
-                String timeOfDay = cal.get(Calendar.HOUR) + ":" + cal.get(Calendar.MINUTE);
-                holder.requestTime.setText(timeOfDay);
-
-            }
-
-            @NonNull
-            @Override
-            public RequestedByCardHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-                View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.user_item_request, viewGroup, false);
-                return new RequestedByCardHolder(view);
-            }
-            @Override
-            public void onDataChanged() {
-                super.onDataChanged();
-                Log.d(TAG, "onDataChanged: changed the data in the requesters list");
-            }
-        };
-        adapter.notifyDataSetChanged();
-        recyclerView.setAdapter(adapter);
-        adapter.startListening();
+        String uid = auth.getCurrentUser().getUid();
+        isPublisher = publisherID.equals(uid);
+        if (isPublisher) {
+            setUpRecyclerView();
+        }
 
         //phoneCard.setVisibility(View.GONE);     // FOR NOW
 
@@ -199,6 +151,7 @@ public class ItemInfoActivity extends AppCompatActivity {
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    Log.d(TAG, "user fetch: onComplete started");
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
@@ -223,10 +176,12 @@ public class ItemInfoActivity extends AppCompatActivity {
                             if (document.getString("photo") != null) {
                                 Log.d(TAG, "Found item photo. Fetched picture url: "
                                         + Uri.parse(document.getString("photo")));
-                                GlideApp.with(ItemInfoActivity.this)
+
+                                RequestOptions requestOptions = new RequestOptions();
+                                requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
+                                Glide.with(getApplicationContext())
                                         .load(document.getString("photo"))
-                                        .apply(new RequestOptions())
-                                        .centerCrop()
+                                        .apply(requestOptions)
                                         .into(itemImageView);
                             }
                             if (document.getString("description") != null) {
@@ -247,24 +202,112 @@ public class ItemInfoActivity extends AppCompatActivity {
                                 locationCard = (CardView) findViewById(R.id.location_card);
                                 //locationCard.setVisibility(View.GONE);
                             }
+                            Log.d(TAG, "user fetch: onComplete finished ");
                         } else {
-                            Log.d("TAG", "No such document");
+                            Log.d(TAG, "No such document");
                         }
                     } else {
-                        Log.d("TAG", "get failed with ", task.getException());
+                        Log.d(TAG, "get failed with ", task.getException());
                     }
                 }
             });
         }
+        Log.d(TAG, "onCreate: finished");
+    }
 
+    private void setUpRecyclerView() {
+        Log.d(TAG, "setUpRecyclerView: started");
+        recyclerView = (FeedRecyclerView) findViewById(R.id.requested_by_list);
+        recyclerView.setVisibility(View.VISIBLE);
+        recyclerView.setEmptyView(findViewById(R.id.empty_feed_view));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemViewCacheSize(10);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+
+        Query query = db.collection("items").document(itemID).collection("requestedBy")
+                .orderBy("timestamp", Query.Direction.ASCENDING);
+
+        FirestoreRecyclerOptions<RequesterCardInformation> response = new FirestoreRecyclerOptions.Builder<RequesterCardInformation>()
+                .setQuery(query, RequesterCardInformation.class)
+                .build();
+
+        adapter = new FirestoreRecyclerAdapter<RequesterCardInformation, RequestedByCardHolder>(response) {
+            @Override
+            protected void onBindViewHolder(@NonNull final RequestedByCardHolder holder, int position, @NonNull final RequesterCardInformation model) {
+                Log.d(TAG, "onBindViewHolder: started");
+
+                String uid = getSnapshots().getSnapshot(holder.getAdapterPosition()).getId();
+
+                model.getUserRef()
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                setUserData(holder, model, documentSnapshot);
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "onBindViewHolder: error loading user");
+                            }
+                        });
+            }
+
+            @NonNull
+            @Override
+            public RequestedByCardHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.user_item_request, viewGroup, false);
+                return new RequestedByCardHolder(view);
+            }
+
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+            }
+        };
+        adapter.notifyDataSetChanged();
+        recyclerView.setAdapter(adapter);
+        adapter.startListening();
+        Log.d(TAG, "setUpRecyclerView: done");
+    }
+
+    private void setUserData(RequestedByCardHolder holder, @NonNull RequesterCardInformation model, DocumentSnapshot documentSnapshot) {
+        holder.requesterProfilePicture.setImageResource(R.drawable.ic_user_purple);
+        holder.requesterName.setText(documentSnapshot.getString("name"));
+        String photo = documentSnapshot.getString("profilePicture");
+        if (photo != null) {
+            Glide.with(getApplicationContext())
+                    .load(photo)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(holder.requesterProfilePicture);
+        }
+
+        Date timeOfRequest = model.getTimestamp();
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        holder.requestDate.setText(dateFormat.format(timeOfRequest));
+        DateFormat hourFormat = new SimpleDateFormat("hh:mm");
+        holder.requestTime.setText(hourFormat.format(timeOfRequest));
+
+        Long ratingTotal = documentSnapshot.getLong("rating");
+        Long ratingCount = documentSnapshot.getLong("ratingCount");
+        if (ratingTotal != null && ratingCount != null && ratingCount > 0) {
+            holder.requeterRating.setRating((float) ratingTotal / ratingCount);
+        } else {
+            holder.requeterRating.setRating(0);
+        }
     }
 
     void fillPublisherInfo(String publisher, final TextView uploaderNameView, final ImageView uploaderProfilePictureView,
                            final RatingBar uploaderRatingBar) {
+        Log.d(TAG, "fillPublisherInfo: started");
         final DocumentReference docRef = db.collection("users").document(publisher);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Log.d(TAG, "publisherInfo onComplete: started");
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
@@ -292,11 +335,12 @@ public class ItemInfoActivity extends AppCompatActivity {
                                     publisherRatingSum / publisherRatingCount;
                             uploaderRatingBar.setRating(publisherRating);
                         }
+                        Log.d(TAG, "publisherInfo onComplete: done");
                     } else {
                         Log.d(TAG, "No such document - item publisher");
                     }
                 } else {
-                    Log.d("TAG", "get failed with ", task.getException());
+                    Log.d(TAG, "get failed with ", task.getException());
                 }
             }
         });
@@ -313,9 +357,27 @@ public class ItemInfoActivity extends AppCompatActivity {
 
     public void requestItem(View view) {
         final String userId = auth.getCurrentUser().getUid();
-        final DocumentReference itemRef = db.collection("items").document(itemID);
         final DocumentReference userRef = db.collection("users").document(userId);
-        itemRef.update("hideFrom", FieldValue.arrayUnion(userId)); // upload to hideFrom
+        Map<String, Object> doc = new HashMap<>();
+        doc.put("timestamp", FieldValue.serverTimestamp());
+        doc.put("userRef", userRef);
+        db.collection("items").document(itemID).collection("requestedBy").document(userId)
+                .set(doc)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "requestedItem: item successfully requested");
+                        //TODO: eliminate post from user feed, and finish the activity
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "requestedItem: failed to request item");
+                    }
+                });
+
+        /*itemRef.update("hideFrom", FieldValue.arrayUnion(userId)); // upload to hideFrom
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @SuppressLint("Assert")
             @Override
@@ -323,7 +385,6 @@ public class ItemInfoActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     String userName = "user";
                     String userPicture = "";
-                    FieldValue timestamp;
                     long rating = 0;
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
@@ -331,18 +392,17 @@ public class ItemInfoActivity extends AppCompatActivity {
                             userName = document.getString("name");
                         }
                         if (document.getString("profilePicture") != null) {
-                            userPicture = document.getString("name");
+                            userPicture = document.getString("profilePicture");
                         }
                         try {
                             rating = document.getLong("rating");
                         } catch (NullPointerException e) {
                             Log.d(TAG, "Error: rating doesn't exist");
                         }
-                        timestamp = FieldValue.serverTimestamp();
-                        Map<String, Object> userToAdd = new HashMap<String, Object>();
+                        Map<String, Object> userToAdd = new HashMap<>();
                         userToAdd.put("name", userName);
                         userToAdd.put("picture", userPicture);
-                        userToAdd.put("timestamp", timestamp);
+                        userToAdd.put("timestamp", FieldValue.serverTimestamp());
                         userToAdd.put("rating", rating);
                         itemRef.collection("requestedBy").document(userId).set(userToAdd);
                         //userRef.collection("requestedItems").add(itemRef);
@@ -353,8 +413,6 @@ public class ItemInfoActivity extends AppCompatActivity {
                     Log.d("TAG", "get failed with ", task.getException());
                 }
             }
-        });
-
-
+        });*/
     }
 }
