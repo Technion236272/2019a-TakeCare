@@ -1,27 +1,33 @@
 package com.example.yuval.takecare;
 
-import android.annotation.SuppressLint;
+import android.Manifest;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -33,7 +39,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -41,14 +46,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ItemInfoActivity extends AppCompatActivity {
@@ -81,14 +88,14 @@ public class ItemInfoActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private StorageReference storage;
 
-    private String itemID;
+    private String itemId;
     private String publisherID;
     private boolean isPublisher = false;
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (isPublisher) {
+        if (isPublisher && recyclerView.getVisibility() == View.VISIBLE) {
             adapter.startListening();
             recyclerView.toggleVisibility();
         }
@@ -135,7 +142,7 @@ public class ItemInfoActivity extends AppCompatActivity {
         final FirebaseUser currentUser = auth.getCurrentUser();
         final FirebaseUser publisher;
         Intent intent = getIntent();
-        itemID = intent.getStringExtra(EXTRA_ITEM_ID);
+        itemId = intent.getStringExtra(EXTRA_ITEM_ID);
         publisherID = intent.getStringExtra(Intent.EXTRA_UID);
 
         String uid = auth.getCurrentUser().getUid();
@@ -147,7 +154,7 @@ public class ItemInfoActivity extends AppCompatActivity {
         //phoneCard.setVisibility(View.GONE);     // FOR NOW
 
         if (currentUser != null) {
-            DocumentReference docRef = db.collection("items").document(itemID);
+            DocumentReference docRef = db.collection("items").document(itemId);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -203,6 +210,10 @@ public class ItemInfoActivity extends AppCompatActivity {
                                 locationCard = (CardView) findViewById(R.id.location_card);
                                 //locationCard.setVisibility(View.GONE);
                             }
+                            if (document.getString("phoneNumber") != null) {
+                                Log.d(TAG, "Found phone number.");
+                                itemPhoneView.setText(document.getString("phoneNumber"));
+                            }
                             Log.d(TAG, "user fetch: onComplete finished ");
                         } else {
                             Log.d(TAG, "No such document");
@@ -226,7 +237,7 @@ public class ItemInfoActivity extends AppCompatActivity {
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
 
-        Query query = db.collection("items").document(itemID).collection("requestedBy")
+        Query query = db.collection("items").document(itemId).collection("requestedBy")
                 .orderBy("timestamp", Query.Direction.ASCENDING);
 
         FirestoreRecyclerOptions<RequesterCardInformation> response = new FirestoreRecyclerOptions.Builder<RequesterCardInformation>()
@@ -238,14 +249,14 @@ public class ItemInfoActivity extends AppCompatActivity {
             protected void onBindViewHolder(@NonNull final RequestedByCardHolder holder, int position, @NonNull final RequesterCardInformation model) {
                 Log.d(TAG, "onBindViewHolder: started");
 
-                String uid = getSnapshots().getSnapshot(holder.getAdapterPosition()).getId();
+                final String uid = getSnapshots().getSnapshot(holder.getAdapterPosition()).getId();
 
                 model.getUserRef()
                         .get()
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                setUserData(holder, model, documentSnapshot);
+                                setUserData(holder, model, documentSnapshot, uid);
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -274,7 +285,9 @@ public class ItemInfoActivity extends AppCompatActivity {
         Log.d(TAG, "setUpRecyclerView: done");
     }
 
-    private void setUserData(RequestedByCardHolder holder, @NonNull RequesterCardInformation model, DocumentSnapshot documentSnapshot) {
+    private void setUserData(RequestedByCardHolder holder, @NonNull RequesterCardInformation model,
+                             final DocumentSnapshot documentSnapshot, final String uid) {
+        Log.d(TAG, "setUserData: started");
         holder.requesterProfilePicture.setImageResource(R.drawable.ic_user_purple);
         holder.requesterName.setText(documentSnapshot.getString("name"));
         String photo = documentSnapshot.getString("profilePicture");
@@ -294,10 +307,97 @@ public class ItemInfoActivity extends AppCompatActivity {
         Long ratingTotal = documentSnapshot.getLong("rating");
         Long ratingCount = documentSnapshot.getLong("ratingCount");
         if (ratingTotal != null && ratingCount != null && ratingCount > 0) {
-            holder.requeterRating.setRating((float) ratingTotal / ratingCount);
+            holder.requesterRating.setRating((float) ratingTotal / ratingCount);
         } else {
-            holder.requeterRating.setRating(0);
+            holder.requesterRating.setRating(0);
         }
+        holder.acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertAcceptRequest(documentSnapshot, uid);
+            }
+        });
+        Log.d(TAG, "setUserData: finished");
+    }
+
+    private void alertAcceptRequest(DocumentSnapshot documentSnapshot, final String uid) {
+        String strPre = "Are you sure you want to accept ";
+        String strName = "<b><small>" + documentSnapshot.getString("name") + "</small></b>";
+        String strSuff = "\'s request?";
+        Spanned alertMsg = Html.fromHtml(strPre + strName + strSuff);
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(this);
+        builder.setTitle("Accept Request")
+                .setMessage(alertMsg)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "accepted request: starting");
+                        //TODO: add this document when requesting an item!
+                        db.collection("users")
+                                .document(uid)
+                                .collection("requestedItems")
+                                .document(itemId)
+                                .update("requestStatus", 1)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "accepted request: committed changes");
+                                        recyclerView.setVisibility(View.GONE);
+
+                                        db.collection("items").document(itemId)
+                                                .update("status", 2);
+                                        db.collection("items").document(itemId)
+                                                .get()
+                                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                        List<String> requests = (List<String>) documentSnapshot.get("requests");
+
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+
+                                                    }
+                                                });
+                                        db.collection("items")
+                                                .document(itemId)
+                                                .collection("requestedBy")
+                                                .get()
+                                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                                        for(QueryDocumentSnapshot entry : queryDocumentSnapshots) {
+
+                                                        }
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+
+                                                    }
+                                                });
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                    }
+                                });
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing
+                        Log.d(TAG, "rejected request");
+                    }
+                })
+                .show();
     }
 
     void fillPublisherInfo(String publisher, final TextView uploaderNameView, final ImageView uploaderProfilePictureView,
@@ -329,10 +429,15 @@ public class ItemInfoActivity extends AppCompatActivity {
                         if (document.getLong("rating") != null
                                 && document.getLong("ratingCount") != null) {
                             Log.d(TAG, "Found publisher rating.");
-                            long publisherRatingSum = document.getLong("rating");
-                            long publisherRatingCount = document.getLong("ratingCount");
-                            float publisherRating = (publisherRatingCount == 0) ? 0 :
-                                    publisherRatingSum / publisherRatingCount;
+                            Long publisherRatingSum = document.getLong("rating");
+                            Long publisherRatingCount = document.getLong("ratingCount");
+                            float publisherRating;
+                            if(publisherRatingSum == null || publisherRatingCount == null ||
+                                    publisherRatingCount == 0) {
+                                publisherRating = 0;
+                            } else {
+                                publisherRating = publisherRatingSum / publisherRatingCount;
+                            }
                             uploaderRatingBar.setRating(publisherRating);
                         }
                         Log.d(TAG, "publisherInfo onComplete: done");
@@ -358,16 +463,39 @@ public class ItemInfoActivity extends AppCompatActivity {
     public void requestItem(View view) {
         final String userId = auth.getCurrentUser().getUid();
         final DocumentReference userRef = db.collection("users").document(userId);
+        final DocumentReference itemRef = db.collection("items").document(itemId);
         Map<String, Object> doc = new HashMap<>();
         doc.put("timestamp", FieldValue.serverTimestamp());
         doc.put("userRef", userRef);
-        db.collection("items").document(itemID).collection("requestedBy").document(userId)
+        db.collection("items").document(itemId).collection("requestedBy").document(userId)
                 .set(doc)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "requestedItem: item successfully requested");
-                        //TODO: eliminate post from user feed, and finish the activity
+                        Map<String, Object> doc = new HashMap<>();
+                        doc.put("itemRef", itemRef);
+                        doc.put("timestamp", FieldValue.serverTimestamp());
+                        doc.put("requestStatus", 1);
+
+                        db.collection("users")
+                                .document(userId)
+                                .collection("requestedItems")
+                                .document(itemId)
+                                .set(doc)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        //TODO: eliminate post from user feed, and finish the activity
+                                        Toast.makeText(getApplicationContext(), "You've successfully requested the item!", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                    }
+                                });
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

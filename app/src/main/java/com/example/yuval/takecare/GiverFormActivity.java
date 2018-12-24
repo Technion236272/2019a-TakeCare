@@ -426,6 +426,7 @@ public class GiverFormActivity extends AppCompatActivity {
             Log.d(TAG, "filled pickup description");
         }
 
+        // Status 1 = available
         itemInfo.put("status", 1);
         Log.d(TAG, "filled item's status");
 
