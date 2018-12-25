@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:1093192580078:android:2a69b522e547c4f3",
         "android_client_info": {
-          "package_name": "com.example.yuval.takecare"
+          "package_name": "com.syv.takecare.takecare"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "1093192580078-f5qrbimij9nog4qrbif8khs4megjf2po.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.yuval.takecare",
+            "package_name": "com.syv.takecare.takecare",
             "certificate_hash": "4a73115a55218e308d6ed4c31e0e7342f6b84a7c"
           }
         },
