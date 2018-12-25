@@ -365,7 +365,7 @@
 
                 </android.support.v7.widget.CardView>
 
-                <com.example.yuval.takecare.FeedRecyclerView
+                <com.syv.takecare.takecare.FeedRecyclerView
                     android:id="@+id/requested_by_list"
                     android:layout_width="match_parent"
                     android:layout_height="240dp"
@@ -382,7 +382,7 @@
                     app:layout_constraintTop_toBottomOf="@id/phone_card"
                     app:layout_constraintBottom_toBottomOf="parent">
 
-                </com.example.yuval.takecare.FeedRecyclerView>
+                </com.syv.takecare.takecare.FeedRecyclerView>
 
                 <Button
                     android:id="@+id/send_message_button"

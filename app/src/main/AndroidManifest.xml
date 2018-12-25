@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.yuval.takecare">
+    package="com.syv.takecare.takecare">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -27,7 +27,7 @@
         android:theme="@style/AppTheme">
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.example.yuval.takecare.provider"
+            android:authorities="com.syv.takecare.takecare.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -46,15 +46,15 @@
             android:name="io.fabric.ApiKey"
             android:value="7f7506f3cfaf9acbb75e34b8b44d610c12a1dccf" />
 
-        <activity android:name=".GatewayActivity"></activity>
+        <activity android:name="com.syv.takecare.takecare.GatewayActivity"></activity>
         <activity
-            android:name=".TakerMenuActivity"
+            android:name="com.syv.takecare.takecare.TakerMenuActivity"
             android:label="@string/title_activity_taker_menu"
-            android:parentActivityName=".GatewayActivity"
+            android:parentActivityName="com.syv.takecare.takecare.GatewayActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.yuval.takecare.GatewayActivity" />
+                android:value="com.syv.takecare.takecare.GatewayActivity" />
         </activity>
         <activity
             android:name="com.facebook.FacebookActivity"
@@ -74,7 +74,7 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity">
+        <activity android:name="com.syv.takecare.takecare.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -82,31 +82,31 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SharedItemsActivity"
+            android:name="com.syv.takecare.takecare.SharedItemsActivity"
             android:label="@string/shared_items_menu_title"></activity>
         <activity
-            android:name=".RequestedItemsActivity"
+            android:name="com.syv.takecare.takecare.RequestedItemsActivity"
             android:label="@string/requested_items_menu_title"></activity>
         <activity
-            android:name=".AboutActivity"
+            android:name="com.syv.takecare.takecare.AboutActivity"
             android:label="@string/about_title"></activity>
         <activity
-            android:name=".UserFavoritesActivity"
+            android:name="com.syv.takecare.takecare.UserFavoritesActivity"
             android:label="@string/user_favorites_menu_title"></activity>
-        <activity android:name=".SignUpActivity"></activity>
+        <activity android:name="com.syv.takecare.takecare.SignUpActivity"></activity>
         <activity
-            android:name=".UserProfileActivity"
+            android:name="com.syv.takecare.takecare.UserProfileActivity"
             android:label="@string/user_profile_menu_title"
             android:windowSoftInputMode="stateHidden|adjustResize"></activity>
         <activity
-            android:name=".ItemInfoActivity"
+            android:name="com.syv.takecare.takecare.ItemInfoActivity"
             android:label="@string/item_info_title"></activity>
         <activity
-            android:name=".GiverFormActivity"
-            android:parentActivityName=".GatewayActivity">
+            android:name="com.syv.takecare.takecare.GiverFormActivity"
+            android:parentActivityName="com.syv.takecare.takecare.GatewayActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.yuval.takecare.GatewayActivity" />
+                android:value="com.syv.takecare.takecare.GatewayActivity" />
         </activity>
     </application>
 
