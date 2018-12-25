@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "1093192580078-dfnv8b3vsehsdh269uoirbbdtlqchd15.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.yuval.takecare",
+            "certificate_hash": "6a3efd918b6dd23b634820f449a3134e76aae5ec"
+          }
+        },
+        {
           "client_id": "1093192580078-b5dgbk1rhnn5sb395se8s3b8dv8o28g8.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -40,7 +48,51 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "1093192580078-b5dgbk1rhnn5sb395se8s3b8dv8o28g8.apps.googleusercontent.com",
+              "client_id": "1093192580078-lh7kjnjl4obk75nv49edosvfd16g5ffs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1093192580078:android:3fc4cc06ec7920bb",
+        "android_client_info": {
+          "package_name": "com.syv.takecare.takecare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1093192580078-m1eu0jokq4jps8apn8di29h6cup1rgmu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.syv.takecare.takecare",
+            "certificate_hash": "6a3efd918b6dd23b634820f449a3134e76aae5ec"
+          }
+        },
+        {
+          "client_id": "1093192580078-b5dgbk1rhnn5sb395se8s3b8dv8o28g8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD18EvoF2GRZeWpKYQitEBi_JCk9aJsNFw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1093192580078-lh7kjnjl4obk75nv49edosvfd16g5ffs.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

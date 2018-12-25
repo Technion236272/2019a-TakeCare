@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.yuval.takecare", appContext.getPackageName());
+        assertEquals("com.syv.takecare.takecare", appContext.getPackageName());
     }
 }
