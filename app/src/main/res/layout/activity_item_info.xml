@@ -441,6 +441,7 @@
                     android:layout_marginBottom="8dp"
                     android:background="@android:color/transparent"
                     android:onClick="onDeletePost"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toTopOf="@+id/divider"
                     app:layout_constraintStart_toEndOf="@+id/item_title"
                     app:layout_constraintTop_toTopOf="parent"

@@ -2,6 +2,7 @@ package com.syv.takecare.takecare;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Image;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
@@ -71,6 +73,7 @@ public class ItemInfoActivity extends AppCompatActivity {
     private TextView itemPhoneView;
     private Button messageButton;
     private Button reportButton;
+    private ImageButton deleteItem;
 
     private CardView locationCard;
     private CardView phoneCard;
@@ -127,6 +130,7 @@ public class ItemInfoActivity extends AppCompatActivity {
         itemPhoneView = (TextView) findViewById(R.id.phone_number);
         messageButton = (Button) findViewById(R.id.send_message_button);
         reportButton = (Button) findViewById(R.id.report_button);
+        deleteItem = (ImageButton) findViewById(R.id.delete_post_button);
 
         phoneCard = (CardView) findViewById(R.id.phone_card);
 
@@ -165,6 +169,7 @@ public class ItemInfoActivity extends AppCompatActivity {
                                 if (document.getString("publisher").equals(currentUser.getUid())) {
                                     request_button_layout = (RelativeLayout) findViewById(R.id.request_button_layout);
                                     request_button_layout.setVisibility(View.GONE);
+                                    deleteItem.setVisibility(View.VISIBLE);
                                     recyclerView.setVisibility(View.VISIBLE);
                                 } else {
                                     RelativeLayout requestButton = (RelativeLayout) findViewById(R.id.request_button_layout);
