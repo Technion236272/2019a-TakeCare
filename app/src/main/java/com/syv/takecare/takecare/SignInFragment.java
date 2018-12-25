@@ -94,7 +94,7 @@ public class SignInFragment extends Fragment  implements View.OnClickListener {
                                 Log.d(TAG, "signInWithEmail:success");
                                 Intent intent = new Intent(getActivity(), GatewayActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                intent.putExtra(Intent.EXTRA_TEXT, false);
+                                intent.putExtra(Intent.EXTRA_TEXT, true);
                                 dialog.dismiss();
                                 startActivity(intent);
                             } else {

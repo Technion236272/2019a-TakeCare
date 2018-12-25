@@ -24,15 +24,20 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.syv.takecare.takecare.utilities.RotateBitmap;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -70,11 +75,13 @@ public class UserProfileActivity extends AppCompatActivity {
     private ImageButton declineNameBtn;
     private ImageButton acceptDescriptionBtn;
     private ImageButton declineDescriptionBtn;
+    private Switch itemNotificationsSwitch;
 
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private StorageReference storage;
+    private FirebaseUser user;
 
     private String currentName = "User";
     private String currentDescription = "";
@@ -98,6 +105,11 @@ public class UserProfileActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        storage = FirebaseStorage.getInstance().getReference();
+        user = auth.getCurrentUser();
+
         profilePictureView = (ImageView) findViewById(R.id.profile_pic);
         picturePB = (ProgressBar) findViewById(R.id.profile_pic_progress_bar);
         userNameView = (EditText) findViewById(R.id.user_name);
@@ -108,6 +120,7 @@ public class UserProfileActivity extends AppCompatActivity {
         declineNameBtn = (ImageButton) findViewById(R.id.decline_name_btn);
         acceptDescriptionBtn = (ImageButton) findViewById(R.id.accept_description_btn);
         declineDescriptionBtn = (ImageButton) findViewById(R.id.decline_description_btn);
+        itemNotificationsSwitch = (Switch) findViewById(R.id.item_notifications_switch);
 
         originalEditTextDrawable = userNameView.getBackground();
         originalKeyListener = userNameView.getKeyListener();
@@ -164,13 +177,8 @@ public class UserProfileActivity extends AppCompatActivity {
         selectedImageFile = null;
         selectedImage = null;
 
-        db = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
-        storage = FirebaseStorage.getInstance().getReference();
-
         final TextView usernameViewRef = userNameView;
         final TextView userDescriptionRef = userDescriptionView;
-        final FirebaseUser user = auth.getCurrentUser();
         if (user != null) {
             DocumentReference docRef = db.collection("users").document(user.getUid());
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -204,6 +212,14 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
             });
         }
+
+        itemNotificationsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                }
+            }
+        });
     }
 
     @Override
@@ -278,7 +294,6 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void setUserName(final String newName, final String restore, final boolean undoable) {
-        final FirebaseUser user = auth.getCurrentUser();
         if (user == null) {
             return;
         }
@@ -288,7 +303,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "user name updated!");
-                        if(undoable) {
+                        if (undoable) {
                             Snackbar override = Snackbar
                                     .make(findViewById(R.id.user_profile_root), "Name updated!", Snackbar.LENGTH_LONG)
                                     .setAction("UNDO", new View.OnClickListener() {
@@ -314,7 +329,6 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void setUserDescription(final String newText, final String restore, final boolean undoable) {
-        final FirebaseUser user = auth.getCurrentUser();
         if (user == null) {
             return;
         }
@@ -324,7 +338,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "user description updated!");
-                        if(undoable) {
+                        if (undoable) {
                             Snackbar override = Snackbar
                                     .make(findViewById(R.id.user_profile_root), "Profile updated!", Snackbar.LENGTH_LONG)
                                     .setAction("UNDO", new View.OnClickListener() {
@@ -357,12 +371,29 @@ public class UserProfileActivity extends AppCompatActivity {
                 .setMessage("Are you sure you want to log out?")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        //close login session of the user
-                        FirebaseAuth.getInstance().signOut();
-                        LoginManager.getInstance().logOut();
-                        Intent intent = new Intent(UserProfileActivity.this, LoginActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
+                        //Close login session of the user: delete token
+                        FirebaseInstanceId.getInstance().getInstanceId()
+                                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                                        if (!task.isSuccessful()) {
+                                            Log.w(TAG, "getInstanceId failed", task.getException());
+                                            return;
+                                        }
+                                        String token = task.getResult().getToken();
+                                        Log.d(TAG, "Token is: " + token);
+                                        db.collection("users").document(user.getUid())
+                                                .update("tokens", FieldValue.arrayRemove(token));
+
+                                        // Perform log out
+
+                                        FirebaseAuth.getInstance().signOut();
+                                        LoginManager.getInstance().logOut();
+                                        Intent intent = new Intent(UserProfileActivity.this, LoginActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intent);
+                                    }
+                                });
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -374,7 +405,6 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void setUserProfilePic(byte[] uploadBytes) {
-        final FirebaseUser user = auth.getCurrentUser();
         assert user != null;
         final StorageReference storageRef = storage.child("userProfilePictures/" + user.getUid());
         UploadTask uploadTask = storageRef.putBytes(uploadBytes);
@@ -523,7 +553,7 @@ public class UserProfileActivity extends AppCompatActivity {
         userNameView.clearFocus();
     }
 
-    public class ImageCompressTask extends AsyncTask<Uri, Integer, byte[]> {
+    private class ImageCompressTask extends AsyncTask<Uri, Integer, byte[]> {
 
         @Override
         protected void onPreExecute() {

@@ -13,9 +13,10 @@ public class RequesterCardInformation {
     /**
      * Empty constructor for the FirestoreRecyclerAdapter
      */
-    public RequesterCardInformation(){
+    public RequesterCardInformation() {
 
     }
+
     public RequesterCardInformation(Date timestamp, DocumentReference userRef) {
         this.timestamp = timestamp;
         this.userRef = userRef;

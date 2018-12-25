@@ -3,8 +3,10 @@ package com.syv.takecare.takecare;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,6 +40,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.syv.takecare.takecare.utilities.RequestedItemsInformation;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -49,13 +52,16 @@ public class RequestedItemsActivity extends AppCompatActivity {
     private static final int ICON_FILL_DURATION = 200;
     private static final int ICON_ACTIVATED_DURATION = 400;
     private static final String RECYCLER_STATE_POSITION_KEY = "RECYCLER POSITION";
-    ReentrantLock iconLock = new ReentrantLock();
+    private static final String EXTRA_ITEM_ID = "Item Id";
+    private ReentrantLock iconLock = new ReentrantLock();
 
     private FeedRecyclerView recyclerView;
     private FirestoreRecyclerAdapter adapter;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private StorageReference storage;
+    private FirebaseUser user;
+
     private int position = 0;
     private Button jumpButton;
 
@@ -78,6 +84,7 @@ public class RequestedItemsActivity extends AppCompatActivity {
         jumpButton = findViewById(R.id.requested_items_jump_button);
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
         storage = FirebaseStorage.getInstance().getReference();
 
         orientation = getResources().getConfiguration().orientation;
@@ -154,97 +161,64 @@ public class RequestedItemsActivity extends AppCompatActivity {
         final FirebaseUser user = auth.getCurrentUser();
         assert user != null;
 
-        Query query = db.collection("users").document(user.getUid()).collection("RequestedItems")
+        Query query = db.collection("users").document(user.getUid()).collection("requestedItems")
+                .orderBy("requestStatus", Query.Direction.ASCENDING)
                 .orderBy("timestamp", Query.Direction.DESCENDING);
 
-        FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
-                .setQuery(query, FeedCardInformation.class)
+        FirestoreRecyclerOptions<RequestedItemsInformation> response = new FirestoreRecyclerOptions.Builder<RequestedItemsInformation>()
+                .setQuery(query, RequestedItemsInformation.class)
                 .build();
 
-        adapter = new FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder>(response) {
+        adapter = new FirestoreRecyclerAdapter<RequestedItemsInformation, ItemsViewHolder>(response) {
             @Override
-            protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, int position, @NonNull FeedCardInformation model) {
-                Log.d(TAG, "model " + model.getPhoto());
-                holder.itemTitle.setText(model.getTitle());
-                RequestOptions requestOptions = new RequestOptions();
-                requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
-                Glide.with(holder.card)
-                        .load(model.getPhoto())
-                        .apply(requestOptions)
-                        .into(holder.itemPhoto);
+            protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, final int position, @NonNull final RequestedItemsInformation model) {
+                Log.d(TAG, "model: " + model);
+                holder.itemRoot.setVisibility(View.INVISIBLE);
 
-                // category selection
-                int categoryId;
-                switch (model.getCategory()) {
-                    case "Food":
-                        categoryId = R.drawable.ic_pizza_slice_purple;
-                        break;
-                    case "Study Material":
-                        categoryId = R.drawable.ic_book_purple;
-                        break;
-                    case "Households":
-                        categoryId = R.drawable.ic_lamp_purple;
-                        break;
-                    case "Lost & Found":
-                        categoryId = R.drawable.ic_lost_and_found_purple;
-                        break;
-                    case "Hitchhikes":
-                        categoryId = R.drawable.ic_car_purple;
-                        break;
-                    default:
-                        categoryId = R.drawable.ic_treasure_purple;
-                        break;
-                }
-
-                int pickupMethodId;
-                switch (model.getPickupMethod()) {
-                    case "In Person":
-                        pickupMethodId = R.drawable.ic_in_person_purple;
-                        break;
-                    case "Giveaway":
-                        pickupMethodId = R.drawable.ic_giveaway_purple;
-                        break;
-                    default:
-                        pickupMethodId = R.drawable.ic_race_purple;
-                        break;
-                }
-
-                holder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
-                db.collection("users").document(model.getPublisher())
+                model.getItemRef()
                         .get()
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                Log.d(TAG, "Found the user: " + documentSnapshot);
-                                holder.itemPublisher.setText(documentSnapshot.getString("name"));
-                                if (documentSnapshot.getString("profilePicture") != null) {
-                                    Glide.with(holder.card)
-                                            .load(documentSnapshot.getString("profilePicture"))
-                                            .apply(RequestOptions.circleCropTransform())
-                                            .into(holder.profilePhoto);
+                            public void onSuccess(final DocumentSnapshot documentSnapshot) {
+                                holder.itemRoot.setVisibility(View.VISIBLE);
+                                holder.card.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(getApplicationContext(), ItemInfoActivity.class);
+                                        intent.putExtra(Intent.EXTRA_UID, user.getUid());
+                                        String path = model.getItemRef().getPath();
+                                        intent.putExtra(EXTRA_ITEM_ID, path.replace("items/", ""));
+                                        startActivity(intent);
+                                    }
+                                });
+                                switch (model.getRequestStatus()) {
+                                    case 0:
+                                        Log.d(TAG, "card in position " + position + " is ACCEPTED");
+                                        holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryLite));
+                                        holder.itemTitle.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                                        break;
+                                    case 1:
+                                        Log.d(TAG, "card in position " + position + " is REQUESTED");
+                                        holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorAccentLite));
+                                        holder.itemTitle.setTextColor(getResources().getColor(R.color.colorAccent));
+                                        break;
+                                    case 2:
+                                        Log.d(TAG, "card in position " + position + " is REJECETD");
+                                        holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorRedLite));
+                                        holder.itemTitle.setTextColor(Color.RED);
+                                        ViewCompat.setBackgroundTintList(holder.itemCategory, getResources().getColorStateList(R.color.secondary_text));
+                                        ViewCompat.setBackgroundTintList(holder.itemPickupMethod, getResources().getColorStateList(R.color.secondary_text));
+                                        break;
                                 }
+                                setUpItemInfo(holder, documentSnapshot);
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-
+                                Log.d(TAG, "ERROR LOADING ITEM!");
                             }
                         });
-                holder.itemCategory.setImageResource(categoryId);
-                holder.itemPickupMethod.setImageResource(pickupMethodId);
-                holder.itemCategory.setTag(categoryId);
-                holder.itemPickupMethod.setTag(pickupMethodId);
-
-                activateViewHolderIcons(holder, model);
-                holder.card.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getApplicationContext(), ItemInfoActivity.class);
-                        intent.putExtra(Intent.EXTRA_UID, getSnapshots().getSnapshot(holder.getAdapterPosition()).getId());
-                        startActivity(intent);
-                    }
-                });
             }
 
             @NonNull
@@ -297,9 +271,80 @@ public class RequestedItemsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private void activateViewHolderIcons(final ItemsViewHolder holder, final FeedCardInformation model) {
+    private void setUpItemInfo(final ItemsViewHolder holder, final DocumentSnapshot documentSnapshot) {
+        holder.itemTitle.setText(documentSnapshot.getString("title"));
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
+        Glide.with(holder.card)
+                .load(documentSnapshot.getString("photo"))
+                .apply(requestOptions)
+                .into(holder.itemPhoto);
 
+        // category selection
+        int categoryId;
+        switch (documentSnapshot.getString("category")) {
+            case "Food":
+                categoryId = R.drawable.ic_pizza_slice_purple;
+                break;
+            case "Study Material":
+                categoryId = R.drawable.ic_book_purple;
+                break;
+            case "Households":
+                categoryId = R.drawable.ic_lamp_purple;
+                break;
+            case "Lost & Found":
+                categoryId = R.drawable.ic_lost_and_found_purple;
+                break;
+            case "Hitchhikes":
+                categoryId = R.drawable.ic_car_purple;
+                break;
+            default:
+                categoryId = R.drawable.ic_treasure_purple;
+                break;
+        }
+
+        int pickupMethodId;
+        switch (documentSnapshot.getString("pickupMethod")) {
+            case "In Person":
+                pickupMethodId = R.drawable.ic_in_person_purple;
+                break;
+            case "Giveaway":
+                pickupMethodId = R.drawable.ic_giveaway_purple;
+                break;
+            default:
+                pickupMethodId = R.drawable.ic_race_purple;
+                break;
+        }
+
+        holder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
+        db.collection("users").document(documentSnapshot.getString("publisher"))
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Log.d(TAG, "Found the user: " + documentSnapshot);
+                        holder.itemPublisher.setText(documentSnapshot.getString("name"));
+                        if (documentSnapshot.getString("profilePicture") != null) {
+                            Glide.with(holder.card)
+                                    .load(documentSnapshot.getString("profilePicture"))
+                                    .apply(RequestOptions.circleCropTransform())
+                                    .into(holder.profilePhoto);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+        holder.itemCategory.setImageResource(categoryId);
+        holder.itemPickupMethod.setImageResource(pickupMethodId);
+        activateViewHolderIcons(holder, categoryId, pickupMethodId);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void activateViewHolderIcons(final ItemsViewHolder holder, final int categoryId, final int pickupMethodId) {
 
         holder.itemCategory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -342,20 +387,20 @@ public class RequestedItemsActivity extends AppCompatActivity {
                 }).start();
 
                 String str;
-                switch (model.getCategory()) {
-                    case "Food":
+                switch (categoryId) {
+                    case R.drawable.ic_pizza_slice_purple:
                         str = "This item's category is food";
                         break;
-                    case "Study Material":
+                    case R.drawable.ic_book_purple:
                         str = "This item's category is study material";
                         break;
-                    case "Households":
+                    case R.drawable.ic_lamp_purple:
                         str = "This item's category is household objects";
                         break;
-                    case "Lost & Found":
+                    case R.drawable.ic_lost_and_found_purple:
                         str = "This item's category is lost&founds";
                         break;
-                    case "Hitchhikes":
+                    case R.drawable.ic_car_purple:
                         str = "This item's category is hitchhiking";
                         break;
                     default:
@@ -408,11 +453,11 @@ public class RequestedItemsActivity extends AppCompatActivity {
                 }).start();
 
                 String str;
-                switch (model.getPickupMethod()) {
-                    case "In Person":
+                switch (pickupMethodId) {
+                    case R.drawable.ic_in_person_purple:
                         str = "This item is available for pick-up in person";
                         break;
-                    case "Giveaway":
+                    case R.drawable.ic_giveaway_purple:
                         str = "This item is available in a public giveaway";
                         break;
                     default:

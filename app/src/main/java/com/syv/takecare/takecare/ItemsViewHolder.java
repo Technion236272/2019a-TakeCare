@@ -10,7 +10,7 @@ class ItemsViewHolder extends RecyclerView.ViewHolder {
 
     private static final String TAG = "TakeCare";
 
-//    private LinearLayout itemRoot;
+    LinearLayout itemRoot;
 //    private ViewGroup.LayoutParams params;
 
     CardView card;
@@ -27,9 +27,8 @@ class ItemsViewHolder extends RecyclerView.ViewHolder {
 
     ItemsViewHolder(View itemView) {
         super(itemView);
-//        itemRoot = itemView.findViewById(R.id.card_root);
+        itemRoot = itemView.findViewById(R.id.card_root);
 //        params = itemRoot.getLayoutParams();
-
         card = (CardView) itemView.findViewById(R.id.taker_feed_card);
         itemTitle = (TextView) itemView.findViewById(R.id.item_title);
         itemPhoto = (ImageView) itemView.findViewById(R.id.item_photo);

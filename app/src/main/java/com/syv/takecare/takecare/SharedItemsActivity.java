@@ -3,6 +3,7 @@ package com.syv.takecare.takecare;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
@@ -240,6 +241,7 @@ public class SharedItemsActivity extends AppCompatActivity {
                     case 0:
                         Log.d(TAG, "card in position " + position + " is REQUESTED");
                         holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorAccentLite));
+                        holder.itemTitle.setTextColor(getResources().getColor(R.color.colorAccent));
                         break;
                     case 1:
                         Log.d(TAG, "card in position " + position + " is AVAILABLE");
@@ -248,10 +250,12 @@ public class SharedItemsActivity extends AppCompatActivity {
                     case 2:
                         Log.d(TAG, "card in position " + position + " is TAKEN");
                         holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryLite));
+                        holder.itemTitle.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
                         break;
                     case 3:
                         Log.d(TAG, "card in position " + position + " is TIMED OUT");
                         holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorRedLite));
+                        holder.itemTitle.setTextColor(Color.RED);
                         ViewCompat.setBackgroundTintList(holder.itemCategory, getResources().getColorStateList(R.color.secondary_text));
                         ViewCompat.setBackgroundTintList(holder.itemPickupMethod, getResources().getColorStateList(R.color.secondary_text));
                         break;

@@ -475,16 +475,6 @@ public class TakerMenuActivity extends AppCompatActivity
 
                             }
                         });
-
-                switch (model.getStatus()) {
-                    case 0:
-                        holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorAccent));
-                        break;
-                    case 1:
-                        holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorCardDefault));
-                        break;
-                }
-
                 holder.itemCategory.setImageResource(categoryId);
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
 

@@ -16,13 +16,18 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.syv.takecare.takecare.utilities.TokenServiceFCM;
 
 public class GatewayActivity extends AppCompatActivity {
-    private final static String TAG = "GatewayActivity";
+    private final static String TAG = "TakeCare";
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,21 +38,38 @@ public class GatewayActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        user = auth.getCurrentUser();
 
         // The extra boolean put in the intent denotes whether the user is new or already existing,
         // and shows the appropriate toast
         Intent intent = getIntent();
         boolean welcomeToast = intent.getBooleanExtra(Intent.EXTRA_TEXT, false);
         makeWelcomeToast(welcomeToast);
+//        String token = TokenServiceFCM.getToken(getApplicationContext());
+//        Log.d(TAG, "onCreate: token is " + token);
+//        Toast.makeText(getApplicationContext(), token, Toast.LENGTH_LONG).show();
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "getInstanceId failed", task.getException());
+                            return;
+                        }
+                        String token = task.getResult().getToken();
+                        Log.d(TAG, "Token is: "+ token);
+                        db.collection("users").document(user.getUid())
+                                .update("tokens", FieldValue.arrayUnion(token));
+                    }
+                });
+
     }
 
-    private void makeWelcomeToast(boolean newUser) {
-        final String toastText;
-        if (newUser) {
-            toastText = "Welcome, ";
-        } else {
-            toastText = "Welcome back, ";
+    private void makeWelcomeToast(boolean fromLoginScreen) {
+        if (!fromLoginScreen) {
+            return;
         }
+        final String toastText = "Welcome, ";
         final FirebaseUser user = auth.getCurrentUser();
         DocumentReference docRef = db.collection("users").document(user.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

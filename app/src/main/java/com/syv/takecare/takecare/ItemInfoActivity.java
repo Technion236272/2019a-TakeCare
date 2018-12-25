@@ -338,48 +338,16 @@ public class ItemInfoActivity extends AppCompatActivity {
                                 .document(uid)
                                 .collection("requestedItems")
                                 .document(itemId)
-                                .update("requestStatus", 1)
+                                .update("requestStatus", 0)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Log.d(TAG, "accepted request: committed changes");
-                                        recyclerView.setVisibility(View.GONE);
-
                                         db.collection("items").document(itemId)
                                                 .update("status", 2);
-                                        db.collection("items").document(itemId)
-                                                .get()
-                                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                    @Override
-                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                        List<String> requests = (List<String>) documentSnapshot.get("requests");
-
-                                                    }
-                                                })
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-
-                                                    }
-                                                });
-                                        db.collection("items")
-                                                .document(itemId)
-                                                .collection("requestedBy")
-                                                .get()
-                                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                                    @Override
-                                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                                        for(QueryDocumentSnapshot entry : queryDocumentSnapshots) {
-
-                                                        }
-                                                    }
-                                                })
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-
-                                                    }
-                                                });
+                                        recyclerView.setVisibility(View.GONE);
+                                        (findViewById(R.id.item_info_root))
+                                                .setBackgroundColor(getResources().getColor(R.color.colorPrimaryLite));
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -416,13 +384,13 @@ public class ItemInfoActivity extends AppCompatActivity {
                         if (document.getString("profilePicture") != null) {
                             Log.d(TAG, "Found profile pic. Fetched picture url: "
                                     + Uri.parse(document.getString("profilePicture")));
-                            Glide.with(ItemInfoActivity.this)
+                            Glide.with(getApplicationContext())
                                     .load(document.getString("profilePicture"))
                                     .apply(RequestOptions.circleCropTransform())
                                     .into(uploaderProfilePictureView);
                         } else {
                             Log.d(TAG, "Profile picture not found.");
-                            Glide.with(ItemInfoActivity.this)
+                            Glide.with(getApplicationContext())
                                     .load(R.drawable.ic_user_vector)
                                     .into(uploaderProfilePictureView);
                         }

@@ -163,6 +163,7 @@
     <string name="nav_about">About</string>
     <string name="about_text"><![CDATA[TakeCare is a social Android app written in Java and developed on Android Studio, suitable for all audiences over the age of 13.\nIn the app, you choose the role of either a giver or a taker at any given time. A giver shares a thing that they own but are not interested in, whereas a taker can browse such things and choose one to schedule a pickup.\nAmong the things you can share with others (or express your interest in):\n\u2022 Food Furniture\n\u2022 Study material\n\u2022 Hitchhikes\n\u2022 Lost & Founds\n\u2022 Just about anything you see fit!\nJoin the sharing revolution: help brighten someone\'s day, and also help the world by not excessively throwing away like in most modern families!]]></string>
     <string name="credits_title">Credits</string>
+    <string name="item_notifications">Receive Notifications from Item Matches</string>
     />
 
     <!---->
