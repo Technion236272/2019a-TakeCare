@@ -283,36 +283,40 @@ public class LoginScreenFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Log.d(TAG, "Existing user document fetched!");
-                        dialog.dismiss();
-                        Intent intent = new Intent(getActivity(), GatewayActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        intent.putExtra(Intent.EXTRA_TEXT, true);
-                        startActivity(intent);
+                        Log.d(TAG, "Existing user document fetched!" + documentSnapshot);
+                        if (documentSnapshot.exists()) {
+                            dialog.dismiss();
+                            Intent intent = new Intent(getActivity(), GatewayActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.putExtra(Intent.EXTRA_TEXT, true);
+                            startActivity(intent);
+                        } else {
+                            db.collection("users").document(uid)
+                                    .set(userInfo)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "New user document successfully written!");
+                                            dialog.dismiss();
+                                            Intent intent = new Intent(getActivity(), GatewayActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            intent.putExtra(Intent.EXTRA_TEXT, true);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.d(TAG, "Error writing document " + e);
+                                        }
+                                    });
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        db.collection("users").document(uid)
-                                .set(userInfo)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d(TAG, "New user document successfully written!");
-                                        dialog.dismiss();
-                                        Intent intent = new Intent(getActivity(), GatewayActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        intent.putExtra(Intent.EXTRA_TEXT, true);
-                                        startActivity(intent);
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d(TAG, "Error writing document " + e);
-                                    }
-                                });
+                        Log.d(TAG, "error loading user document");
                     }
                 });
     }
