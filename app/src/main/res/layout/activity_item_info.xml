@@ -58,15 +58,24 @@
 
                 <TextView
                     android:id="@+id/item_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginLeft="40dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginEnd="40dp"
+                    android:layout_marginRight="40dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_horizontal"
+                    android:textAlignment="center"
                     android:textColor="@color/primary_text"
                     android:textSize="25sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
 
                 <View
                     android:id="@+id/divider"
@@ -436,16 +445,17 @@
                     android:id="@+id/delete_post_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
                     android:layout_marginBottom="8dp"
                     android:background="@android:color/transparent"
                     android:onClick="onDeletePost"
                     android:visibility="gone"
                     app:layout_constraintBottom_toTopOf="@+id/divider"
-                    app:layout_constraintStart_toEndOf="@+id/item_title"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.444"
                     app:srcCompat="@drawable/ic_trash_can" />
 
             </android.support.constraint.ConstraintLayout>
