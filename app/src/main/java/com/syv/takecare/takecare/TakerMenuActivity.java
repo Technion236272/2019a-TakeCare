@@ -957,7 +957,7 @@ public class TakerMenuActivity extends AppCompatActivity
                     queryCategoriesFilter = "Lost & Found";
                     break;
                 case R.id.nav_hitchhike:
-                    queryCategoriesFilter = "Hitchhike";
+                    queryCategoriesFilter = "Hitchhikes";
                     break;
                 case R.id.nav_other:
                     queryCategoriesFilter = "Other";

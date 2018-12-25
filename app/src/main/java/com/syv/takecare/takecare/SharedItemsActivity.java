@@ -261,7 +261,7 @@ public class SharedItemsActivity extends AppCompatActivity {
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
 
                 // Remove option to report own items
-                holder.itemReport.setVisibility(View.GONE);
+                holder.itemReport.setVisibility(View.INVISIBLE);
 
                 activateViewHolderIcons(holder, model);
 
