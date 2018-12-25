@@ -50,6 +50,7 @@ public class SharedItemsActivity extends AppCompatActivity {
     private static final int ICON_FILL_DURATION = 200;
     private static final int ICON_ACTIVATED_DURATION = 400;
     private static final String RECYCLER_STATE_POSITION_KEY = "RECYCLER POSITION";
+    private static final String EXTRA_ITEM_ID = "Item Id";
     ReentrantLock iconLock = new ReentrantLock();
 
     private FeedRecyclerView recyclerView;
@@ -168,15 +169,16 @@ public class SharedItemsActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, int position, @NonNull FeedCardInformation model) {
                 Log.d(TAG, "model " + model.getPhoto());
+                final String itemId = getSnapshots().getSnapshot(holder.getAdapterPosition()).getId();
                 holder.itemTitle.setText(model.getTitle());
                 RequestOptions requestOptions = new RequestOptions();
                 requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
-                Glide.with(holder.card)
+                Glide.with(getApplicationContext())
                         .load(model.getPhoto())
                         .apply(requestOptions)
                         .into(holder.itemPhoto);
 
-                // category selection
+                // Category selection
                 int categoryId;
                 switch (model.getCategory()) {
                     case "Food":
@@ -218,10 +220,9 @@ public class SharedItemsActivity extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                Log.d(TAG, "Found the user: " + documentSnapshot);
                                 holder.itemPublisher.setText(documentSnapshot.getString("name"));
                                 if (documentSnapshot.getString("profilePicture") != null) {
-                                    Glide.with(holder.card)
+                                    Glide.with(getApplicationContext())
                                             .load(documentSnapshot.getString("profilePicture"))
                                             .apply(RequestOptions.circleCropTransform())
                                             .into(holder.profilePhoto);
@@ -234,7 +235,8 @@ public class SharedItemsActivity extends AppCompatActivity {
 
                             }
                         });
-                switch(model.getStatus()) {
+
+                switch (model.getStatus()) {
                     case 0:
                         Log.d(TAG, "card in position " + position + " is REQUESTED");
                         holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorAccentLite));
@@ -254,17 +256,21 @@ public class SharedItemsActivity extends AppCompatActivity {
                         ViewCompat.setBackgroundTintList(holder.itemPickupMethod, getResources().getColorStateList(R.color.secondary_text));
                         break;
                 }
+
                 holder.itemCategory.setImageResource(categoryId);
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
-                holder.itemCategory.setTag(categoryId);
-                holder.itemPickupMethod.setTag(pickupMethodId);
+
+                // Remove option to report own items
+                holder.itemReport.setVisibility(View.GONE);
 
                 activateViewHolderIcons(holder, model);
+
                 holder.card.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getApplicationContext(), ItemInfoActivity.class);
-                        intent.putExtra(Intent.EXTRA_UID, getSnapshots().getSnapshot(holder.getAdapterPosition()).getId());
+                        intent.putExtra(EXTRA_ITEM_ID, itemId);
+                        intent.putExtra(Intent.EXTRA_UID, user.getUid());
                         startActivity(intent);
                     }
                 });
