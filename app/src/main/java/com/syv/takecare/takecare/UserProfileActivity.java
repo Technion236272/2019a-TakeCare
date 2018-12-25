@@ -1,4 +1,4 @@
-package com.example.yuval.takecare;
+package com.syv.takecare.takecare;
 
 import android.Manifest;
 import android.app.Activity;
@@ -33,7 +33,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.yuval.takecare.utilities.RotateBitmap;
+import com.syv.takecare.takecare.utilities.RotateBitmap;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;

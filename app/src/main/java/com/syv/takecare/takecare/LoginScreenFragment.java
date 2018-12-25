@@ -1,4 +1,4 @@
-package com.example.yuval.takecare;
+package com.syv.takecare.takecare;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
