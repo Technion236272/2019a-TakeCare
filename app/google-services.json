@@ -1,0 +1,71 @@
+{
+  "project_info": {
+    "project_number": "1093192580078",
+    "firebase_url": "https://takecare-81dab.firebaseio.com",
+    "project_id": "takecare-81dab",
+    "storage_bucket": "takecare-81dab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1093192580078:android:3fc4cc06ec7920bb",
+        "android_client_info": {
+          "package_name": "com.syv.takecare.takecare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1093192580078-m1eu0jokq4jps8apn8di29h6cup1rgmu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.syv.takecare.takecare",
+            "certificate_hash": "6a3efd918b6dd23b634820f449a3134e76aae5ec"
+          }
+        },
+        {
+          "client_id": "1093192580078-k2j2q70ff9geud9ajg046t23nbqvqmsv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.syv.takecare.takecare",
+            "certificate_hash": "4a73115a55218e308d6ed4c31e0e7342f6b84a7c"
+          }
+        },
+        {
+          "client_id": "1093192580078-pgajbt7fvmlv4v0fdie31sgc6jb8b6va.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.syv.takecare.takecare",
+            "certificate_hash": "b19ee39060860d9ee3b5f6091a3dbc860f20bcae"
+          }
+        },
+        {
+          "client_id": "1093192580078-b5dgbk1rhnn5sb395se8s3b8dv8o28g8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD18EvoF2GRZeWpKYQitEBi_JCk9aJsNFw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1093192580078-lh7kjnjl4obk75nv49edosvfd16g5ffs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
