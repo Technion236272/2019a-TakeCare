@@ -1,4 +1,4 @@
-package com.syv.takecare.takecare;
+package com.example.yuval.takecare;
 
 import android.Manifest;
 import android.app.Activity;
@@ -24,18 +24,17 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.syv.takecare.takecare.utilities.RotateBitmap;
+import com.example.yuval.takecare.utilities.RotateBitmap;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -71,13 +70,11 @@ public class UserProfileActivity extends AppCompatActivity {
     private ImageButton declineNameBtn;
     private ImageButton acceptDescriptionBtn;
     private ImageButton declineDescriptionBtn;
-    private Switch showPhoneNumberSwitch;
 
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private StorageReference storage;
-    private FirebaseUser user;
 
     private String currentName = "User";
     private String currentDescription = "";
@@ -111,7 +108,6 @@ public class UserProfileActivity extends AppCompatActivity {
         declineNameBtn = (ImageButton) findViewById(R.id.decline_name_btn);
         acceptDescriptionBtn = (ImageButton) findViewById(R.id.accept_description_btn);
         declineDescriptionBtn = (ImageButton) findViewById(R.id.decline_description_btn);
-        showPhoneNumberSwitch = (Switch) findViewById(R.id.show_phone_number);
 
         originalEditTextDrawable = userNameView.getBackground();
         originalKeyListener = userNameView.getKeyListener();
@@ -171,7 +167,6 @@ public class UserProfileActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
-        user = auth.getCurrentUser();
 
         final TextView usernameViewRef = userNameView;
         final TextView userDescriptionRef = userDescriptionView;
@@ -209,16 +204,6 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
             });
         }
-        setPhoneSwitch();
-    }
-
-    private void setPhoneSwitch() {
-        showPhoneNumberSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //TODO: fetch phone number
-            }
-        });
     }
 
     @Override
@@ -303,7 +288,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "user name updated!");
-                        if (undoable) {
+                        if(undoable) {
                             Snackbar override = Snackbar
                                     .make(findViewById(R.id.user_profile_root), "Name updated!", Snackbar.LENGTH_LONG)
                                     .setAction("UNDO", new View.OnClickListener() {
@@ -339,7 +324,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "user description updated!");
-                        if (undoable) {
+                        if(undoable) {
                             Snackbar override = Snackbar
                                     .make(findViewById(R.id.user_profile_root), "Profile updated!", Snackbar.LENGTH_LONG)
                                     .setAction("UNDO", new View.OnClickListener() {
@@ -374,6 +359,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         //close login session of the user
                         FirebaseAuth.getInstance().signOut();
+                        LoginManager.getInstance().logOut();
                         Intent intent = new Intent(UserProfileActivity.this, LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);

@@ -1,6 +1,8 @@
-package com.syv.takecare.takecare;
+package com.example.yuval.takecare;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -19,14 +21,21 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.OptionalPendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -35,11 +44,17 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.SignInMethodQueryResult;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -67,7 +82,7 @@ public class LoginScreenFragment extends Fragment {
 
         // Note: this is the OAUth 2.0 client ID for our app:
         // 738513157372-ktkd6jopc3rqlsherd7c5759tv79eina.apps.googleusercontent.com
-        // "1093192580078-lh7kjnjl4obk75nv49edosvfd16g5ffs.apps.googleusercontent.com/" (Current)
+        // "1093192580078-lh7kjnjl4obk75nv49edosvfd16g5ffs.apps.googleusercontent.com" (Current)
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -79,7 +94,7 @@ public class LoginScreenFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent signInIntent = googleSignInClient.getSignInIntent();
-                getActivity().startActivityForResult(signInIntent, REQ_GOOGLE_SIGN_IN);
+                startActivityForResult(signInIntent, REQ_GOOGLE_SIGN_IN);
             }
         });
 
@@ -93,7 +108,8 @@ public class LoginScreenFragment extends Fragment {
 
         callbackManager = CallbackManager.Factory.create();
         LoginButton loginButton = (LoginButton) view.findViewById(R.id.facebook_login_button);
-        loginButton.setReadPermissions("public_profile", "email"); //Add name
+        loginButton.setReadPermissions(Arrays.asList("public_profile", "email")); //Add name
+        loginButton.setFragment(this);
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -121,7 +137,6 @@ public class LoginScreenFragment extends Fragment {
             Log.w(TAG, "Intent is null");
             return;
         }
-        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_GOOGLE_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             if (!task.isSuccessful()) {
@@ -133,14 +148,16 @@ public class LoginScreenFragment extends Fragment {
                 if (idToken == null)
                     Log.w(TAG, "ID Token is null");
                 // Successful google sign in
-                handleGoogleAccount(account);
+                 handleGoogleAccount(account);
             } catch (ApiException e) {
                 Log.w(TAG, "Google sign in failed", e);
             } catch (Exception ex) {
                 Log.w(TAG, "Some other exception caught: " + ex.toString());
             }
+            return;
         }
-        //callbackManager.onActivityResult(requestCode, resultCode, data);
+
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
 
@@ -174,7 +191,7 @@ public class LoginScreenFragment extends Fragment {
         dialog = new ProgressDialog(getActivity());
         dialog.setMessage("Loading data...");
         dialog.show();
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        final AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         auth.signInWithCredential(credential)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
@@ -183,12 +200,55 @@ public class LoginScreenFragment extends Fragment {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = auth.getCurrentUser();
+                            dialog.dismiss();
                             performSignIn(user);
                         } else {
+                            try {
+                                throw task.getException();
+                            } catch (FirebaseAuthInvalidCredentialsException e) {
+                                Toast.makeText(getActivity(), "Credentials has been malformed or expired",
+                                        Toast.LENGTH_SHORT).show();
+                            } catch (FirebaseAuthUserCollisionException e) {
+                                Toast.makeText(getActivity(), "User with same credentials already exists",
+                                        Toast.LENGTH_SHORT).show();
+                                String email = credential.getSignInMethod();
+                                String provider = ""; List<String> providers = null;
+                                try {
+                                    Task<SignInMethodQueryResult> resultTask = auth.fetchSignInMethodsForEmail(email);
+                                    if (!task.isSuccessful())
+                                        Log.w(TAG, "Task is not successful");
+                                    else {
+                                        providers = resultTask.getResult().getSignInMethods();
+                                    }
+                                } catch (NullPointerException nullptrex) {
+                                    Log.w(TAG, "NullPointerException from getSignInMethods");
+                                }
+                                if (providers == null || providers.isEmpty())
+                                    Log.w(TAG, "No existing sign in providers");
+                                else
+                                    provider = providers.get(0);
+                                String alertDialogMessage = "Please sign in with your ";
+                                if (provider.isEmpty())
+                                    alertDialogMessage += "Other account";
+                                else
+                                    alertDialogMessage += provider + " account";
+                                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                builder.setMessage("Please sign in with your " + provider + " account")
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.cancel();
+                                            }
+                                        }).show();
+                                auth.signOut();
+                                LoginManager.getInstance().logOut();
+                            } catch (Exception e) {
+                                Toast.makeText(getActivity(), "Authentication failed",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(getActivity(), "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
                         }
                     }
                 });
@@ -196,7 +256,7 @@ public class LoginScreenFragment extends Fragment {
 
     private void performSignIn(FirebaseUser user) {
         assert user != null;
-        String uid = user.getUid();
+        final String uid = user.getUid();
         String email = user.getEmail();
         String name = user.getDisplayName();
         String profilePicture;
@@ -205,7 +265,7 @@ public class LoginScreenFragment extends Fragment {
         } else {
             profilePicture = user.getPhotoUrl().toString();
         }
-        Map<String, Object> userInfo = new HashMap<>();
+        final Map<String, Object> userInfo = new HashMap<>();
         if (name != null)
             userInfo.put("name", name);
         else
@@ -219,23 +279,40 @@ public class LoginScreenFragment extends Fragment {
         userInfo.put("ratingCount", 0);
 
         db.collection("users").document(uid)
-                .set(userInfo)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Log.d(TAG, "Existing user document fetched!");
                         dialog.dismiss();
-                        Toast.makeText(getActivity(), "Authentication success!",
-                                Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getActivity(), GatewayActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.putExtra(Intent.EXTRA_TEXT, true);
                         startActivity(intent);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Error writing document " + e);
+                        db.collection("users").document(uid)
+                                .set(userInfo)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "New user document successfully written!");
+                                        dialog.dismiss();
+                                        Intent intent = new Intent(getActivity(), GatewayActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        intent.putExtra(Intent.EXTRA_TEXT, true);
+                                        startActivity(intent);
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d(TAG, "Error writing document " + e);
+                                    }
+                                });
                     }
                 });
     }
@@ -253,5 +330,4 @@ public class LoginScreenFragment extends Fragment {
 
     public void onSignInClick(View view) {
     }
-
 }
