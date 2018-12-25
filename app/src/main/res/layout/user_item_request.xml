@@ -2,7 +2,6 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -109,32 +108,20 @@
                 app:layout_constraintEnd_toEndOf="@+id/request_timestamp_title"
                 app:layout_constraintStart_toStartOf="@+id/request_timestamp_title" />
 
-
-            <ImageButton
+            <android.support.v7.widget.AppCompatButton
                 android:id="@+id/accept_request_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/decline_request_button"
-                app:layout_constraintTop_toTopOf="parent"
-                app:backgroundTint="@android:color/holo_green_light"
-                app:srcCompat="@drawable/ic_check"/>
-
-            <ImageButton
-                android:id="@+id/decline_request_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
+                android:text="Accept"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:backgroundTint="@color/colorAccent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:backgroundTint="@android:color/holo_red_light"
-                app:srcCompat="@drawable/ic_close"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
 
         </android.support.constraint.ConstraintLayout>

@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
     tools:context=".ItemInfoActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -250,6 +249,7 @@
                             android:layout_toRightOf="@id/pickup_time_clock"
                             android:textColor="@color/primary_text"
                             android:textSize="16sp"
+                            android:text="Flexible"
                             app:layout_constraintStart_toEndOf="@+id/pickup_time_clock" />
 
                     </RelativeLayout>
@@ -312,6 +312,7 @@
                             android:layout_marginStart="10dp"
                             android:layout_marginLeft="10dp"
                             android:layout_weight="3"
+                            android:text="Unknown"
                             android:textColor="@color/primary_text"
                             android:textSize="16sp" />
                     </LinearLayout>
@@ -356,6 +357,7 @@
                             android:layout_marginRight="10dp"
                             android:layout_toEndOf="@id/phone_image"
                             android:layout_toRightOf="@id/phone_image"
+                            android:text="Private"
                             android:textColor="@color/primary_text"
                             android:textSize="16sp" />
 
@@ -363,7 +365,7 @@
 
                 </android.support.v7.widget.CardView>
 
-                <com.example.yuval.takecare.FeedRecyclerView
+                <com.syv.takecare.takecare.FeedRecyclerView
                     android:id="@+id/requested_by_list"
                     android:layout_width="match_parent"
                     android:layout_height="240dp"
@@ -380,7 +382,7 @@
                     app:layout_constraintTop_toBottomOf="@id/phone_card"
                     app:layout_constraintBottom_toBottomOf="parent">
 
-                </com.example.yuval.takecare.FeedRecyclerView>
+                </com.syv.takecare.takecare.FeedRecyclerView>
 
                 <Button
                     android:id="@+id/send_message_button"
@@ -400,7 +402,7 @@
                     android:textAllCaps="false"
                     android:textColor="@color/icons"
                     android:textSize="20sp"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/requested_by_list" />

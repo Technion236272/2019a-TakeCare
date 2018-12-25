@@ -31,7 +31,7 @@
 
                 <TextView
                     android:id="@+id/item_title"
-                    android:layout_width="330dp"
+                    android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_above="@+id/item_photo"
                     android:layout_alignEnd="@+id/item_photo"
@@ -46,7 +46,7 @@
                     app:layout_constraintEnd_toStartOf="@id/item_report"
                     app:layout_constraintStart_toStartOf="@id/item_photo"
                     app:layout_constraintTop_toTopOf="parent"
-                    card_view:layout_constraintHorizontal_bias="0.0"/>
+                    card_view:layout_constraintHorizontal_bias="0.0" />
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/item_report"
