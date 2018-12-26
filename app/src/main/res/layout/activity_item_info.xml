@@ -394,7 +394,7 @@
 
                 </com.syv.takecare.takecare.FeedRecyclerView>
 
-                <Button
+                <android.support.v7.widget.AppCompatButton
                     android:id="@+id/send_message_button"
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
@@ -473,16 +473,13 @@
         android:visibility="gone"
         tools:layout_editor_absoluteY="490dp">
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/request_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorAccent"
-            android:drawableStart="@drawable/ic_heart_outline"
-            android:drawableLeft="@drawable/ic_heart_outline"
             android:focusable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            android:onClick="requestItem"
             android:padding="15dp"
             android:text="@string/request_item"
             android:textAllCaps="false"
