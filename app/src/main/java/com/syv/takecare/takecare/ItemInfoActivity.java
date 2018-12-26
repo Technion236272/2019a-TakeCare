@@ -236,6 +236,7 @@ public class ItemInfoActivity extends AppCompatActivity {
                 requestItem(v);
             }
         });
+        reportButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.alert_circle), null, null, null);
         Log.d(TAG, "onCreate: finished");
     }
 
