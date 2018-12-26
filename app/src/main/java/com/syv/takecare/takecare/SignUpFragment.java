@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.AppCompatEditText;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,10 +73,10 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
     private FirebaseFirestore db;
 
     // UI references
-    private EditText mNameView;
+    private AppCompatEditText mNameView;
     private AutoCompleteTextView mEmailView;
-    private AppCompatEditText mPasswordView;
-    private AppCompatEditText mRePasswordView;
+    private CustomEditText mPasswordView;
+    private CustomEditText mRePasswordView;
     private View mProgressView;
     private ImageButton backButton;
 
@@ -83,7 +84,7 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
-        mNameView = (EditText) view.findViewById(R.id.user_name);
+        mNameView = (AppCompatEditText) view.findViewById(R.id.user_name);
         mEmailView = (AutoCompleteTextView) view.findViewById(R.id.email);
         populateAutoComplete();
         mPasswordView = (CustomEditText) view.findViewById(R.id.password);
@@ -125,6 +126,10 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
         }
 
 
+        mNameView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_person_outline_black_24dp), null, null, null);
+        mEmailView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_mail_outline_black_24dp), null, null, null);
+        mPasswordView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_lock_outline_black_24dp), null, null, null);
+        mRePasswordView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_lock_outline_black_24dp), null, null, null);
         return view;
     }
 
