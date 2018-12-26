@@ -77,6 +77,14 @@ public class LoginScreenFragment extends Fragment {
         Button sign_in_button = (Button) view.findViewById(R.id.sign_in_button_login_screen);
         sign_in_button.setPaintFlags(sign_in_button.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
+        Button signUpButton = (Button) view.findViewById(R.id.sign_up_with_email_button);
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((LoginActivity)getActivity()).changeFragment(v);
+            }
+        });
+
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
@@ -327,9 +335,6 @@ public class LoginScreenFragment extends Fragment {
         String newUrlSeg = "s400-c/photo.jpg";
         imagePath = imagePath.replace(originalUrlSeg, newUrlSeg);
         return imagePath.concat("?type=large");
-    }
-
-    public void onSignUpClick(View view) {
     }
 
     public void onSignInClick(View view) {

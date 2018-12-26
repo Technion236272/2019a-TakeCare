@@ -53,7 +53,6 @@
         android:layout_marginBottom="72dp"
         android:background="@drawable/invisible_button"
         android:fontFamily="@font/asap_italic"
-        android:onClick="onSignUpClick"
         android:paddingTop="12dp"
         android:paddingBottom="12dp"
         android:paddingStart="50dp"

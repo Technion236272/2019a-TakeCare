@@ -19,6 +19,7 @@ import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -195,6 +196,22 @@ public class GiverFormActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
+        AppCompatImageButton[] b = new AppCompatImageButton[6];
+        b[0] = findViewById(R.id.category_food_btn);
+        b[1] = findViewById(R.id.category_study_material_btn);
+        b[2] = findViewById(R.id.category_households_btn);
+        b[3] = findViewById(R.id.category_lost_and_found_btn);
+        b[4] = findViewById(R.id.category_hitchhikes_btn);
+        b[5] = findViewById(R.id.category_other_btn);
+        Log.d(TAG, "made it so far ");
+        for(int i=0;i<6;i++) {
+            b[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onCategorySelect(v);
+                }
+            });
+        }
     }
 
     @Override
@@ -544,8 +561,8 @@ public class GiverFormActivity extends AppCompatActivity {
         Log.d(TAG, "uploadPhoto: starting execute");
         resize.execute(imagePath);
     }
-
     public void onCategorySelect(View view) {
+        Log.d(TAG, "onCategorySelect: invoke");
         if (chosenCategory != null && chosenCategory.equals(view)) {
             return;
         } else if (chosenCategory == null) {

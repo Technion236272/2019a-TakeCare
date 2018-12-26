@@ -101,7 +101,6 @@
         <activity
             android:name="com.syv.takecare.takecare.UserFavoritesActivity"
             android:label="@string/user_favorites_menu_title"></activity>
-        <activity android:name="com.syv.takecare.takecare.SignUpActivity"></activity>
         <activity
             android:name="com.syv.takecare.takecare.UserProfileActivity"
             android:label="@string/user_profile_menu_title"
