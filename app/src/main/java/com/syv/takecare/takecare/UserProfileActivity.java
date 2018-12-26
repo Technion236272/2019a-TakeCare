@@ -18,6 +18,8 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
 import android.text.method.KeyListener;
 import android.util.Log;
@@ -92,6 +94,12 @@ public class UserProfileActivity extends AppCompatActivity {
     private static int APP_PERMISSION_REQUEST_CAMERA;
     private final static int REQUEST_CAMERA = 1;
     private final static int SELECT_IMAGE = 2;
+
+    private AppCompatButton changePasswordButton;
+    private AppCompatButton myFavoritesButton;
+    private AppCompatButton myItemsButton;
+    private AppCompatButton pendingRequestsButton;
+    private AppCompatButton logOutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,6 +226,37 @@ public class UserProfileActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                 }
+            }
+        });
+
+        changePasswordButton = findViewById(R.id.change_password);
+        myFavoritesButton = findViewById(R.id.my_favorites);
+        myItemsButton = findViewById(R.id.my_items);
+        pendingRequestsButton = findViewById(R.id.pending_requests);
+        logOutButton = findViewById(R.id.logout);
+
+        changePasswordButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_black_24dp), null);
+        myFavoritesButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_black_24dp), null);
+        myItemsButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_black_24dp), null);
+        pendingRequestsButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_black_24dp), null);
+        logOutButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_logout), null);
+
+        myItemsButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                onMyItemsPressed(v);
+            }
+        });
+        pendingRequestsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onPendingRequestsPressed(v);
+            }
+        });
+        logOutButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                onLogOutClick(v);
             }
         });
     }

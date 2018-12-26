@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -63,7 +65,7 @@ public class RequestedItemsActivity extends AppCompatActivity {
     private FirebaseUser user;
 
     private int position = 0;
-    private Button jumpButton;
+    private AppCompatButton jumpButton;
 
 
     private int orientation;
@@ -90,6 +92,19 @@ public class RequestedItemsActivity extends AppCompatActivity {
         orientation = getResources().getConfiguration().orientation;
 
         setUpRecyclerView();
+
+        jumpButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                onJumpClick(v);
+            }
+        });
+        int orientation = getResources().getConfiguration().orientation;
+        if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            jumpButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_back), null, null, null);
+        } else{
+            jumpButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_up), null);
+        }
     }
 
     @Override
