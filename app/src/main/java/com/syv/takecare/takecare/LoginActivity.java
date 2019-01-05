@@ -63,10 +63,6 @@ public class LoginActivity extends AppCompatActivity {
         ft.addToBackStack(null).commit();
     }
 
-    public void onSignUpClick(View view) {
-        changeFragment(view);
-    }
-
     public void onSignInClick(View view) {
         changeFragment(view);
     }

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -68,6 +69,8 @@ public class SignInFragment extends Fragment  implements View.OnClickListener {
             }
         });
 
+        passwordView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_mail_outline_black_24dp), null, null, null);
+        emailView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_lock_outline_black_24dp), null, null, null);
         return view;
     }
 

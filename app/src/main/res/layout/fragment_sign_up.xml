@@ -34,12 +34,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.15">
 
-        <EditText
+        <android.support.v7.widget.AppCompatEditText
             android:id="@+id/user_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_person_outline_black_24dp"
-            android:drawableLeft="@drawable/ic_person_outline_black_24dp"
             android:gravity="center"
             android:hint="@string/user_name"
             android:imeOptions="actionNext"
@@ -71,8 +69,6 @@
             android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_mail_outline_black_24dp"
-            android:drawableLeft="@drawable/ic_mail_outline_black_24dp"
             android:gravity="center"
             android:hint="@string/prompt_email"
             android:imeOptions="actionNext"
@@ -100,12 +96,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email_input_layout">
 
-        <EditText
+        <com.syv.takecare.takecare.CustomEditText
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_lock_outline_black_24dp"
-            android:drawableLeft="@drawable/ic_lock_outline_black_24dp"
             android:gravity="center"
             android:hint="@string/prompt_password"
             android:imeActionId="6"
@@ -135,12 +129,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_input_layout">
 
-        <EditText
+        <com.syv.takecare.takecare.CustomEditText
             android:id="@+id/confirm_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_lock_outline_black_24dp"
-            android:drawableLeft="@drawable/ic_lock_outline_black_24dp"
             android:gravity="center"
             android:hint="@string/prompt_confirm_password"
             android:imeActionId="6"

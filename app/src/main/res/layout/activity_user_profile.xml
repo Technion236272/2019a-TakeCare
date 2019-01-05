@@ -167,14 +167,12 @@
                 app:backgroundTint="@android:color/holo_red_light"
                 app:srcCompat="@drawable/ic_close" />
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:id="@+id/change_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/about"
                 android:layout_marginTop="20dp"
-                android:drawableEnd="@drawable/ic_arrow_forward_black_24dp"
-                android:drawableRight="@drawable/ic_arrow_forward_black_24dp"
                 android:gravity="start"
                 android:padding="25dp"
                 android:text="@string/change_password"
@@ -182,14 +180,12 @@
                 app:backgroundTint="@android:color/transparent"
                 app:backgroundTintMode="add" />
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:id="@+id/my_favorites"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/change_password"
                 android:layout_marginTop="10dp"
-                android:drawableEnd="@drawable/ic_arrow_forward_black_24dp"
-                android:drawableRight="@drawable/ic_arrow_forward_black_24dp"
                 android:gravity="start"
                 android:padding="25dp"
                 android:text="@string/my_favorites"
@@ -198,35 +194,29 @@
                 android:visibility="gone"
                 app:backgroundTintMode="add" />
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:id="@+id/my_items"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/my_favorites"
                 android:layout_marginTop="10dp"
-                android:drawableEnd="@drawable/ic_arrow_forward_black_24dp"
-                android:drawableRight="@drawable/ic_arrow_forward_black_24dp"
                 android:gravity="start"
                 android:padding="25dp"
                 android:text="@string/my_items"
                 android:textAllCaps="false"
-                android:onClick="onMyItemsPressed"
                 app:backgroundTint="@android:color/transparent"
                 app:backgroundTintMode="add" />
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:id="@+id/pending_requests"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/my_items"
                 android:layout_marginTop="10dp"
-                android:drawableEnd="@drawable/ic_arrow_forward_black_24dp"
-                android:drawableRight="@drawable/ic_arrow_forward_black_24dp"
                 android:gravity="start"
                 android:padding="25dp"
                 android:text="@string/pending_requests"
                 android:textAllCaps="false"
-                android:onClick="onPendingRequestsPressed"
                 app:backgroundTint="@android:color/transparent"
                 app:backgroundTintMode="add" />
 
@@ -258,7 +248,7 @@
                 android:visibility="gone"
                 android:text="@string/get_favorites_notifications" />
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:id="@+id/logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -267,12 +257,9 @@
                 android:layout_marginTop="50dp"
                 android:background="@android:color/holo_red_dark"
                 android:clickable="true"
-                android:drawableEnd="@drawable/ic_logout"
-                android:drawableRight="@drawable/ic_logout"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:gravity="start"
-                android:onClick="onLogOutClick"
                 android:padding="30dp"
                 android:text="@string/log_out"
                 android:textAllCaps="false"

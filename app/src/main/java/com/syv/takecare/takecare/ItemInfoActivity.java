@@ -8,6 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -71,7 +73,8 @@ public class ItemInfoActivity extends AppCompatActivity {
     private TextView itemPickupTimeView;
     private TextView itemLocationView;
     private TextView itemPhoneView;
-    private Button messageButton;
+    private AppCompatButton messageButton;
+    private AppCompatButton requestButton;
     private Button reportButton;
     private ImageButton deleteItem;
 
@@ -128,10 +131,10 @@ public class ItemInfoActivity extends AppCompatActivity {
         itemPickupTimeView = (TextView) findViewById(R.id.pickup_time_text);
         itemLocationView = (TextView) findViewById(R.id.location_text);
         itemPhoneView = (TextView) findViewById(R.id.phone_number);
-        messageButton = (Button) findViewById(R.id.send_message_button);
+        messageButton = (AppCompatButton) findViewById(R.id.send_message_button);
         reportButton = (Button) findViewById(R.id.report_button);
         deleteItem = (ImageButton) findViewById(R.id.delete_post_button);
-
+        requestButton = (AppCompatButton) findViewById(R.id.request_button);
         phoneCard = (CardView) findViewById(R.id.phone_card);
 
         db = FirebaseFirestore.getInstance();
@@ -224,6 +227,16 @@ public class ItemInfoActivity extends AppCompatActivity {
                 }
             });
         }
+
+        messageButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.message_text_outline), null, null, null);
+        requestButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_heart_outline), null, null, null);
+        requestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestItem(v);
+            }
+        });
+        reportButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.alert_circle), null, null, null);
         Log.d(TAG, "onCreate: finished");
     }
 

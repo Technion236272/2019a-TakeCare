@@ -394,7 +394,7 @@
 
                 </com.syv.takecare.takecare.FeedRecyclerView>
 
-                <Button
+                <android.support.v7.widget.AppCompatButton
                     android:id="@+id/send_message_button"
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
@@ -405,8 +405,6 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
                     android:background="@color/colorPrimary"
-                    android:drawableStart="@drawable/message_text_outline"
-                    android:drawableLeft="@drawable/message_text_outline"
                     android:padding="12dp"
                     android:text="@string/send_message_from_item_info"
                     android:textAllCaps="false"
@@ -417,7 +415,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/requested_by_list" />
 
-                <Button
+                <android.support.v7.widget.AppCompatButton
                     android:id="@+id/report_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -428,8 +426,6 @@
                     android:layout_marginRight="8dp"
                     android:layout_marginBottom="8dp"
                     android:background="@android:color/transparent"
-                    android:drawableStart="@drawable/alert_circle"
-                    android:drawableLeft="@drawable/alert_circle"
                     android:padding="10dp"
                     android:text="@string/report"
                     android:textAllCaps="false"
@@ -473,16 +469,13 @@
         android:visibility="gone"
         tools:layout_editor_absoluteY="490dp">
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/request_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorAccent"
-            android:drawableStart="@drawable/ic_heart_outline"
-            android:drawableLeft="@drawable/ic_heart_outline"
             android:focusable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            android:onClick="requestItem"
             android:padding="15dp"
             android:text="@string/request_item"
             android:textAllCaps="false"

@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatEditText;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,23 +73,22 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
     private FirebaseFirestore db;
 
     // UI references
-    private EditText mNameView;
+    private AppCompatEditText mNameView;
     private AutoCompleteTextView mEmailView;
-    private EditText mPasswordView;
-    private EditText mRePasswordView;
+    private CustomEditText mPasswordView;
+    private CustomEditText mRePasswordView;
     private View mProgressView;
-    private View mLoginFormView;
     private ImageButton backButton;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
-        mNameView = (EditText) view.findViewById(R.id.user_name);
+        mNameView = (AppCompatEditText) view.findViewById(R.id.user_name);
         mEmailView = (AutoCompleteTextView) view.findViewById(R.id.email);
         populateAutoComplete();
-        mPasswordView = (EditText) view.findViewById(R.id.password);
-        mRePasswordView = (EditText) view.findViewById(R.id.confirm_password);
+        mPasswordView = (CustomEditText) view.findViewById(R.id.password);
+        mRePasswordView = (CustomEditText) view.findViewById(R.id.confirm_password);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -114,7 +115,7 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
             }
         });
 
-        mLoginFormView = view.findViewById(R.id.login_form);
+        //mLoginFormView = view.findViewById(R.id.login_form);
         mProgressView = view.findViewById(R.id.sign_up_progress_bar);
 
         FirebaseUser currentUser = auth.getCurrentUser();
@@ -125,6 +126,10 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
         }
 
 
+        mNameView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_person_outline_black_24dp), null, null, null);
+        mEmailView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_mail_outline_black_24dp), null, null, null);
+        mPasswordView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_lock_outline_black_24dp), null, null, null);
+        mRePasswordView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_lock_outline_black_24dp), null, null, null);
         return view;
     }
 
@@ -290,42 +295,6 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
 
     private boolean isRePasswordValid(String rePassword, String password) {
         return rePassword.equals(password);
-    }
-
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : VISIBLE);
-        }
     }
 
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {

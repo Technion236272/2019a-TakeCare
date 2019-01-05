@@ -51,7 +51,6 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginBottom="8dp"
-                android:onClick="onChoosePickupMethod"
                 android:tint="@color/icons"
                 app:backgroundTint="@color/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -75,7 +74,6 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginBottom="8dp"
-                android:onClick="onChoosePickupMethod"
                 android:tint="@color/secondary_text"
                 app:backgroundTint="@color/divider"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -99,7 +97,6 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginBottom="8dp"
-                android:onClick="onChoosePickupMethod"
                 android:tint="@color/secondary_text"
                 app:backgroundTint="@color/divider"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -123,7 +120,6 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginBottom="8dp"
-                android:onClick="onChoosePickupMethod"
                 android:tint="@color/secondary_text"
                 app:backgroundTint="@color/divider"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -192,7 +188,7 @@
         </android.support.constraint.ConstraintLayout>
     </LinearLayout>
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/jump_button"
         android:layout_width="150dp"
         android:layout_height="40dp"
@@ -204,9 +200,6 @@
         android:layout_marginTop="12dp"
         android:alpha="0.9"
         android:background="@drawable/floating_button_shape"
-        android:drawableStart="@drawable/ic_arrow_back"
-        android:drawableLeft="@drawable/ic_arrow_back"
-        android:onClick="onJumpClick"
         android:paddingLeft="8dp"
         android:paddingEnd="8dp"
         android:paddingRight="8dp"

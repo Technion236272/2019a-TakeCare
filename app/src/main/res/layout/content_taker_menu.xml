@@ -50,7 +50,6 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginBottom="8dp"
-                android:onClick="onChoosePickupMethod"
                 android:tint="@color/icons"
                 app:backgroundTint="@color/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -74,7 +73,6 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginBottom="8dp"
-                android:onClick="onChoosePickupMethod"
                 android:tint="@color/secondary_text"
                 app:backgroundTint="@color/divider"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -98,7 +96,6 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginBottom="8dp"
-                android:onClick="onChoosePickupMethod"
                 android:tint="@color/secondary_text"
                 app:backgroundTint="@color/divider"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -122,7 +119,6 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginBottom="8dp"
-                android:onClick="onChoosePickupMethod"
                 android:tint="@color/secondary_text"
                 app:backgroundTint="@color/divider"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -207,7 +203,7 @@
         </android.support.constraint.ConstraintLayout>
     </LinearLayout>
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/jump_button"
         android:layout_width="150dp"
         android:layout_height="40dp"
@@ -216,9 +212,6 @@
         android:layout_marginTop="12dp"
         android:alpha="0.9"
         android:background="@drawable/floating_button_shape"
-        android:drawableEnd="@drawable/ic_arrow_up"
-        android:drawableRight="@drawable/ic_arrow_up"
-        android:onClick="onJumpClick"
         android:paddingEnd="12dp"
         android:paddingRight="12dp"
         android:paddingLeft="12dp"

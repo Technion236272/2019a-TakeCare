@@ -85,7 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="?android:attr/actionBarSize">
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/requested_items_jump_button"
             android:layout_width="150dp"
             android:layout_height="40dp"
@@ -94,9 +94,6 @@
             android:layout_marginTop="12dp"
             android:alpha="0.9"
             android:background="@drawable/floating_button_shape"
-            android:drawableEnd="@drawable/ic_arrow_up"
-            android:drawableRight="@drawable/ic_arrow_up"
-            android:onClick="onJumpClick"
             android:paddingLeft="8dp"
             android:paddingEnd="8dp"
             android:paddingRight="8dp"

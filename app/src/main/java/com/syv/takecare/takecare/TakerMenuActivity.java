@@ -15,6 +15,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -65,13 +68,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class TakerMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
     private final static String TAG = "TakeCare";
     private static final int LIST_JUMP_THRESHOLD = 4;
     private static final int ICON_FILL_ITERATIONS = 12;
@@ -90,7 +93,7 @@ public class TakerMenuActivity extends AppCompatActivity
 
     private ConstraintLayout filterPopupMenu;
     private AppCompatImageButton chosenPickupMethod;
-    private Button jumpButton;
+    private AppCompatButton jumpButton;
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
@@ -141,10 +144,29 @@ public class TakerMenuActivity extends AppCompatActivity
 
         filterPopupMenu = (ConstraintLayout) findViewById(R.id.filter_menu_popup);
         chosenPickupMethod = (AppCompatImageButton) findViewById(R.id.pickup_any_button);
-        jumpButton = (Button) findViewById(R.id.jump_button);
+        jumpButton = (AppCompatButton) findViewById(R.id.jump_button);
         View header = navigationView.getHeaderView(0);
         userProfilePicture = (ImageView) header.findViewById(R.id.nav_user_picture);
         userName = (TextView) header.findViewById(R.id.nav_user_name);
+
+        // Adding pickup method filtering buttons' onClick listener
+
+        List<View> pickupMethodFilterOptions = new ArrayList<>();
+        pickupMethodFilterOptions.add(findViewById(R.id.pickup_any_button));
+        pickupMethodFilterOptions.add(findViewById(R.id.pickup_in_person_button));
+        pickupMethodFilterOptions.add(findViewById(R.id.pickup_giveaway_button));
+        pickupMethodFilterOptions.add(findViewById(R.id.pickup_race_button));
+
+        View.OnClickListener pickupMethodfilterListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onChoosePickupMethod(view);
+            }
+        };
+
+        for(View view : pickupMethodFilterOptions) {
+            view.setOnClickListener(pickupMethodfilterListener);
+        }
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -157,6 +179,21 @@ public class TakerMenuActivity extends AppCompatActivity
         Log.d(TAG, "onCreate: getting screen orientation");
         orientation = getResources().getConfiguration().orientation;
         setUpRecyclerView();
+
+        jumpButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                recyclerView.smoothScrollToPosition(0);
+                jumpButton.setVisibility(View.GONE);
+            }
+        });
+        int orientation = getResources().getConfiguration().orientation;
+        if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            jumpButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_back), null, null, null);
+        } else{
+            jumpButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_up), null);
+        }
     }
 
     @Override
@@ -257,6 +294,7 @@ public class TakerMenuActivity extends AppCompatActivity
                 break;
         }
         onChoosePickupMethod(pickupButton);
+
     }
 
 
@@ -869,10 +907,6 @@ public class TakerMenuActivity extends AppCompatActivity
     }
 
 
-    public void onJumpClick(View view) {
-        recyclerView.smoothScrollToPosition(0);
-        jumpButton.setVisibility(View.GONE);
-    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
