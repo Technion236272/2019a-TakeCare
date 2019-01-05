@@ -246,7 +246,7 @@ public class GiverFormActivity extends AppCompatActivity {
                 break;
             case ERROR_PICTURE_NOT_INCLUDED:
                 dialog.dismiss();
-                showAlertMessage("Please include a picture of the item");
+                showAlertMessage("Please include a picture of the item"); //TODO: change this
 //                showAlertMessage("Please include a picture of the item when posting for pick-up in person");
                 break;
             case ERROR_NO_CATEGORY:
@@ -265,6 +265,7 @@ public class GiverFormActivity extends AppCompatActivity {
     }
 
     private void uploadItemDataNoPicture(Map<String, Object> itemInfo, final FirebaseUser user, final FieldValue timestamp) {
+        Log.d(TAG, "uploadItemDataNoPicture: starting data upload");
         db.collection("items").document(timestamp.toString())
                 .set(itemInfo)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -375,6 +376,7 @@ public class GiverFormActivity extends AppCompatActivity {
         if (category == null) {
             return formResult.ERROR_NO_CATEGORY;
         }
+
         uid = user.getUid();
         itemInfo.put("publisher", uid);
         Log.d(TAG, "filled publisher");
@@ -409,11 +411,6 @@ public class GiverFormActivity extends AppCompatActivity {
         itemInfo.put("pickupMethod", pickupMethod);
         Log.d(TAG, "filled pickup method");
 
-        //TODO: allow users to not upload a picture under some circumstances
-        if (selectedImage == null) {
-            return formResult.ERROR_PICTURE_NOT_INCLUDED;
-        }
-
         if (title.getText().toString().isEmpty()) {
             return formResult.ERROR_TITLE;
         }
@@ -439,9 +436,9 @@ public class GiverFormActivity extends AppCompatActivity {
         itemInfo.put("status", 1);
         Log.d(TAG, "filled item's status");
 
-        // We don't get here for now
+        //TODO: allow users to not upload a picture under some circumstances later
         if (selectedImage == null)
-            return formResult.PICTURE_MISSING;
+            return formResult.ERROR_PICTURE_NOT_INCLUDED; //TODO: change this error code if upload is legal
         return formResult.PICTURE_UPLOADED;
     }
 
@@ -506,7 +503,7 @@ public class GiverFormActivity extends AppCompatActivity {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CAMERA:
-                    if (selectedImage != null) {
+                    if (selectedImageFile != null && selectedImage != null) {
                         Log.d(TAG, "About to set image");
                         itemImageView.setVisibility(View.INVISIBLE);
                         uploadPhoto(selectedImage);
@@ -515,13 +512,15 @@ public class GiverFormActivity extends AppCompatActivity {
                 case SELECT_IMAGE:
                     Log.d(TAG, "Fetching gallery's image");
                     selectedImage = data.getData();
-                    //TODO: add Glide
                     Log.d(TAG, "About to set image");
                     uploadPhoto(selectedImage);
                     break;
                 default:
                     Log.d(TAG, "Error: unknown request code");
             }
+        } else {
+            selectedImage = null;
+            selectedImageFile = null;
         }
     }
 

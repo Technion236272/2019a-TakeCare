@@ -837,7 +837,6 @@ public class TakerMenuActivity extends AppCompatActivity
         ViewCompat.setBackgroundTintList(view, getResources().getColorStateList(R.color.colorPrimary));
         ImageViewCompat.setImageTintList((ImageView) view, getResources().getColorStateList(R.color.icons));
         chosenPickupMethod = (AppCompatImageButton) view;
-
         switch (view.getId()) {
             case R.id.pickup_any_button:
                 queryPickupMethodFilter = null;
@@ -854,6 +853,7 @@ public class TakerMenuActivity extends AppCompatActivity
         }
         setUpAdapter();
         filterPopupMenu.setVisibility(View.GONE);
+        jumpButton.setVisibility(View.GONE);
         if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
             ((findViewById(R.id.empty_feed_arrow))).setVisibility(View.VISIBLE);
         }
@@ -954,6 +954,7 @@ public class TakerMenuActivity extends AppCompatActivity
                     break;
                 //TODO: add favorites filter in the future. For now we ignore this
             }
+            jumpButton.setVisibility(View.GONE);
             setUpAdapter();
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
