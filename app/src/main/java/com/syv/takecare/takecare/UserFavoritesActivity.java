@@ -1,25 +1,26 @@
 package com.syv.takecare.takecare;
 
+import android.content.Context;
 import android.content.Intent;
-import android.support.design.chip.ChipDrawable;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.Spanned;
-import android.text.TextWatcher;
-import android.text.style.ImageSpan;
 import android.view.MenuItem;
 
+import com.hootsuite.nachos.ChipConfiguration;
+import com.hootsuite.nachos.NachoTextView;
+import com.hootsuite.nachos.chip.ChipSpan;
+import com.hootsuite.nachos.chip.ChipSpanChipCreator;
+import com.hootsuite.nachos.terminator.ChipTerminatorHandler;
+import com.hootsuite.nachos.tokenizer.SpanChipTokenizer;
+
 public class UserFavoritesActivity extends AppCompatActivity {
+    private NachoTextView tagsBox;
 
-    private FeedRecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
-
-    private int chipSpannedLength;
+//    private int chipSpannedLength;
     private final int chipMaxLength = 8;
 
     @Override
@@ -34,7 +35,7 @@ public class UserFavoritesActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        chipSpannedLength = 0;
+        /*chipSpannedLength = 0;
         AppCompatEditText tagBox = findViewById(R.id.favorites_tag_box);
 
         tagBox.addTextChangedListener(new TextWatcher() {
@@ -63,7 +64,28 @@ public class UserFavoritesActivity extends AppCompatActivity {
                 }
 
             }
-        });
+        });*/
+
+        tagsBox = (NachoTextView) findViewById(R.id.favorites_tag_box);
+        tagsBox.addChipTerminator('\n', ChipTerminatorHandler.BEHAVIOR_CHIPIFY_ALL);
+        tagsBox.addChipTerminator(' ', ChipTerminatorHandler.BEHAVIOR_CHIPIFY_ALL);
+        tagsBox.addChipTerminator(',', ChipTerminatorHandler.BEHAVIOR_CHIPIFY_ALL);
+        tagsBox.addChipTerminator(';', ChipTerminatorHandler.BEHAVIOR_CHIPIFY_ALL);
+        tagsBox.setChipTokenizer(new SpanChipTokenizer<>(this, new ChipSpanChipCreator() {
+            @Override
+            public ChipSpan createChip(@NonNull Context context, @NonNull CharSequence text, Object data) {
+                return new ChipSpan(context, text, ContextCompat.getDrawable(UserFavoritesActivity.this, R.drawable.ic_close), data);
+            }
+
+            @Override
+            public void configureChip(@NonNull ChipSpan chip, @NonNull ChipConfiguration chipConfiguration) {
+                super.configureChip(chip, chipConfiguration);
+                chip.setShowIconOnLeft(true);
+                chip.setIconBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+            }
+        }, ChipSpan.class));
+
+        tagsBox.enableEditChipOnTouch(false, true);
     }
 
     @Override

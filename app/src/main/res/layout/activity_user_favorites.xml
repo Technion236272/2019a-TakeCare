@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -52,7 +53,8 @@
             android:textColor="@color/secondary_text"
             android:textSize="16sp" />
 
-        <android.support.v7.widget.AppCompatEditText
+
+        <com.hootsuite.nachos.NachoTextView
             android:id="@+id/favorites_tag_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -65,7 +67,12 @@
             android:hint="@string/favorites_tag_hint"
             android:textColor="@color/secondary_text"
             android:textSize="16sp"
-            android:digits="0123456789qwertzuiopasdfghjklyxcvbnm " />
+
+            app:chipSpacing="2sp"
+            app:chipBackground="@color/colorPrimary"
+            app:chipTextColor="#FFFFFE"
+            app:chipTextSize="16sp"
+            app:chipHeight="30dp" />
 
     </LinearLayout>
 
