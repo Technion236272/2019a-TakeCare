@@ -43,6 +43,13 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name = ".utilities.MessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebas.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
