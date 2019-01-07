@@ -11,6 +11,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -22,9 +24,12 @@ import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.Toolbar;
+import android.transition.Scene;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -60,7 +65,7 @@ import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 public class GiverFormActivity extends AppCompatActivity {
 
     private final static String TAG = "TakeCare";
-
+    private String pickupMethod;
     private String category;
     private String[] spinnerNames;
     private int[] spinnerIcons;
@@ -204,7 +209,7 @@ public class GiverFormActivity extends AppCompatActivity {
         buttonsCategories[4] = findViewById(R.id.category_hitchhikes_btn);
         buttonsCategories[5] = findViewById(R.id.category_other_btn);
         Log.d(TAG, "made it so far ");
-        for(int i=0;i<6;i++) {
+        for (int i = 0; i < 6; i++) {
             buttonsCategories[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -212,11 +217,42 @@ public class GiverFormActivity extends AppCompatActivity {
                 }
             });
         }
-        formBtn.setOnClickListener(new View.OnClickListener(){
+        formBtn.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 onSendForm(v);
+            }
+        });
+        pickup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        pickupMethod = "In Person";
+                        pickupDescription.setVisibility(View.VISIBLE);
+                        findViewById(R.id.time_location_separator).setVisibility(View.VISIBLE);
+                        break;
+                    case 1:
+                        pickupMethod = "Giveaway";
+                        pickupDescription.setVisibility(View.VISIBLE);
+                        findViewById(R.id.time_location_separator).setVisibility(View.VISIBLE);
+                        break;
+                    case 2:
+                        pickupMethod = "Race";
+                        pickupDescription.setVisibility(View.GONE);
+                        findViewById(R.id.time_location_separator).setVisibility(View.GONE);
+                        break;
+                    default:
+                        Log.d(TAG, "formStatus: Error in spinner position: " + pickup.getSelectedItemPosition());
+                        pickupMethod = "ERROR";
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
@@ -280,7 +316,7 @@ public class GiverFormActivity extends AppCompatActivity {
                 break;
             case PICTURE_MISSING:
                 assert user != null;
-                uploadItemDataNoPicture(itemInfo, user, timestamp);
+                uploadItemDataNoPicture(itemInfo, user);
                 break;
             case PICTURE_UPLOADED:
                 assert user != null;
@@ -289,53 +325,32 @@ public class GiverFormActivity extends AppCompatActivity {
         }
     }
 
-    private void uploadItemDataNoPicture(Map<String, Object> itemInfo, final FirebaseUser user, final FieldValue timestamp) {
-        Log.d(TAG, "uploadItemDataNoPicture: starting data upload");
-        db.collection("items").document(timestamp.toString())
+    private void uploadItemDataNoPicture(final Map<String, Object> itemInfo, final FirebaseUser user) {
+        Log.d(TAG, "uploadItemAndPictureData: starting data upload ");
+        final String uniqueID = UUID.randomUUID().toString();
+        final DocumentReference documentRef = db.collection("items").document();
+        documentRef
                 .set(itemInfo)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Item added successfully");
-                        Map<String, Object> itemRef = new HashMap<>();
-                        final DocumentReference ref = db.collection("items").document(timestamp.toString());
-                        itemRef.put("ref", ref);
-                        db.collection("users").document(user.getUid()).collection("publishedItems").document(timestamp.toString())
-                                .set(itemRef)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d(TAG, "Item reference added successfully");
-                                        dialog.dismiss();
-                                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
-                                                Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d(TAG, "Error adding item reference");
-                                        dialog.dismiss();
-                                        Toast.makeText(GiverFormActivity.this, "An error has occurred. Please try again",
-                                                Toast.LENGTH_SHORT).show();
-                                        ref.delete();
-                                    }
-                                });
+                        Log.d(TAG, "uploadItemAndPictureData: item added successfully ");
+                        dialog.dismiss();
+                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
+                                Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Error adding document");
                         dialog.dismiss();
-                        Toast.makeText(GiverFormActivity.this, "An error has occurred. Please try again",
-                                Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 
     private void uploadItemDataWithPicture(final Map<String, Object> itemInfo, final FirebaseUser user) {
         Log.d(TAG, "uploadItemAndPictureData: starting data upload ");
@@ -416,23 +431,7 @@ public class GiverFormActivity extends AppCompatActivity {
         itemInfo.put("category", category);
         Log.d(TAG, "filled category");
 
-        String pickupMethod;
         Log.d(TAG, "pickup method poition: " + pickup.getSelectedItemPosition());
-        switch (pickup.getSelectedItemPosition()) {
-            case 0:
-                pickupMethod = "In Person";
-                break;
-            case 1:
-                pickupMethod = "Giveaway";
-                break;
-            case 2:
-                pickupMethod = "Race";
-                break;
-            default:
-                Log.d(TAG, "formStatus: Error in spinner position: " + pickup.getSelectedItemPosition());
-                pickupMethod = "ERROR";
-                break;
-        }
         itemInfo.put("pickupMethod", pickupMethod);
         Log.d(TAG, "filled pickup method");
 
@@ -451,10 +450,18 @@ public class GiverFormActivity extends AppCompatActivity {
             itemInfo.put("pickupInformation", pickupDescription.getText().toString());
             Log.d(TAG, "filled pickup description");
         }
-
         if (!pickupLocation.getText().toString().isEmpty()) {
-            itemInfo.put("pickupLocation", pickupLocation.getText().toString());
-            Log.d(TAG, "filled pickup location");
+            if (category.equals("Hitchhikes")) {
+                try {
+                    String to = ((TextInputEditText) (findViewById(R.id.item_location_to))).getText().toString();
+                    itemInfo.put("pickupLocation", "From " + pickupLocation.getText().toString() + " To " + to);
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "formStatus: Hitchhike getText from to");
+                }
+            } else {
+                itemInfo.put("pickupLocation", pickupLocation.getText().toString());
+                Log.d(TAG, "filled pickup location");
+            }
         }
 
         // Status 1 = available
@@ -462,9 +469,13 @@ public class GiverFormActivity extends AppCompatActivity {
         Log.d(TAG, "filled item's status");
 
         //TODO: allow users to not upload a picture under some circumstances later
-        if (selectedImage == null)
-            return formResult.ERROR_PICTURE_NOT_INCLUDED; //TODO: change this error code if upload is legal
-        return formResult.PICTURE_UPLOADED;
+        /*if (selectedImage == null && !category.equals("Hitchhikes") && !category.equals("Other"))
+            return formResult.ERROR_PICTURE_NOT_INCLUDED; //TODO: change this error code if upload is legal*/
+        if (selectedImage == null) {
+            return formResult.PICTURE_MISSING;
+        } else {
+            return formResult.PICTURE_UPLOADED;
+        }
     }
 
     public void onUploadPicture(View view) {
@@ -568,6 +579,7 @@ public class GiverFormActivity extends AppCompatActivity {
         Log.d(TAG, "uploadPhoto: starting execute");
         resize.execute(imagePath);
     }
+
     public void onCategorySelect(View view) {
         Log.d(TAG, "onCategorySelect: invoke");
         if (chosenCategory != null && chosenCategory.equals(view)) {
@@ -606,6 +618,7 @@ public class GiverFormActivity extends AppCompatActivity {
                 airTime = 24 * 5;
                 airTimePicker.setProgress(6);
                 category = "Lost & Found";
+                pickupMethod = "In Person";
                 break;
             case R.id.category_hitchhikes_btn:
                 airTime = 12;
@@ -617,6 +630,44 @@ public class GiverFormActivity extends AppCompatActivity {
                 airTimePicker.setProgress(7);
                 category = "Other";
                 break;
+        }
+        if (category.equals("Hitchhikes") || category.equals("Lost & Found")) {
+            pickupMethod = "In Person";
+            pickupDescription.setVisibility(View.VISIBLE);
+            findViewById(R.id.time_location_separator).setVisibility(View.VISIBLE);
+            pickup.setVisibility(View.GONE);
+            findViewById(R.id.type_time_separator).setVisibility(View.GONE);
+        } else {
+            switch (pickup.getSelectedItemPosition()) {
+                case 0:
+                    pickupMethod = "In Person";
+                    pickupDescription.setVisibility(View.VISIBLE);
+                    findViewById(R.id.time_location_separator).setVisibility(View.VISIBLE);
+                    break;
+                case 1:
+                    pickupMethod = "Giveaway";
+                    pickupDescription.setVisibility(View.VISIBLE);
+                    findViewById(R.id.time_location_separator).setVisibility(View.VISIBLE);
+                    break;
+                case 2:
+                    pickupMethod = "Race";
+                    pickupDescription.setVisibility(View.GONE);
+                    findViewById(R.id.time_location_separator).setVisibility(View.GONE);
+                    break;
+                default:
+                    Log.d(TAG, "formStatus: Error in spinner position: " + pickup.getSelectedItemPosition());
+                    pickupMethod = "ERROR";
+                    break;
+            }
+            pickup.setVisibility(View.VISIBLE);
+            findViewById(R.id.type_time_separator).setVisibility(View.VISIBLE);
+        }
+        if (category.equals("Hitchhikes")) {
+            findViewById(R.id.text_input_layout_location_hitchhiking_extension).setVisibility(View.VISIBLE);
+            ((TextInputLayout) findViewById(R.id.text_input_layout_location)).setHint(getResources().getString(R.string.enter_location_from_hint));
+        } else {
+            findViewById(R.id.text_input_layout_location_hitchhiking_extension).setVisibility(View.GONE);
+            ((TextInputLayout) findViewById(R.id.text_input_layout_location)).setHint(getResources().getString(R.string.enter_location_hint));
         }
         setDefaultAirTime();
     }

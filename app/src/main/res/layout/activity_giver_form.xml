@@ -368,7 +368,6 @@
                         android:paddingBottom="8dp"
                         android:hint="@string/giver_form_title_input_hint"
                         android:inputType="textPersonName"
-                        android:background="@drawable/edit_text_box_frame"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/item_information_prompt"
@@ -424,6 +423,8 @@
                 app:layout_constraintTop_toBottomOf="@id/description_card">
 
                 <android.support.constraint.ConstraintLayout
+                    android:animateLayoutChanges="true"
+                    android:id="@+id/pickup_info_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -477,7 +478,6 @@
                             android:id="@+id/item_time"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@null"
                             android:hint="@string/enter_time_hint"
                             android:paddingBottom="20dp" />
                     </android.support.design.widget.TextInputLayout>
@@ -511,8 +511,28 @@
                             android:id="@+id/item_location"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@null"
                             android:hint="@string/enter_location_hint"
+                            android:paddingBottom="20dp" />
+                    </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/text_input_layout_location_hitchhiking_extension"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/text_input_layout_location">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/item_location_to"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/enter_location_to_hint"
                             android:paddingBottom="20dp" />
                     </android.support.design.widget.TextInputLayout>
                 </android.support.constraint.ConstraintLayout>

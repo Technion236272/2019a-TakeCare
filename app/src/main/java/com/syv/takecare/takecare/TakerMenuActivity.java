@@ -44,8 +44,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.azoft.carousellayoutmanager.CarouselLayoutManager;
-import com.azoft.carousellayoutmanager.CenterScrollListener;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -303,8 +302,7 @@ public class TakerMenuActivity extends AppCompatActivity
         View emptyFeedView = findViewById(R.id.empty_feed_view);
         Log.d(TAG, "setUpRecyclerView: setting layout manager for the current orientation");
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            recyclerView.setLayoutManager(new CarouselLayoutManager(CarouselLayoutManager.HORIZONTAL, false));
-            recyclerView.addOnScrollListener(new CenterScrollListener());
+            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
         } else {
             recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
         }
@@ -327,9 +325,7 @@ public class TakerMenuActivity extends AppCompatActivity
                 } else {
                     jumpButton.setVisibility(View.GONE);
                 }
-                absolutePosition = (orientation == Configuration.ORIENTATION_LANDSCAPE) ?
-                        ((CarouselLayoutManager) recyclerView.getLayoutManager()).getCenterItemPosition() :
-                        ((LinearLayoutManager) recyclerView.getLayoutManager())
+                absolutePosition = ((LinearLayoutManager) recyclerView.getLayoutManager())
                                 .findFirstVisibleItemPosition();
             }
         });
@@ -451,10 +447,35 @@ public class TakerMenuActivity extends AppCompatActivity
                 holder.itemTitle.setText(model.getTitle());
                 RequestOptions requestOptions = new RequestOptions();
                 requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
-                Glide.with(getApplicationContext())
-                        .load(model.getPhoto())
-                        .apply(requestOptions)
-                        .into(holder.itemPhoto);
+                if(model.getPhoto() == null){
+                    holder.itemPhoto.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    switch(model.getCategory()) {
+                        case "Food":
+                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_pizza_slice_purple));
+                            break;
+                        case "Study Material":
+                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_book_purple));
+                            break;
+                        case "Households":
+                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_lamp_purple));
+                            break;
+                        case "Lost & Found":
+                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_lost_and_found_purple));
+                            break;
+                        case "Hitchhikes":
+                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_car_purple));
+                            break;
+                        default:
+                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_treasure_purple));
+                            break;
+                    }
+                    holder.itemPhoto.setScaleType(ImageView.ScaleType.CENTER);
+                } else {
+                    Glide.with(getApplicationContext())
+                            .load(model.getPhoto())
+                            .apply(requestOptions)
+                            .into(holder.itemPhoto);
+                }
 
                 // Category selection
                 int categoryId;
@@ -761,10 +782,7 @@ public class TakerMenuActivity extends AppCompatActivity
 
     private void updatePosition() {
         assert recyclerView.getLayoutManager() != null;
-        position = (orientation == Configuration.ORIENTATION_LANDSCAPE) ?
-                ((CarouselLayoutManager) recyclerView.getLayoutManager()).getCenterItemPosition() :
-                ((LinearLayoutManager) recyclerView.getLayoutManager())
-                        .findFirstVisibleItemPosition();
+        position = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
 
         Log.d(TAG, "onScrollStateChanged: POSITION IS: " + position);
         tryToggleJumpButton();

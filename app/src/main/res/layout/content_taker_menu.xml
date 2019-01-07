@@ -7,12 +7,14 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".TakerMenuActivity"
-    tools:showIn="@layout/app_bar_taker_menu">
+    tools:showIn="@layout/app_bar_taker_menu"
+    android:background="#E7E6E3">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:animateLayoutChanges="true">
 
         <!--TODO: Change the height of the menu as more items are added-->
         <android.support.constraint.ConstraintLayout

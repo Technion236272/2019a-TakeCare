@@ -152,6 +152,8 @@
     <string name="share_button_text">Share</string>
     <string name="air_time_clickable_change_text">Change</string>
     <string name="enter_location_hint">Enter location</string>
+    <string name="enter_location_to_hint">To</string>
+    <string name="enter_location_from_hint">From</string>
     <string name="picture_prompt">Add a picture</string>
     <string name="pickup_information_prompt_text">Pickup Information</string>
     <string name="select_category_prompt">Select a category:</string>
