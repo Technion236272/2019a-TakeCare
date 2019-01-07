@@ -98,7 +98,9 @@
     <string name="empty_feed_text_1">Uh-oh…\n\nSeems like there are no nearby items available right now!\n\nThe good news is:"</string>
     <string name="empty_feed_text_2">you can share the first one!</string>>
     <string name="shared_items_empty_feed_text">You didn\'t share any items yet</string>
-    <string name="requested_items_empty_feed_text">You don\'t have any requested items at the moment</string>
+    <string name="accepted_items_empty_feed_text">None of your requests was accepted yet</string>
+    <string name="pending_items_empty_feed_text">There are no requested items available at the moment</string>
+    <string name="rejected_items_empty_feed_text">None of your requests was rejected</string>
 
 
     <!--Favorites page elements-->
@@ -166,6 +168,9 @@
     <string name="about_text"><![CDATA[TakeCare is a social Android app written in Java and developed on Android Studio, suitable for all audiences over the age of 13.\nIn the app, you choose the role of either a giver or a taker at any given time. A giver shares a thing that they own but are not interested in, whereas a taker can browse such things and choose one to schedule a pickup.\nAmong the things you can share with others (or express your interest in):\n\u2022 Food Furniture\n\u2022 Study material\n\u2022 Hitchhikes\n\u2022 Lost & Founds\n\u2022 Just about anything you see fit!\nJoin the sharing revolution: help brighten someone\'s day, and also help the world by not excessively throwing away like in most modern families!]]></string>
     <string name="credits_title">Credits</string>
     <string name="item_notifications">Receive Notifications from Item Matches</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     />
 
     <!---->
