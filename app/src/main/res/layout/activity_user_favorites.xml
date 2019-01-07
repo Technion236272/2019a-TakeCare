@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".UserFavoritesActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -22,58 +25,140 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:layout_weight="2"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="serif"
-            android:gravity="center"
-            android:text="@string/favorites_tags_title"
-            android:textColor="@color/primary_text"
-            android:textSize="22sp" />
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="24dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginRight="12dp"
-            android:fontFamily="serif"
-            android:text="@string/favorites_instruction_text"
-            android:textColor="@color/secondary_text"
-            android:textSize="16sp" />
-
-
-        <com.hootsuite.nachos.NachoTextView
-            android:id="@+id/favorites_tag_box"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginRight="24dp"
-            android:layout_marginBottom="24dp"
-            android:background="@drawable/edit_text_box_frame"
-            android:fontFamily="serif"
-            android:hint="@string/favorites_tag_hint"
-            android:textColor="@color/secondary_text"
-            android:textSize="16sp"
+            android:layout_margin="8dp"
+            android:animateLayoutChanges="true">
 
-            app:chipSpacing="2sp"
-            app:chipBackground="@color/colorPrimary"
-            app:chipTextColor="#FFFFFE"
-            app:chipTextSize="16sp"
-            app:chipHeight="30dp" />
+            <TextView
+                android:id="@+id/tags_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="serif"
+                android:text="@string/favorites_tags_title"
+                android:textColor="@color/primary_text"
+                android:textSize="22sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tags_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tags_title"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="serif"
+                android:text="@string/favorites_instruction_text"
+                android:textColor="@color/secondary_text"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tags_title" />
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/tags_help"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_above="@id/tags_hint"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:alpha="0.7"
+                android:src="@drawable/ic_help"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tags_hint" />
+
+            <com.nhaarman.supertooltips.ToolTipRelativeLayout
+                android:id="@+id/tags_help_tooltip"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+
+            <TextView
+                android:id="@+id/tags_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tags_description"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:fontFamily="serif"
+                android:text="@string/favorites_instruction_hint"
+                android:textColor="@color/secondary_text"
+                android:textSize="14sp"
+                android:textStyle="italic|bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tags_description" />
+
+            <com.hootsuite.nachos.NachoTextView
+                android:id="@+id/favorites_tag_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tags_hint"
+                android:gravity="top"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/edit_text_box_frame"
+                android:fontFamily="serif"
+                android:hint="@string/favorites_tag_hint"
+                android:lines="8"
+                android:textColor="@color/secondary_text"
+                android:textSize="14sp"
+                android:windowSoftInputMode="stateVisible|adjustResize"
+                app:chipBackground="@color/colorPrimary"
+                app:chipHeight="30dp"
+                app:chipSpacing="2sp"
+                app:chipTextColor="#FFFFFE"
+                app:chipTextSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tags_help" />
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/save_keywords_button"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_below="@id/favorites_tag_box"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:text="@string/favorites_save_changes"
+                android:textAllCaps="false"
+
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:visibility="gone"
+                app:backgroundTint="@color/colorAccent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/favorites_tag_box" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </ScrollView>
 
 </LinearLayout>

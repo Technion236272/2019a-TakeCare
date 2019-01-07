@@ -110,7 +110,10 @@
     <!--Favorites page elements-->
     <string name="favorites_tags_title">Tags:</string>
     <string name="favorites_tag_hint">e.g. "muffins", "giveaway", "music"…</string>
-    <string name="favorites_instruction_text">Type in words that interest you.\nWe\'ll make sure to notify you when a suitable item is posted!</string>
+    <string name="favorites_instruction_text">Type in words that interest you.\nWe\'ll make sure to notify you when a\nsuitable item is posted!</string>
+    <string name="favorites_instruction_hint">Use a comma or enter to separate words</string>
+    <string name="favorites_save_changes">Save Changes</string>
+    <string name="favorites_help_popup_text">Keywords must be at least\n3 characters long, but no\nmore than 15</string>
 
     <!-- Strings related to sign up -->
     <string name="prompt_email">Email</string>
