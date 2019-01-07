@@ -20,7 +20,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardCornerRadius="6dp">
+            app:cardCornerRadius="8dp">
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
