@@ -3,10 +3,12 @@ package com.syv.takecare.takecare;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -26,6 +28,8 @@ import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.transition.Scene;
 import android.transition.TransitionManager;
 import android.util.Log;
@@ -37,13 +41,21 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.hootsuite.nachos.ChipConfiguration;
 import com.hootsuite.nachos.NachoTextView;
+import com.hootsuite.nachos.chip.ChipSpan;
+import com.hootsuite.nachos.chip.ChipSpanChipCreator;
+import com.hootsuite.nachos.terminator.ChipTerminatorHandler;
+import com.hootsuite.nachos.tokenizer.SpanChipTokenizer;
+import com.nhaarman.supertooltips.ToolTip;
 import com.nhaarman.supertooltips.ToolTipRelativeLayout;
 import com.nhaarman.supertooltips.ToolTipView;
 import com.syv.takecare.takecare.utilities.RotateBitmap;
@@ -61,8 +73,14 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.google.firebase.firestore.FieldValue.serverTimestamp;
@@ -70,10 +88,20 @@ import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 public class GiverFormActivity extends AppCompatActivity {
 
     private final static String TAG = "TakeCare";
+    private static final int POPUP_ACTIVE_DURATION = 7000;
+    private static final String changeText = "Change";
+    private static final String hideText = "Hide";
+    private static final List<Character> TERMINATORS =  Arrays.asList('\n', ';', ',');
+    private static final int CHIP_MAX_LENGTH = 15;
+    private static final int CHIP_MIN_LENGTH = 3;
+    private static final int TAGS_SEPARATING_LENGTH = 4;
+
     private String pickupMethod;
     private String category;
     private String[] spinnerNames;
     private int[] spinnerIcons;
+
+    private ScrollView scrollView;
 
     private EditText title;
     private EditText description;
@@ -90,6 +118,7 @@ public class GiverFormActivity extends AppCompatActivity {
     private ToolTipView airTimeToolTipView;
     private Handler airTimeTooltipHandler = new Handler();
     private Runnable airTimeTooltipTask;
+    private boolean isAirtimeTooltipOpen;
 
     private TextView tagsToggler;
     private NachoTextView tagsBox;
@@ -98,7 +127,9 @@ public class GiverFormActivity extends AppCompatActivity {
     private ToolTipView tagsToolTipView;
     private Handler tagsTooltipHandler = new Handler();
     private Runnable tagsTooltipTask;
+    private boolean isTagsTooltipOpen;
 
+    private View tooltipsPlaceholder;
 
     private ImageView itemImageView;
     final static private int REQUEST_CAMERA = 1;
@@ -111,9 +142,6 @@ public class GiverFormActivity extends AppCompatActivity {
 
     private AppCompatImageButton chosenCategory = null;
     private int airTime = 0;
-    private static final String changeText = "Change";
-    private static final String hideText = "Hide";
-
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
@@ -214,7 +242,6 @@ public class GiverFormActivity extends AppCompatActivity {
         buttonsCategories[3] = findViewById(R.id.category_lost_and_found_btn);
         buttonsCategories[4] = findViewById(R.id.category_hitchhikes_btn);
         buttonsCategories[5] = findViewById(R.id.category_other_btn);
-        Log.d(TAG, "made it so far ");
         for (int i = 0; i < 6; i++) {
             buttonsCategories[i].setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -262,9 +289,12 @@ public class GiverFormActivity extends AppCompatActivity {
             }
         });
 
+        initTooltips();
+        configureTagsBox();
     }
 
     private void initWidgets() {
+        scrollView = (ScrollView) findViewById(R.id.form_scroll);
         pickup = (Spinner) findViewById(R.id.pickup_method_spinner);
         title = (EditText) findViewById(R.id.title_input);
         description = (EditText) findViewById(R.id.item_description);
@@ -283,6 +313,7 @@ public class GiverFormActivity extends AppCompatActivity {
         tagsBox = (NachoTextView) findViewById(R.id.keywords_tag_box);
         tagsTooltipLayout = (ToolTipRelativeLayout) findViewById(R.id.keywords_help_tooltip);
         formBtn = (Button) findViewById(R.id.send_form_button);
+        tooltipsPlaceholder = (View) findViewById(R.id.placeholder);
 
 
         // Pickup method spinner initialization
@@ -290,6 +321,145 @@ public class GiverFormActivity extends AppCompatActivity {
         spinnerIcons = new int[]{R.drawable.ic_in_person, R.drawable.ic_giveaway, R.drawable.ic_race};
         IconTextAdapter ita = new IconTextAdapter(this, spinnerNames, spinnerIcons);
         pickup.setAdapter(ita);
+    }
+
+
+    private void initTooltips() {
+        isAirtimeTooltipOpen = false;
+        isTagsTooltipOpen = false;
+
+        airTimeTooltipTask = new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "tooltip timed out!");
+                        if (airTimeToolTipView != null)
+                            airTimeToolTipView.remove();
+                        airTimeHelpBtn.setAlpha(0.7f);
+                        isAirtimeTooltipOpen = false;
+                        if (!isAirtimeTooltipOpen && !isTagsTooltipOpen) {
+                            tooltipsPlaceholder.setVisibility(View.GONE);
+                        }
+                    }
+                });
+            }
+        };
+
+        tagsTooltipTask = new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "tooltip timed out!");
+                        if (tagsToolTipView != null)
+                            tagsToolTipView.remove();
+                        tagsHelpBtn.setAlpha(0.7f);
+                        isTagsTooltipOpen = false;
+                        if (!isAirtimeTooltipOpen && !isTagsTooltipOpen) {
+                            tooltipsPlaceholder.setVisibility(View.GONE);
+                        }
+                    }
+                });
+            }
+        };
+
+        final ToolTip airtimeTooltip = new ToolTip()
+                .withText(getResources().getString(R.string.air_time_tooltip_text))
+                .withColor(getResources().getColor(R.color.colorAccent))
+                .withTextColor(Color.WHITE)
+                .withAnimationType(ToolTip.AnimationType.FROM_TOP);
+
+        final ToolTip tagsTooltip = new ToolTip()
+                .withText(getResources().getString(R.string.tags_tooltip_text))
+                .withColor(getResources().getColor(R.color.colorPrimary))
+                .withTextColor(Color.WHITE)
+                .withAnimationType(ToolTip.AnimationType.FROM_TOP);
+
+        airTimeHelpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isAirtimeTooltipOpen)
+                    return;
+                isAirtimeTooltipOpen = true;
+                airTimeHelpBtn.setAlpha(1.0f);
+                tooltipsPlaceholder.setVisibility(View.INVISIBLE);
+                scrollView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollView.smoothScrollTo(0, scrollView.getScrollY() + 320);
+                    }
+                }, 100);
+                airTimeToolTipView = airTimeTooltipLayout
+                        .showToolTipForView(airtimeTooltip, airTimeHelpBtn);
+                airTimeToolTipView.setOnToolTipViewClickedListener(new ToolTipView.OnToolTipViewClickedListener() {
+                    @Override
+                    public void onToolTipViewClicked(ToolTipView toolTipView) {
+                        airTimeTooltipTask.run();
+                    }
+                });
+
+                tagsTooltipTask.run();
+                tagsTooltipHandler.removeCallbacks(tagsTooltipTask);
+                airTimeTooltipHandler.removeCallbacks(airTimeTooltipTask);
+                airTimeTooltipHandler.postDelayed(airTimeTooltipTask, POPUP_ACTIVE_DURATION);
+            }
+        });
+
+        tagsHelpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isTagsTooltipOpen)
+                    return;
+                isTagsTooltipOpen = true;
+                tagsHelpBtn.setAlpha(1.0f);
+                tooltipsPlaceholder.setVisibility(View.INVISIBLE);
+                scrollView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollView.smoothScrollTo(0, scrollView.getScrollY() + 320);
+                    }
+                }, 100);
+                tagsToolTipView = tagsTooltipLayout
+                        .showToolTipForView(tagsTooltip, tagsHelpBtn);
+                tagsToolTipView.setOnToolTipViewClickedListener(new ToolTipView.OnToolTipViewClickedListener() {
+                    @Override
+                    public void onToolTipViewClicked(ToolTipView toolTipView) {
+                        tagsTooltipTask.run();
+                    }
+                });
+
+                airTimeTooltipTask.run();
+                airTimeTooltipHandler.removeCallbacks(airTimeTooltipTask);
+                tagsTooltipHandler.removeCallbacks(tagsTooltipTask);
+                tagsTooltipHandler.postDelayed(tagsTooltipTask, POPUP_ACTIVE_DURATION);
+            }
+        });
+    }
+
+
+    private void configureTagsBox() {
+        for (char c : TERMINATORS) {
+            tagsBox.addChipTerminator(c, ChipTerminatorHandler.BEHAVIOR_CHIPIFY_ALL);
+        }
+
+        tagsBox.setChipTokenizer(new SpanChipTokenizer<>(this, new ChipSpanChipCreator() {
+            @Override
+            public ChipSpan createChip(@NonNull Context context, @NonNull CharSequence text, Object data) {
+                return new ChipSpan(context, text, ContextCompat.getDrawable(GiverFormActivity.this, R.drawable.ic_edit_white), data);
+            }
+
+            @Override
+            public void configureChip(@NonNull ChipSpan chip, @NonNull ChipConfiguration chipConfiguration) {
+                super.configureChip(chip, chipConfiguration);
+                chip.setShowIconOnLeft(true);
+                chip.setIconBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+            }
+        }, ChipSpan.class));
+
+        tagsBox.enableEditChipOnTouch(false, true);
     }
 
     @Override
@@ -502,6 +672,11 @@ public class GiverFormActivity extends AppCompatActivity {
         itemInfo.put("status", 1);
         Log.d(TAG, "filled item's status");
 
+        List<String> keywords = getAllKeywords();
+        if (!keywords.isEmpty()) {
+            itemInfo.put("tags", keywords);
+        }
+
         //TODO: allow users to not upload a picture under some circumstances later
         /*if (selectedImage == null && !category.equals("Hitchhikes") && !category.equals("Other"))
             return formResult.ERROR_PICTURE_NOT_INCLUDED; //TODO: change this error code if upload is legal*/
@@ -509,6 +684,44 @@ public class GiverFormActivity extends AppCompatActivity {
             return formResult.PICTURE_MISSING;
         } else {
             return formResult.PICTURE_UPLOADED;
+        }
+    }
+
+    public List<String> getAllKeywords() {
+        tagsBox.chipifyAllUnterminatedTokens();
+
+        // Filter duplicates & long keywords
+        List<String> chosenTags = tagsBox.getChipValues();
+        Set<String> uniqueTags = new HashSet<>(chosenTags);
+
+        for (Iterator<String> iterator = uniqueTags.iterator(); iterator.hasNext();) {
+            String tag = iterator.next();
+            if (tag.length() > CHIP_MAX_LENGTH || tag.length() < CHIP_MIN_LENGTH) {
+                iterator.remove();
+            }
+        }
+
+        chosenTags.clear();
+        chosenTags.addAll(uniqueTags);
+        initChips(chosenTags);
+        return chosenTags;
+    }
+
+    private void initChips(Collection<String> tags) {
+        if (tags == null || tags.isEmpty()) {
+            tagsBox.setText("");
+            return;
+        }
+        StringBuilder tagsTextBuilder = new StringBuilder();
+        for (String tag : tags) {
+            tagsTextBuilder.append(tag);
+        }
+
+        tagsBox.setText(tagsTextBuilder.toString());
+        int index = 0;
+        for (String tag : tags) {
+            tagsBox.chipify(index, index + tag.length());
+            index += tag.length() + TAGS_SEPARATING_LENGTH;
         }
     }
 
@@ -704,6 +917,12 @@ public class GiverFormActivity extends AppCompatActivity {
             ((TextInputLayout) findViewById(R.id.text_input_layout_location)).setHint(getResources().getString(R.string.enter_location_hint));
         }
         setDefaultAirTime();
+        setDefaultTags();
+    }
+
+    private void setDefaultTags() {
+        tagsToggler.setVisibility(View.VISIBLE);
+        tagsHelpBtn.setVisibility(View.VISIBLE);
     }
 
     private void setDefaultAirTime() {
@@ -711,6 +930,7 @@ public class GiverFormActivity extends AppCompatActivity {
         airTimeText.setVisibility(View.VISIBLE);
         airTimeToggler.setVisibility(View.VISIBLE);
         airTimeToggler.setText(changeText);
+        airTimeHelpBtn.setVisibility(View.VISIBLE);
         airTimePicker.setVisibility(View.GONE);
     }
 
@@ -753,6 +973,32 @@ public class GiverFormActivity extends AppCompatActivity {
             airTimeToggler.setText(changeText);
         }
     }
+
+    public void onTagsTogglerClick(View view) {
+        TextView togglerText = (TextView) view;
+        if (togglerText.getText().toString().equals(getResources().getString
+                (R.string.tags_box_show_text))) {
+            // Show the tags box
+            togglerText.setText(getResources().getString
+                    (R.string.tags_box_hide_text));
+            tagsBox.setVisibility(View.VISIBLE);
+
+            scrollView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                }
+            }, 300);
+
+        } else if (togglerText.getText().toString().equals(getResources().getString
+                (R.string.tags_box_hide_text))) {
+            // Hide the tags box
+            togglerText.setText(getResources().getString
+                    (R.string.tags_box_show_text));
+            tagsBox.setVisibility(View.GONE);
+        }
+    }
+
 
     public class ImageCompressTask extends AsyncTask<Uri, Integer, byte[]> {
 

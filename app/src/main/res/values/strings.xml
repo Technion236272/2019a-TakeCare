@@ -154,7 +154,7 @@
 
     <!--GiverForm elements-->
     <string name="giver_form_title_input_hint">Add a title</string>
-    <string name="giver_form_add_a_picture_button_text">Add A Picture:</string>
+    <string name="giver_form_add_a_picture_button_text">Add a picture:</string>
     <string name="enter_description_hint">Enter description</string>
     <string name="enter_time_hint">Specify time</string>
     <string name="pickup_method_prompt_text">Pickup Type</string>
@@ -164,8 +164,14 @@
     <string name="enter_location_to_hint">To</string>
     <string name="enter_location_from_hint">From</string>
     <string name="picture_prompt">Add a picture</string>
-    <string name="pickup_information_prompt_text">Pickup Information</string>
+    <string name="pickup_information_prompt_text">Pickup information</string>
     <string name="select_category_prompt">Select a category:</string>
+    <string name="giver_form_item_information_title">Item information</string>
+    <string name="tags_box_show_text">Add keywords</string>
+    <string name="tags_box_hide_text">Hide keywords</string>
+    <string name="air_time_tooltip_text">Select how long your item should\nbe listed for. It will be removed\nautomatically after that amount\nof time if nobody picked it</string>
+    <string name="tags_tooltip_text">Enter keywords to describe your item.\nSeparate keywords with a comma.\nKeywords must be at least 3\ncharacters long, but no more than 15.\nDuplicate keywords will be ignored</string>
+
 
     <!-- About -->
     <string name="my_link"><a href="http://somesite.com/">Click me!</a></string>
@@ -175,10 +181,6 @@
     <string name="about_text"><![CDATA[TakeCare is a social Android app written in Java and developed on Android Studio, suitable for all audiences over the age of 13.\nIn the app, you choose the role of either a giver or a taker at any given time. A giver shares a thing that they own but are not interested in, whereas a taker can browse such things and choose one to schedule a pickup.\nAmong the things you can share with others (or express your interest in):\n\u2022 Food Furniture\n\u2022 Study material\n\u2022 Hitchhikes\n\u2022 Lost & Founds\n\u2022 Just about anything you see fit!\nJoin the sharing revolution: help brighten someone\'s day, and also help the world by not excessively throwing away like in most modern families!]]></string>
     <string name="credits_title">Credits</string>
     <string name="item_notifications">Receive Notifications from Item Matches</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    />
 
     <!---->
 </resources>

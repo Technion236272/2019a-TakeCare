@@ -24,12 +24,14 @@
     </android.support.design.widget.AppBarLayout>
 
     <ScrollView
+        android:id="@+id/form_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true">
 
             <android.support.v7.widget.CardView
                 android:id="@+id/item_image_card"
@@ -351,7 +353,7 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginTop="16dp"
-                        android:text="@string/item_info_title"
+                        android:text="@string/giver_form_item_information_title"
                         android:textColor="@color/primary_text"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -543,18 +545,26 @@
 
             </android.support.v7.widget.CardView>
 
+            <View
+                android:id="@+id/placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/pickup_time_card" />
+
             <TextView
                 android:id="@+id/air_time_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:textColor="@color/primary_text"
                 android:textSize="14sp"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/pickup_time_card" />
+                app:layout_constraintTop_toBottomOf="@+id/placeholder" />
 
             <TextView
                 android:id="@+id/air_time_change"
@@ -562,7 +572,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:onClick="onChangeAirTimeClick"
@@ -572,7 +582,7 @@
                 android:textStyle="bold"
                 android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@id/air_time_text"
-                app:layout_constraintTop_toBottomOf="@+id/pickup_time_card" />
+                app:layout_constraintTop_toBottomOf="@+id/placeholder" />
 
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/air_time_help"
@@ -585,12 +595,13 @@
                 android:src="@drawable/ic_help_amber"
                 android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@+id/air_time_change"
-                app:layout_constraintTop_toBottomOf="@+id/pickup_time_card" />
+                app:layout_constraintTop_toBottomOf="@+id/placeholder" />
 
             <com.nhaarman.supertooltips.ToolTipRelativeLayout
                 android:id="@+id/air_time_help_tooltip"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                app:layout_constraintBottom_toTopOf="@+id/air_time_help"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -617,11 +628,12 @@
                 android:layout_marginTop="24dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:text="Add Keywords"
+                android:text="@string/tags_box_show_text"
                 android:textColor="@color/colorPrimary"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:visibility="gone"
+                android:onClick="onTagsTogglerClick"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/air_time_seek_bar" />
 
@@ -642,6 +654,7 @@
                 android:id="@+id/keywords_help_tooltip"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                app:layout_constraintBottom_toTopOf="@+id/keywords_help"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -658,7 +671,7 @@
                 android:fontFamily="serif"
                 android:gravity="top"
                 android:hint="@string/favorites_tag_hint"
-                android:lines="8"
+                android:lines="3"
                 android:textColor="@color/secondary_text"
                 android:textSize="14sp"
                 android:visibility="gone"
@@ -678,7 +691,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:padding="15dp"
