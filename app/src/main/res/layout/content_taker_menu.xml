@@ -5,16 +5,16 @@
     android:id="@+id/taker_root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#E7E6E3"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".TakerMenuActivity"
-    tools:showIn="@layout/app_bar_taker_menu"
-    android:background="#E7E6E3">
+    tools:showIn="@layout/app_bar_taker_menu">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:animateLayoutChanges="true">
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
 
         <!--TODO: Change the height of the menu as more items are added-->
         <android.support.constraint.ConstraintLayout
@@ -135,12 +135,25 @@
 
         </android.support.constraint.ConstraintLayout>
 
-        <com.syv.takecare.takecare.FeedRecyclerView
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/taker_feed_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.6"
             android:scrollbars="vertical" />
+
+        <FrameLayout
+            android:id="@+id/map_wrapper_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.6">
+
+            <fragment
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/empty_feed_view"
@@ -214,9 +227,9 @@
         android:layout_marginTop="12dp"
         android:alpha="0.9"
         android:background="@drawable/floating_button_shape"
+        android:paddingLeft="12dp"
         android:paddingEnd="12dp"
         android:paddingRight="12dp"
-        android:paddingLeft="12dp"
         android:shadowColor="#A8A8A8"
         android:shadowRadius="10"
         android:text="@string/jump_to_top_button"

@@ -1,10 +1,13 @@
 package com.syv.takecare.takecare;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -12,6 +15,8 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AlertDialog;
@@ -38,6 +43,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
@@ -52,6 +58,12 @@ import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -72,8 +84,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static android.view.View.VISIBLE;
+
 public class TakerMenuActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
     private final static String TAG = "TakeCare";
     private static final int LIST_JUMP_THRESHOLD = 4;
     private static final int ICON_FILL_ITERATIONS = 12;
@@ -85,10 +99,11 @@ public class TakerMenuActivity extends AppCompatActivity
     private ReentrantLock iconLock = new ReentrantLock();
     private static final String EXTRA_ITEM_ID = "Item Id";
     private RelativeLayout rootLayout;
-    private FeedRecyclerView recyclerView;
+    private RecyclerView recyclerView;
     private ImageView userProfilePicture;
     private TextView userName;
     private MenuItem currentDrawerChecked;
+    private View emptyFeedView;
 
     private ConstraintLayout filterPopupMenu;
     private AppCompatImageButton chosenPickupMethod;
@@ -107,6 +122,9 @@ public class TakerMenuActivity extends AppCompatActivity
 
     private int orientation;
     private int absolutePosition;
+    GoogleMap mMap;
+    private boolean mapViewEnabled;
+    private FrameLayout mapViewWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,6 +211,15 @@ public class TakerMenuActivity extends AppCompatActivity
         } else{
             jumpButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_up), null);
         }
+        /**
+         * Map related stuff goes here
+         */
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        mapViewEnabled = false;
+        mapViewWrapper = (FrameLayout) findViewById(R.id.map_wrapper_layout);
+        mapViewWrapper.setVisibility(View.GONE);
     }
 
     @Override
@@ -298,8 +325,8 @@ public class TakerMenuActivity extends AppCompatActivity
 
 
     private void setUpRecyclerView() {
-        recyclerView = (FeedRecyclerView) findViewById(R.id.taker_feed_list);
-        View emptyFeedView = findViewById(R.id.empty_feed_view);
+        recyclerView = (RecyclerView) findViewById(R.id.taker_feed_list);
+        emptyFeedView = findViewById(R.id.empty_feed_view);
         Log.d(TAG, "setUpRecyclerView: setting layout manager for the current orientation");
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -313,8 +340,6 @@ public class TakerMenuActivity extends AppCompatActivity
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
         setUpAdapter();
-
-        recyclerView.setEmptyView(emptyFeedView);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -628,11 +653,13 @@ public class TakerMenuActivity extends AppCompatActivity
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
+                toggleVisibility();
                 if (position == 0 && recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
                     recyclerView.scrollToPosition(0);
                 }
-                if (getItemCount() == 0)
+                if (getItemCount() == 0) {
                     filterPopupMenu.setVisibility(View.GONE);
+                }
             }
 
             class AdapterViewHolder extends ItemsViewHolder {
@@ -656,6 +683,7 @@ public class TakerMenuActivity extends AppCompatActivity
         Log.d(TAG, "setUpAdapter: created adapter");
         currentAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(currentAdapter);
+        toggleVisibility();
         currentAdapter.startListening();
         Log.d(TAG, "setUpAdapter: done");
     }
@@ -807,8 +835,7 @@ public class TakerMenuActivity extends AppCompatActivity
     public void onStart() {
         super.onStart();
         currentAdapter.startListening();
-        recyclerView.toggleVisibility();
-
+        toggleVisibility();
         // Update user name and picture if necessary (changed via user profile)
         Log.d("TAG", "Checking for user");
         if (user != null) {
@@ -844,7 +871,7 @@ public class TakerMenuActivity extends AppCompatActivity
     public void onStop() {
         super.onStop();
         currentAdapter.stopListening();
-        recyclerView.toggleVisibility();
+        toggleVisibility();
     }
 
     @Override
@@ -870,7 +897,16 @@ public class TakerMenuActivity extends AppCompatActivity
                 toggleFilterMenu();
                 break;
             case R.id.action_change_display:
-                makeHighlightedSnackbar("Map display will be added in the future");
+                if (!mapViewEnabled) {
+                    mapViewWrapper.setVisibility(VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
+                    mapViewEnabled = true;
+                } else {
+                    mapViewWrapper.setVisibility(View.GONE);
+                    recyclerView.setVisibility(VISIBLE);
+                    mapViewEnabled = false;
+                }
+                tryToggleJumpButton();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -879,7 +915,7 @@ public class TakerMenuActivity extends AppCompatActivity
     private void toggleFilterMenu() {
         if (filterPopupMenu.getVisibility() == View.GONE) {
             jumpButton.setVisibility(View.GONE);
-            filterPopupMenu.setVisibility(View.VISIBLE);
+            filterPopupMenu.setVisibility(VISIBLE);
             if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
                 (findViewById(R.id.empty_feed_arrow)).setVisibility(View.GONE);
             }
@@ -887,7 +923,7 @@ public class TakerMenuActivity extends AppCompatActivity
             filterPopupMenu.setVisibility(View.GONE);
             tryToggleJumpButton();
             if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
-                (findViewById(R.id.empty_feed_arrow)).setVisibility(View.VISIBLE);
+                (findViewById(R.id.empty_feed_arrow)).setVisibility(VISIBLE);
             }
         }
     }
@@ -926,20 +962,31 @@ public class TakerMenuActivity extends AppCompatActivity
         filterPopupMenu.setVisibility(View.GONE);
         jumpButton.setVisibility(View.GONE);
         if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
-            ((findViewById(R.id.empty_feed_arrow))).setVisibility(View.VISIBLE);
+            ((findViewById(R.id.empty_feed_arrow))).setVisibility(VISIBLE);
         }
     }
 
     private void tryToggleJumpButton() {
-        if (position >= LIST_JUMP_THRESHOLD && filterPopupMenu.getVisibility() == View.GONE) {
-            jumpButton.setVisibility(View.VISIBLE);
+        if (position >= LIST_JUMP_THRESHOLD && filterPopupMenu.getVisibility() == View.GONE && !mapViewEnabled) {
+            jumpButton.setVisibility(VISIBLE);
             Log.d(TAG, "tryToggleJumpButton: jump button is visible");
         } else {
             jumpButton.setVisibility(View.GONE);
         }
     }
 
-
+    public void toggleVisibility() {
+        if (emptyFeedView != null && !mapViewEnabled) {
+            //Make the emptyFeedView visible of the adapter has no items (feed is empty)
+            emptyFeedView.setVisibility(
+                    (recyclerView.getAdapter() == null || recyclerView.getAdapter().getItemCount() == 0) ?
+                            VISIBLE : View.GONE);
+            //The list itself is set to be invisible if there are no items, in order to display emptyFeedView in its stead
+            recyclerView.setVisibility(
+                    (recyclerView.getAdapter() == null || recyclerView.getAdapter().getItemCount() == 0) ?
+                            View.GONE : View.VISIBLE);
+        }
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -951,18 +998,24 @@ public class TakerMenuActivity extends AppCompatActivity
             startActivity(intent);
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
+            mapViewEnabled = false;
+            mapViewWrapper.setVisibility(View.GONE);
             return false;
         } else if (id == R.id.nav_my_items) {
             intent = new Intent(this, SharedItemsActivity.class);
             startActivity(intent);
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
+            mapViewEnabled = false;
+            mapViewWrapper.setVisibility(View.GONE);
             return false;
         } else if (id == R.id.nav_manage_favorites) {
             intent = new Intent(this, UserFavoritesActivity.class);
             startActivity(intent);
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
+            mapViewEnabled = false;
+            mapViewWrapper.setVisibility(View.GONE);
             return false;
         } else if (id == R.id.nav_chat) {
             //TODO: change this when chat is implemented
@@ -985,6 +1038,7 @@ public class TakerMenuActivity extends AppCompatActivity
             currentDrawerChecked.setChecked(true);
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
+            mapViewEnabled = false;
             return false;
         } else if (id == R.id.nav_about) {
             intent = new Intent(this, AboutActivity.class);
@@ -1025,6 +1079,7 @@ public class TakerMenuActivity extends AppCompatActivity
             setUpAdapter();
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
+            Log.d(TAG, "onNavigationItemSelected: here");
         }
 
         return true;
@@ -1079,5 +1134,59 @@ public class TakerMenuActivity extends AppCompatActivity
         TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.YELLOW);
         snackbar.show();
+    }
+
+    /**
+     * Map related listeners and methods
+     */
+    private GoogleMap.OnMyLocationClickListener onMyLocationClickListener =
+            new GoogleMap.OnMyLocationClickListener() {
+                @Override
+                public void onMyLocationClick(@NonNull Location location) {
+
+                    mMap.setMinZoomPreference(12);
+
+                    CircleOptions circleOptions = new CircleOptions();
+                    circleOptions.center(new LatLng(location.getLatitude(),
+                            location.getLongitude()));
+
+                    circleOptions.radius(200);
+                    circleOptions.fillColor(Color.RED);
+                    circleOptions.strokeWidth(6);
+
+                    mMap.addCircle(circleOptions);
+                }
+            };
+    private GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener =
+            new GoogleMap.OnMyLocationButtonClickListener() {
+                @Override
+                public boolean onMyLocationButtonClick() {
+                    mMap.setMinZoomPreference(15);
+                    return false;
+                }
+            };
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.setOnMyLocationButtonClickListener(onMyLocationButtonClickListener);
+        mMap.setOnMyLocationClickListener(onMyLocationClickListener);
+        enableMyLocationIfPermitted();
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.setMinZoomPreference(11);
+        MarkerOptions testMarker = new MarkerOptions();
+        testMarker.position(new LatLng(32.776473,35.023376));
+        mMap.addMarker(testMarker);
+    }
+    private void enableMyLocationIfPermitted() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+        } else if (mMap != null) {
+            mMap.setMyLocationEnabled(true);
+        }
     }
 }

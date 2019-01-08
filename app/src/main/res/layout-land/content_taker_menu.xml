@@ -135,12 +135,24 @@
 
         </android.support.constraint.ConstraintLayout>
 
-        <com.syv.takecare.takecare.FeedRecyclerView
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/taker_feed_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.6"
             android:scrollbars="vertical" />
+        <FrameLayout
+            android:id="@+id/map_wrapper_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.6">
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        </FrameLayout>
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/empty_feed_view"
