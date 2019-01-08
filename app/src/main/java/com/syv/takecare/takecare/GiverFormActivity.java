@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
@@ -23,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageButton;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Scene;
 import android.transition.TransitionManager;
@@ -41,6 +43,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.hootsuite.nachos.NachoTextView;
+import com.nhaarman.supertooltips.ToolTipRelativeLayout;
+import com.nhaarman.supertooltips.ToolTipView;
 import com.syv.takecare.takecare.utilities.RotateBitmap;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -76,9 +81,24 @@ public class GiverFormActivity extends AppCompatActivity {
     private EditText pickupLocation;
     private Spinner pickup;
     private ProgressDialog dialog;
+
     private TextView airTimeText;
     private TextView airTimeToggler;
     private SeekBar airTimePicker;
+    private AppCompatImageView airTimeHelpBtn;
+    private ToolTipRelativeLayout airTimeTooltipLayout;
+    private ToolTipView airTimeToolTipView;
+    private Handler airTimeTooltipHandler = new Handler();
+    private Runnable airTimeTooltipTask;
+
+    private TextView tagsToggler;
+    private NachoTextView tagsBox;
+    private AppCompatImageView tagsHelpBtn;
+    private ToolTipRelativeLayout tagsTooltipLayout;
+    private ToolTipView tagsToolTipView;
+    private Handler tagsTooltipHandler = new Handler();
+    private Runnable tagsTooltipTask;
+
 
     private ImageView itemImageView;
     final static private int REQUEST_CAMERA = 1;
@@ -121,22 +141,8 @@ public class GiverFormActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        // Pickup method spinner initialization
-        spinnerNames = new String[]{"In Person", "Giveaway", "Race"};
-        spinnerIcons = new int[]{R.drawable.ic_in_person, R.drawable.ic_giveaway, R.drawable.ic_race};
-        IconTextAdapter ita = new IconTextAdapter(this, spinnerNames, spinnerIcons);
-        pickup = (Spinner) findViewById(R.id.pickup_method_spinner);
-        pickup.setAdapter(ita);
+        initWidgets();
 
-        title = (EditText) findViewById(R.id.title_input);
-        description = (EditText) findViewById(R.id.item_description);
-        pickupDescription = (EditText) findViewById(R.id.item_time);
-        pickupLocation = (EditText) findViewById(R.id.item_location);
-        itemImageView = (ImageView) findViewById(R.id.item_picture);
-        picturePB = (ProgressBar) findViewById(R.id.picture_pb);
-        airTimeText = (TextView) findViewById(R.id.air_time_text);
-        airTimeToggler = (TextView) findViewById(R.id.air_time_change);
-        airTimePicker = (SeekBar) findViewById(R.id.air_time_seek_bar);
         airTimePicker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
@@ -192,7 +198,6 @@ public class GiverFormActivity extends AppCompatActivity {
                 setPostAirTimeText();
             }
         });
-        formBtn = (Button) findViewById(R.id.send_form_button);
 
         selectedImage = null;
         selectedImageFile = null;
@@ -201,6 +206,7 @@ public class GiverFormActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
+
         AppCompatImageButton[] buttonsCategories = new AppCompatImageButton[6];
         buttonsCategories[0] = findViewById(R.id.category_food_btn);
         buttonsCategories[1] = findViewById(R.id.category_study_material_btn);
@@ -249,13 +255,41 @@ public class GiverFormActivity extends AppCompatActivity {
                         break;
                 }
             }
-
+ 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                // Do nothing
             }
         });
 
+    }
+
+    private void initWidgets() {
+        pickup = (Spinner) findViewById(R.id.pickup_method_spinner);
+        title = (EditText) findViewById(R.id.title_input);
+        description = (EditText) findViewById(R.id.item_description);
+        pickupDescription = (EditText) findViewById(R.id.item_time);
+        pickupLocation = (EditText) findViewById(R.id.item_location);
+        itemImageView = (ImageView) findViewById(R.id.item_picture);
+        picturePB = (ProgressBar) findViewById(R.id.picture_pb);
+        airTimeText = (TextView) findViewById(R.id.air_time_text);
+        airTimeToggler = (TextView) findViewById(R.id.air_time_change);
+        airTimePicker = (SeekBar) findViewById(R.id.air_time_seek_bar);
+        airTimeHelpBtn = (AppCompatImageView) findViewById(R.id.air_time_help);
+        airTimeTooltipLayout = (ToolTipRelativeLayout) findViewById(R.id.air_time_help_tooltip);
+        airTimeHelpBtn = (AppCompatImageView) findViewById(R.id.air_time_help);
+        tagsToggler = (TextView) findViewById(R.id.add_keywords_text);
+        tagsHelpBtn = (AppCompatImageView) findViewById(R.id.keywords_help);
+        tagsBox = (NachoTextView) findViewById(R.id.keywords_tag_box);
+        tagsTooltipLayout = (ToolTipRelativeLayout) findViewById(R.id.keywords_help_tooltip);
+        formBtn = (Button) findViewById(R.id.send_form_button);
+
+
+        // Pickup method spinner initialization
+        spinnerNames = new String[]{"In Person", "Giveaway", "Race"};
+        spinnerIcons = new int[]{R.drawable.ic_in_person, R.drawable.ic_giveaway, R.drawable.ic_race};
+        IconTextAdapter ita = new IconTextAdapter(this, spinnerNames, spinnerIcons);
+        pickup.setAdapter(ita);
     }
 
     @Override

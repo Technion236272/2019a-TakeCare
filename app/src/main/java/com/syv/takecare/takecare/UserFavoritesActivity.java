@@ -383,6 +383,8 @@ public class UserFavoritesActivity extends AppCompatActivity {
             return;
         }
 
+        tagsBox.clearFocus();
+        hideKeyboard(UserFavoritesActivity.this);
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(this);
         builder.setTitle("Unsaved Keywords")

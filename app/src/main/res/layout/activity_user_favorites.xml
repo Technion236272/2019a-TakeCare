@@ -78,7 +78,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:alpha="0.7"
-                android:src="@drawable/ic_help"
+                android:src="@drawable/ic_help_purple"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tags_hint" />
@@ -89,7 +89,6 @@
                 android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
-
 
             <TextView
                 android:id="@+id/tags_hint"
