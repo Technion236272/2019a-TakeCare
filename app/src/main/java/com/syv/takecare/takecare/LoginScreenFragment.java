@@ -4,16 +4,22 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatTextView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -135,7 +141,14 @@ public class LoginScreenFragment extends Fragment {
                 Log.d(TAG, "facebook:onError", e);
             }
         });
-
+        String text = "TakeCare";
+        AppCompatTextView title_view = view.findViewById(R.id.login_activity_title);
+        SpannableString title = new SpannableString(text);
+        ForegroundColorSpan fcsPurple = new ForegroundColorSpan(Color.parseColor("#4527a0"));
+        ForegroundColorSpan fcsAmber = new ForegroundColorSpan(getResources().getColor(R.color.colorAccent));
+        title.setSpan(fcsPurple,0,4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        title.setSpan(fcsAmber, 4, 8, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        title_view.setText(title);
         return view;
     }
 

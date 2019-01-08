@@ -3,12 +3,19 @@ package com.syv.takecare.takecare;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.facebook.CallbackManager;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -41,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
+
     }
 
     public void changeFragment(View view) {

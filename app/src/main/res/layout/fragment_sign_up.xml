@@ -12,6 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0.7"
+        android:tint="#6F000000"
         android:scaleType="centerCrop"
         app:srcCompat="@drawable/background_image_blurred_mq" />
 

@@ -18,12 +18,35 @@
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
         android:scaleType="centerCrop"
+        android:alpha="0.95"
         android:src="@drawable/background_image_mq"
+        android:tint="#6F000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="45dp"
+        app:layout_constraintBottom_toTopOf="@id/facebook_login_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.110000014">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/login_activity_title"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:text="TakeCare"
+            android:textColor="@color/colorPrimary"
+            app:autoSizeTextType="uniform"
+            app:fontFamily="@font/rambla_bold" />
+    </FrameLayout>
     <com.facebook.login.widget.LoginButton
         android:id="@+id/facebook_login_button"
         android:layout_width="0dp"

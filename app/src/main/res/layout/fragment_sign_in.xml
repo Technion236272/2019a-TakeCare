@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
         android:alpha="0.7"
+        android:tint="#6F000000"
         android:src="@drawable/background_image_blurred_mq"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
