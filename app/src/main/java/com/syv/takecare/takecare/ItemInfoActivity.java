@@ -194,6 +194,27 @@ public class ItemInfoActivity extends AppCompatActivity {
                                         .load(document.getString("photo"))
                                         .apply(requestOptions)
                                         .into(itemImageView);
+                            } else {
+                                switch(document.getString("category")) {
+                                    case "Food":
+                                        itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_pizza_96_big_purple));
+                                        break;
+                                    case "Study Material":
+                                        itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_book_purple));
+                                        break;
+                                    case "Households":
+                                        itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_lamp_purple));
+                                        break;
+                                    case "Lost & Found":
+                                        itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_lost_and_found_purple));
+                                        break;
+                                    case "Hitchhikes":
+                                        itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_car_purple));
+                                        break;
+                                    default:
+                                        itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_treasure_purple));
+                                        break;
+                                }
                             }
                             if (document.getString("description") != null) {
                                 Log.d(TAG, "Found description. Writing: ");
