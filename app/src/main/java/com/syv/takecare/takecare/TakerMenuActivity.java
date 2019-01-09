@@ -6,8 +6,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -17,6 +20,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AlertDialog;
@@ -61,17 +65,26 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -79,7 +92,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
@@ -125,6 +142,7 @@ public class TakerMenuActivity extends AppCompatActivity
     GoogleMap mMap;
     private boolean mapViewEnabled;
     private FrameLayout mapViewWrapper;
+    private HashMap<String, Marker> markers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,7 +199,7 @@ public class TakerMenuActivity extends AppCompatActivity
             }
         };
 
-        for(View view : pickupMethodFilterOptions) {
+        for (View view : pickupMethodFilterOptions) {
             view.setOnClickListener(pickupMethodfilterListener);
         }
 
@@ -197,7 +215,7 @@ public class TakerMenuActivity extends AppCompatActivity
         orientation = getResources().getConfiguration().orientation;
         setUpRecyclerView();
 
-        jumpButton.setOnClickListener(new View.OnClickListener(){
+        jumpButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -206,9 +224,9 @@ public class TakerMenuActivity extends AppCompatActivity
             }
         });
         int orientation = getResources().getConfiguration().orientation;
-        if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             jumpButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_back), null, null, null);
-        } else{
+        } else {
             jumpButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_up), null);
         }
         /**
@@ -220,6 +238,7 @@ public class TakerMenuActivity extends AppCompatActivity
         mapViewEnabled = false;
         mapViewWrapper = (FrameLayout) findViewById(R.id.map_wrapper_layout);
         mapViewWrapper.setVisibility(View.GONE);
+        markers = new HashMap<String, Marker>();
     }
 
     @Override
@@ -479,9 +498,9 @@ public class TakerMenuActivity extends AppCompatActivity
                 holder.itemTitle.setText(model.getTitle());
                 RequestOptions requestOptions = new RequestOptions();
                 requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
-                if(model.getPhoto() == null){
+                if (model.getPhoto() == null) {
                     holder.itemPhoto.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    switch(model.getCategory()) {
+                    switch (model.getCategory()) {
                         case "Food":
                             holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_pizza_slice_purple));
                             break;
@@ -1046,7 +1065,7 @@ public class TakerMenuActivity extends AppCompatActivity
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
             return false;
-        }else {
+        } else {
             // Category filtering
             currentDrawerChecked.setChecked(false);
             currentDrawerChecked = item;
@@ -1165,6 +1184,7 @@ public class TakerMenuActivity extends AppCompatActivity
                     return false;
                 }
             };
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -1173,10 +1193,83 @@ public class TakerMenuActivity extends AppCompatActivity
         enableMyLocationIfPermitted();
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setMinZoomPreference(11);
-        MarkerOptions testMarker = new MarkerOptions();
-        testMarker.position(new LatLng(32.776473,35.023376));
-        mMap.addMarker(testMarker);
+        Query query = db.collection("items");
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+
+
+            @Override
+            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.d(TAG, "error loading documents: " + e.getMessage());
+                    return;
+                }
+                if (queryDocumentSnapshots == null || queryDocumentSnapshots.isEmpty()) {
+                    Log.d(TAG, "did not find any documents");
+                    return;
+                }
+
+
+
+                for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
+                    DocumentSnapshot doc = dc.getDocument();
+                    String itemId = (String) doc.getReference().getId();
+                    if(dc.getType() == DocumentChange.Type.REMOVED){
+                        Marker markerToDelete = markers.get(itemId);
+                        markerToDelete.remove();
+                        markers.remove(itemId);
+                        continue;
+                    }
+                    GeoPoint itemLocation = (GeoPoint) doc.get("location");
+                    if (itemLocation != null) {
+                        MarkerOptions testMarker = new MarkerOptions();
+                        String category = (String) doc.get("category");
+                        int iconId = R.drawable.pizza_markernobg;
+                        switch (category) {
+                            case "Food":
+                                iconId = R.drawable.pizza_markernobg;
+                                break;
+                            case "Study Material":
+                                iconId = R.drawable.book_marker;
+                                break;
+                            case "Households":
+                                iconId = R.drawable.households_marker;
+                                break;
+                            case "Lost & Found":
+                                iconId = R.drawable.lost_and_found_marker;
+                                break;
+                            case "Hitchhikes":
+                                iconId = R.drawable.car_marker;
+                                break;
+                            default:
+                                iconId = R.drawable.treasure_marker;
+                        }
+                        String title = (String) doc.get("title");
+                        String pickupMethod = (String) doc.get("pickupMethod");
+                        String photoURL = (String) doc.get("photo");
+                        testMarker.position(new LatLng(itemLocation.getLatitude(), itemLocation.getLongitude()))
+                                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(iconId, 170, 170)))
+                                .title(title)
+                                .snippet(pickupMethod);
+                        CustomInfoWindow customInfoWindow = new CustomInfoWindow(TakerMenuActivity.this);
+                        mMap.setInfoWindowAdapter(customInfoWindow);
+                        Marker m = mMap.addMarker(testMarker);
+                        m.setTag(photoURL);
+                        markers.put(itemId, m);
+
+                    }
+                }
+            }
+        });
+
+
     }
+
+    public Bitmap resizeMapIcons(int markerIcon, int width, int height) {
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), markerIcon);
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+        return resizedBitmap;
+    }
+
     private void enableMyLocationIfPermitted() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -1189,4 +1282,5 @@ public class TakerMenuActivity extends AppCompatActivity
             mMap.setMyLocationEnabled(true);
         }
     }
+
 }
