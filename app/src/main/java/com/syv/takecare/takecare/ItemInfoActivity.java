@@ -2,9 +2,11 @@ package com.syv.takecare.takecare;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.Image;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -488,6 +490,26 @@ public class ItemInfoActivity extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
+                                        db.collection("items").document(userId)
+                                                .update("status", 1)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Log.d(TAG, "an error occurred with the request");
+                                                        db.collection("users")
+                                                                .document(userId)
+                                                                .collection("requestedItems")
+                                                                .document(itemId)
+                                                                .delete();
+                                                    }
+
+                                                });
                                         //TODO: eliminate post from user feed, and finish the activity
                                         Toast.makeText(getApplicationContext(), "You've successfully requested the item!", Toast.LENGTH_SHORT).show();
                                     }
@@ -580,4 +602,16 @@ public class ItemInfoActivity extends AppCompatActivity {
                 })
                 .show();
     }
+
+    private void makeHighlightedSnackbar(String str) {
+        Snackbar snackbar = Snackbar
+                .make(findViewById(R.id.item_root), str, Snackbar.LENGTH_SHORT);
+        View sbView = snackbar.getView();
+        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.YELLOW);
+        snackbar.show();
+    }
+
 }
+
+
