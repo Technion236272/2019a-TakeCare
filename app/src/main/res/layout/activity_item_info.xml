@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     tools:context=".ItemInfoActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -22,32 +23,54 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <RelativeLayout
+        android:id="@+id/fullscreen_image_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/item_info_toolbar_layout">
+
+        <ImageView
+            android:id="@+id/item_image_fullscreen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
     <ImageView
         android:id="@+id/item_image"
         android:layout_width="match_parent"
         android:layout_height="360dp"
         android:layout_below="@+id/item_info_toolbar_layout"
-        android:scaleType="center" />
+        android:scaleType="center"
+        android:clickable="false"
+        android:focusable="false"/>
 
     <ScrollView
         android:id="@+id/item_info_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/request_button_layout"
-        android:layout_below="@id/item_info_toolbar_layout">
+        android:layout_below="@id/item_info_toolbar_layout"
+        android:clickable="true"
+        android:focusable="true">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:clickable="true"
+            android:focusable="true">
 
-            <Space
+            <View
                 android:id="@+id/image_space"
                 android:layout_width="match_parent"
                 android:layout_height="320dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:clickable="true"
+                android:focusable="true"/>
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/item_info_root"
