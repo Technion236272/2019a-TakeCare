@@ -226,7 +226,7 @@ public class TakerMenuActivity extends AppCompatActivity
                 @Override
                 public void run() {
                     Log.d(TAG, "thread run: moving to " + absolutePosition);
-                    recyclerView.scrollToPosition(absolutePosition);
+                    recyclerView.getLayoutManager().scrollToPosition(absolutePosition);
                     updatePosition();
                 }
             }, 300);
@@ -325,8 +325,15 @@ public class TakerMenuActivity extends AppCompatActivity
                 } else {
                     jumpButton.setVisibility(View.GONE);
                 }
-                absolutePosition = ((LinearLayoutManager) recyclerView.getLayoutManager())
-                                .findFirstVisibleItemPosition();
+                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    int pos = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+                    if (pos == RecyclerView.NO_POSITION)
+                        absolutePosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                    else
+                        absolutePosition = pos;
+                } else {
+                    absolutePosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+                }
             }
         });
     }
@@ -782,7 +789,15 @@ public class TakerMenuActivity extends AppCompatActivity
 
     private void updatePosition() {
         assert recyclerView.getLayoutManager() != null;
-        position = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            int pos = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+            if (pos == RecyclerView.NO_POSITION)
+                position = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+            else
+                position = pos;
+        } else {
+            position = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+        }
 
         Log.d(TAG, "onScrollStateChanged: POSITION IS: " + position);
         tryToggleJumpButton();

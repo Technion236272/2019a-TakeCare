@@ -43,6 +43,7 @@ public class RejectedRequestsFragment extends RequestedItemsBaseFragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final FirebaseUser user = auth.getCurrentUser();
         assert user != null;
+
         Query query = db.collection("users").document(user.getUid()).collection("requestedItems")
                 .orderBy("requestStatus", Query.Direction.ASCENDING)
                 .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -52,69 +53,7 @@ public class RejectedRequestsFragment extends RequestedItemsBaseFragment {
                 .setQuery(query, RequestedItemsInformation.class)
                 .build();
 
-        return new FirestoreRecyclerAdapter<RequestedItemsInformation, ItemsViewHolder>(response) {
-            @Override
-            protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, final int position, @NonNull final RequestedItemsInformation model) {
-                Log.d(TAG, "model: " + model);
-                holder.itemRoot.setVisibility(View.INVISIBLE);
-
-                model.getItemRef()
-                        .get()
-                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(final DocumentSnapshot documentSnapshot) {
-                                Log.d(TAG, "card in position " + position + " is REJECTED");
-                                holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorRedLite));
-                                holder.itemTitle.setTextColor(Color.RED);
-                                ViewCompat.setBackgroundTintList(holder.itemCategory, getResources().getColorStateList(R.color.secondary_text));
-                                ViewCompat.setBackgroundTintList(holder.itemPickupMethod, getResources().getColorStateList(R.color.secondary_text));
-                                RejectedRequestsFragment.super.setUpItemInfo(holder, documentSnapshot);
-                                holder.itemRoot.setVisibility(View.VISIBLE);
-                                holder.card.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        Intent intent = new Intent(getContext(), ItemInfoActivity.class);
-                                        intent.putExtra(Intent.EXTRA_UID, user.getUid());
-                                        String path = model.getItemRef().getPath();
-                                        intent.putExtra(EXTRA_ITEM_ID, path.replace("items/", ""));
-                                        startActivity(intent);
-                                    }
-                                });
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "ERROR LOADING ITEM!");
-                            }
-                        });
-            }
-
-            @NonNull
-            @Override
-            public ItemsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-                View view = null;
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card_carousel, viewGroup, false);
-
-                } else {
-                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card, viewGroup, false);
-                }
-                return new ItemsViewHolder(view);
-            }
-
-            @Override
-            public void onError(FirebaseFirestoreException e) {
-                Log.e("error", e.getMessage());
-            }
-
-            @Override
-            public void onDataChanged() {
-                super.onDataChanged();
-                if (position == 0 && recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
-                    recyclerView.scrollToPosition(0);
-                }
-            }
-        };
+        return super.setFirestoreRecyclerAdapter(response, 2);
     }
 }
+
