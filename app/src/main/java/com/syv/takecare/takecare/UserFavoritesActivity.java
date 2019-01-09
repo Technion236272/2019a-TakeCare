@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -33,7 +34,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.hootsuite.nachos.ChipConfiguration;
 import com.hootsuite.nachos.NachoTextView;
 import com.hootsuite.nachos.chip.ChipSpan;
@@ -44,12 +50,15 @@ import com.nhaarman.supertooltips.ToolTip;
 import com.nhaarman.supertooltips.ToolTipRelativeLayout;
 import com.nhaarman.supertooltips.ToolTipView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.annotation.Nullable;
 
 public class UserFavoritesActivity extends AppCompatActivity {
     private static final String TAG = "TakeCare";
@@ -67,8 +76,13 @@ public class UserFavoritesActivity extends AppCompatActivity {
     private ToolTipView toolTipView;
 
     private Handler tooltipHandler = new Handler();
-    private Runnable task;
+    private Runnable tooltipTask;
 
+    private Handler suggestionsHandler = new Handler();
+    private Runnable suggestionsTask;
+    private List<String> autoCompleteSuggestions = new ArrayList<>();
+    private List<String> allExistingTags = new ArrayList<>();
+    private int tagsAmount = 0;
     private String tagsCopy;
     private boolean isPopupOpen;
 
@@ -98,6 +112,9 @@ public class UserFavoritesActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         user = auth.getCurrentUser();
 
+
+
+        addAutoCompleteOptions();
         configureTagsBox();
         configureTagsButton();
         configureTagsHelpButton();
@@ -144,6 +161,8 @@ public class UserFavoritesActivity extends AppCompatActivity {
                         Log.d(TAG, "onSuccess: successfully loaded keywords");
                         List<String> tags = (List<String>) documentSnapshot.get("tags");
                         initChips(tags);
+                        tagsAmount = tagsBox.getChipValues().size();
+                        suggestionsHandler.post(suggestionsTask);
 
                         tagsBox.addTextChangedListener(new TextWatcher() {
                             @Override
@@ -161,11 +180,16 @@ public class UserFavoritesActivity extends AppCompatActivity {
                                         Log.d(TAG, "keywords unchanged");
                                         tagsBtn.setVisibility(View.GONE);
                                     }
-                                } else {
-                                    if (tagsBtn.getVisibility() == View.GONE) {
-                                        Log.d(TAG, "detected keyword changes");
-                                        tagsBtn.setVisibility(View.VISIBLE);
-                                    }
+                                } else if (tagsBtn.getVisibility() == View.GONE) {
+                                    // The keyword are different than the original configuration: show accept button
+                                    tagsBtn.setVisibility(View.VISIBLE);
+                                }
+
+                                // Check if the user has entered or deleted a keyword, in order to manage suggestions
+                                if (tagsAmount != tagsBox.getAllChips().size()) {
+                                    Log.d(TAG, "change in chips detected");
+                                    suggestionsHandler.removeCallbacks(suggestionsTask);
+                                    suggestionsHandler.post(suggestionsTask);
                                 }
                             }
                         });
@@ -310,7 +334,7 @@ public class UserFavoritesActivity extends AppCompatActivity {
 
     private void configureTagsHelpButton() {
         isPopupOpen = false;
-        task = new Runnable() {
+        tooltipTask = new Runnable() {
             @Override
             public void run() {
                 runOnUiThread(new Runnable() {
@@ -351,11 +375,70 @@ public class UserFavoritesActivity extends AppCompatActivity {
                     }
                 });
 
-                tooltipHandler.removeCallbacks(task);
-                tooltipHandler.postDelayed(task, POPUP_ACTIVE_DURATION);
+                tooltipHandler.removeCallbacks(tooltipTask);
+                tooltipHandler.postDelayed(tooltipTask, POPUP_ACTIVE_DURATION);
             }
         });
     }
+
+
+    private void addAutoCompleteOptions() {
+        Query query = db.collection("tags")
+                .orderBy("tag");
+
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.d(TAG, "Listen failed with: " + e);
+                    return;
+                }
+
+                if (queryDocumentSnapshots == null) {
+                    Log.d(TAG, "Did not find any tags in database");
+                    return;
+                }
+
+                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                    if (doc.get("tag") != null) {
+                        allExistingTags.add(doc.getString("tag"));
+                    }
+                }
+
+                suggestionsHandler.removeCallbacks(suggestionsTask);
+                suggestionsHandler.post(suggestionsTask);
+            }
+        });
+
+        suggestionsTask = new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "detected keyword suggestions changes");
+                        setAutoCompleteAdapter();
+                    }
+                });
+            }
+        };
+    }
+
+    private void setAutoCompleteAdapter() {
+        autoCompleteSuggestions.clear();
+        List<String> currentKeywords = tagsBox.getChipValues();
+        tagsAmount = currentKeywords.size();
+        for (String keyword : allExistingTags) {
+            if (!currentKeywords.contains(keyword)) {
+                autoCompleteSuggestions.add(keyword);
+            }
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>
+                (getApplicationContext(), R.layout.auto_complete_dropdown_item, autoCompleteSuggestions);
+        tagsBox.setAdapter(adapter);
+        Log.d(TAG, "set the auto-complete adapter");
+    }
+
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);

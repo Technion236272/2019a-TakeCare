@@ -110,10 +110,11 @@
     <!--Favorites page elements-->
     <string name="favorites_tags_title">Tags:</string>
     <string name="favorites_tag_hint">e.g. "muffins", "giveaway", "music"…</string>
-    <string name="favorites_instruction_text">Type in words that interest you.\nWe\'ll make sure to notify you when a\nsuitable item is posted!</string>
-    <string name="favorites_instruction_hint">Use a comma or enter to separate words</string>
+    <string name="favorites_instruction_text">Type in words that interest you.\nWe\'ll make sure to notify you\nwhen a suitable item is posted!</string>
+    <string name="favorites_instruction_hint">To separate keywords,</string>
+    <string name="favorites_instruction_hint2">use a comma or enter</string>
     <string name="favorites_save_changes">Save Changes</string>
-    <string name="favorites_help_popup_text">Keywords must be at least\n3 characters long, but no\nmore than 15</string>
+    <string name="favorites_help_popup_text">3\-15 characters long.\nSeparate by comma or enter.\nNo duplicates allowed</string>
 
     <!-- Strings related to sign up -->
     <string name="prompt_email">Email</string>
@@ -169,8 +170,8 @@
     <string name="giver_form_item_information_title">Item information</string>
     <string name="tags_box_show_text">Add keywords</string>
     <string name="tags_box_hide_text">Hide keywords</string>
-    <string name="air_time_tooltip_text">Select how long your item should\nbe listed for. It will be removed\nautomatically after that amount\nof time if nobody picked it</string>
-    <string name="tags_tooltip_text">Enter keywords to describe your item.\nSeparate keywords with a comma.\nKeywords must be at least 3\ncharacters long, but no more than 15.\nDuplicate keywords will be ignored</string>
+    <string name="air_time_tooltip_text">Select how long your item\nshould be listed for</string>
+    <string name="tags_tooltip_text">Enter keywords to describe your item.\nSeparate with comma and enter,\n3\-15 characters long</string>
 
 
     <!-- About -->

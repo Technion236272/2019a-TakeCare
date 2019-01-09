@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -36,6 +37,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -49,6 +51,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.hootsuite.nachos.ChipConfiguration;
 import com.hootsuite.nachos.NachoTextView;
 import com.hootsuite.nachos.chip.ChipSpan;
@@ -73,6 +80,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -82,6 +90,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 
@@ -142,6 +152,12 @@ public class GiverFormActivity extends AppCompatActivity {
 
     private AppCompatImageButton chosenCategory = null;
     private int airTime = 0;
+
+    private Handler suggestionsHandler = new Handler();
+    private Runnable suggestionsTask;
+    private List<String> autoCompleteSuggestions = new ArrayList<>();
+    private List<String> allExistingTags = new ArrayList<>();
+    private int tagsAmount = 0;
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
@@ -314,7 +330,8 @@ public class GiverFormActivity extends AppCompatActivity {
         tagsTooltipLayout = (ToolTipRelativeLayout) findViewById(R.id.keywords_help_tooltip);
         formBtn = (Button) findViewById(R.id.send_form_button);
         tooltipsPlaceholder = (View) findViewById(R.id.placeholder);
-
+        airTimePicker.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+        airTimePicker.getThumb().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
 
         // Pickup method spinner initialization
         spinnerNames = new String[]{"In Person", "Giveaway", "Race"};
@@ -368,7 +385,7 @@ public class GiverFormActivity extends AppCompatActivity {
 
         final ToolTip airtimeTooltip = new ToolTip()
                 .withText(getResources().getString(R.string.air_time_tooltip_text))
-                .withColor(getResources().getColor(R.color.colorAccent))
+                .withColor(getResources().getColor(R.color.colorPrimary))
                 .withTextColor(Color.WHITE)
                 .withAnimationType(ToolTip.AnimationType.FROM_TOP);
 
@@ -389,7 +406,7 @@ public class GiverFormActivity extends AppCompatActivity {
                 scrollView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        scrollView.smoothScrollTo(0, scrollView.getScrollY() + 320);
+                        scrollView.smoothScrollTo(0, scrollView.getScrollY() + 144);
                     }
                 }, 100);
                 airTimeToolTipView = airTimeTooltipLayout
@@ -419,7 +436,7 @@ public class GiverFormActivity extends AppCompatActivity {
                 scrollView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        scrollView.smoothScrollTo(0, scrollView.getScrollY() + 320);
+                        scrollView.smoothScrollTo(0, scrollView.getScrollY() + 144);
                     }
                 }, 100);
                 tagsToolTipView = tagsTooltipLayout
@@ -460,7 +477,100 @@ public class GiverFormActivity extends AppCompatActivity {
         }, ChipSpan.class));
 
         tagsBox.enableEditChipOnTouch(false, true);
+
+        suggestionsTask = new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "detected keyword suggestions changes");
+                        setAutoCompleteAdapter();
+                    }
+                });
+            }
+        };
+
+        addAutoCompleteOptions();
+
+        tagsBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Check if the user has entered or deleted a keyword, in order to manage suggestions
+                if (tagsAmount != tagsBox.getAllChips().size()) {
+                    Log.d(TAG, "change in chips detected");
+                    suggestionsHandler.removeCallbacks(suggestionsTask);
+                    suggestionsHandler.post(suggestionsTask);
+                }
+            }
+        });
     }
+
+    private void addAutoCompleteOptions() {
+        Query query = db.collection("tags")
+                .orderBy("tag");
+
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.d(TAG, "Listen failed with: " + e);
+                    return;
+                }
+
+                if (queryDocumentSnapshots == null) {
+                    Log.d(TAG, "Did not find any tags in database");
+                    return;
+                }
+
+                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                    if (doc.get("tag") != null) {
+                        allExistingTags.add(doc.getString("tag"));
+                    }
+                }
+
+                suggestionsHandler.removeCallbacks(suggestionsTask);
+                suggestionsHandler.post(suggestionsTask);
+            }
+        });
+
+        suggestionsTask = new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "detected keyword suggestions changes");
+                        setAutoCompleteAdapter();
+                    }
+                });
+            }
+        };
+    }
+
+    private void setAutoCompleteAdapter() {
+        autoCompleteSuggestions.clear();
+        List<String> currentKeywords = tagsBox.getChipValues();
+        tagsAmount = currentKeywords.size();
+        for (String keyword : allExistingTags) {
+            if (!currentKeywords.contains(keyword)) {
+                autoCompleteSuggestions.add(keyword);
+            }
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>
+                (getApplicationContext(), R.layout.auto_complete_dropdown_item, autoCompleteSuggestions);
+        tagsBox.setAdapter(adapter);
+        Log.d(TAG, "set the auto-complete adapter");
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -658,7 +768,7 @@ public class GiverFormActivity extends AppCompatActivity {
             if (category.equals("Hitchhikes")) {
                 try {
                     String to = ((TextInputEditText) (findViewById(R.id.item_location_to))).getText().toString();
-                    itemInfo.put("pickupLocation", "From " + pickupLocation.getText().toString() + " To " + to);
+                    itemInfo.put("pickupLocation", "From: " + pickupLocation.getText().toString() + "\nTo: " + to);
                 } catch (NullPointerException e) {
                     Log.d(TAG, "formStatus: Hitchhike getText from to");
                 }

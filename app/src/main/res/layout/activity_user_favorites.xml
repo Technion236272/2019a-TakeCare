@@ -6,9 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:orientation="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true"
+    android:orientation="vertical"
     tools:context=".UserFavoritesActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -70,18 +70,15 @@
                 android:id="@+id/tags_help"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_above="@id/tags_hint"
+                android:layout_above="@id/tags_hint2"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
                 android:alpha="0.7"
                 android:src="@drawable/ic_help_purple"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tags_hint" />
+                app:layout_constraintBottom_toBottomOf="@+id/tags_hint2"
+                app:layout_constraintStart_toEndOf="@+id/tags_hint2"
+                app:layout_constraintTop_toTopOf="@+id/tags_hint1" />
 
             <com.nhaarman.supertooltips.ToolTipRelativeLayout
                 android:id="@+id/tags_help_tooltip"
@@ -91,13 +88,13 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
-                android:id="@+id/tags_hint"
+                android:id="@+id/tags_hint1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tags_description"
-                android:layout_marginTop="8dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
                 android:fontFamily="serif"
                 android:text="@string/favorites_instruction_hint"
                 android:textColor="@color/secondary_text"
@@ -106,12 +103,26 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tags_description" />
 
+            <TextView
+                android:id="@+id/tags_hint2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tags_description"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:fontFamily="serif"
+                android:text="@string/favorites_instruction_hint2"
+                android:textColor="@color/secondary_text"
+                android:textSize="14sp"
+                android:textStyle="italic|bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tags_hint1" />
+
             <com.hootsuite.nachos.NachoTextView
                 android:id="@+id/favorites_tag_box"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tags_hint"
-                android:gravity="top"
+                android:layout_below="@id/tags_hint2"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
@@ -119,7 +130,10 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:background="@drawable/edit_text_box_frame"
+                android:completionThreshold="1"
+                android:dropDownHeight="120dp"
                 android:fontFamily="serif"
+                android:gravity="top"
                 android:hint="@string/favorites_tag_hint"
                 android:lines="8"
                 android:textColor="@color/secondary_text"
@@ -132,7 +146,7 @@
                 app:chipTextSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tags_help" />
+                app:layout_constraintTop_toBottomOf="@+id/tags_hint2" />
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/save_keywords_button"
