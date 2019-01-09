@@ -229,10 +229,14 @@ public class SharedItemsBaseFragment extends Fragment {
                 holder.itemTitle.setText(model.getTitle());
                 RequestOptions requestOptions = new RequestOptions();
                 requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
-                Glide.with(holder.card)
-                        .load(model.getPhoto())
-                        .apply(requestOptions)
-                        .into(holder.itemPhoto);
+                try {
+                    Glide.with(getActivity().getApplicationContext())
+                            .load(model.getPhoto())
+                            .apply(requestOptions)
+                            .into(holder.itemPhoto);
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "could not load picture");
+                }
 
                 // Category selection
                 int categoryId;
@@ -278,10 +282,14 @@ public class SharedItemsBaseFragment extends Fragment {
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                 holder.itemPublisher.setText(documentSnapshot.getString("name"));
                                 if (documentSnapshot.getString("profilePicture") != null) {
-                                    Glide.with(holder.card)
-                                            .load(documentSnapshot.getString("profilePicture"))
-                                            .apply(RequestOptions.circleCropTransform())
-                                            .into(holder.profilePhoto);
+                                    try {
+                                        Glide.with(holder.card)
+                                                .load(documentSnapshot.getString("profilePicture"))
+                                                .apply(RequestOptions.circleCropTransform())
+                                                .into(holder.profilePhoto);
+                                    } catch (NullPointerException e) {
+                                        Log.d(TAG, "could not load picture");
+                                    }
                                 }
                             }
                         })

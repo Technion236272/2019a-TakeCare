@@ -119,6 +119,20 @@ public class RequestedItemsBaseFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+        recyclerView.toggleVisibility();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
+        recyclerView.toggleVisibility();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
         switch (item.getItemId()) {
@@ -185,10 +199,14 @@ public class RequestedItemsBaseFragment extends Fragment {
         holder.itemTitle.setText(documentSnapshot.getString("title"));
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
-        Glide.with(holder.card)
-                .load(documentSnapshot.getString("photo"))
-                .apply(requestOptions)
-                .into(holder.itemPhoto);
+        try {
+            Glide.with(getActivity().getApplicationContext())
+                    .load(documentSnapshot.getString("photo"))
+                    .apply(requestOptions)
+                    .into(holder.itemPhoto);
+        } catch (NullPointerException e) {
+            Log.d(TAG, "could not load picture");
+        }
 
         // category selection
         int categoryId;
@@ -235,10 +253,14 @@ public class RequestedItemsBaseFragment extends Fragment {
                         Log.d(TAG, "Found the user: " + documentSnapshot);
                         holder.itemPublisher.setText(documentSnapshot.getString("name"));
                         if (documentSnapshot.getString("profilePicture") != null) {
-                            Glide.with(holder.card)
-                                    .load(documentSnapshot.getString("profilePicture"))
-                                    .apply(RequestOptions.circleCropTransform())
-                                    .into(holder.profilePhoto);
+                            try {
+                                Glide.with(getActivity().getApplicationContext())
+                                        .load(documentSnapshot.getString("profilePicture"))
+                                        .apply(RequestOptions.circleCropTransform())
+                                        .into(holder.profilePhoto);
+                            } catch (NullPointerException e) {
+                                Log.d(TAG, "could not load picture");
+                            }
                         }
                     }
                 })

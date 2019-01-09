@@ -146,7 +146,7 @@
     <string name="change_password">Change Password</string>
     <string name="my_favorites">My Favorites</string>
     <string name="my_items">My Items</string>
-    <string name="pending_requests">Pending Requests</string>
+    <string name="pending_requests">Requested Items</string>
     <string name="log_out">Log Out</string>
 
     <!--GiverForm elements-->
