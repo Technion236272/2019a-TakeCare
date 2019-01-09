@@ -45,9 +45,8 @@ public class RejectedRequestsFragment extends RequestedItemsBaseFragment {
         assert user != null;
 
         Query query = db.collection("users").document(user.getUid()).collection("requestedItems")
-                .orderBy("requestStatus", Query.Direction.ASCENDING)
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .whereEqualTo("requestStatus", 2);
+                .whereEqualTo("requestStatus", 2)
+                .orderBy("timestamp", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<RequestedItemsInformation> response = new FirestoreRecyclerOptions.Builder<RequestedItemsInformation>()
                 .setQuery(query, RequestedItemsInformation.class)

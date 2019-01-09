@@ -420,6 +420,9 @@ public class RequestedItemsBaseFragment extends Fragment {
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(final DocumentSnapshot documentSnapshot) {
+                                if (getActivity() == null) {
+                                    return;
+                                }
                                 switch (status) {
                                     case 0:
                                         Log.d(TAG, "card in position " + position + " is ACCEPTED");
