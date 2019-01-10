@@ -1199,6 +1199,8 @@ public class TakerMenuActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setPadding(0,0,40,200);
+        mMap.getUiSettings().setMapToolbarEnabled(true);
         mMap.setOnMyLocationButtonClickListener(onMyLocationButtonClickListener);
         mMap.setOnMyLocationClickListener(onMyLocationClickListener);
         enableMyLocationIfPermitted();
