@@ -111,9 +111,7 @@
     <!--Favorites page elements-->
     <string name="favorites_tags_title">Tags:</string>
     <string name="favorites_tag_hint">e.g. "muffins", "giveaway", "music"…</string>
-    <string name="favorites_instruction_text">Type in words that interest you.\nWe\'ll make sure to notify you\nwhen a suitable item is posted!</string>
-    <string name="favorites_instruction_hint">To separate keywords,</string>
-    <string name="favorites_instruction_hint2">use a comma or enter</string>
+    <string name="favorites_instruction_text">Type in words that interest you.\nWe\'ll make sure to notify you when a suitable item is posted!</string>
     <string name="favorites_save_changes">Save Changes</string>
     <string name="favorites_help_popup_text">3\-15 characters long.\nSeparate by comma or enter.\nNo duplicates allowed</string>
 

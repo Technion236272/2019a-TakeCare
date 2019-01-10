@@ -120,7 +120,7 @@ import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 public class GiverFormActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private final static String TAG = "TakeCare";
-    private static final int POPUP_ACTIVE_DURATION = 7000;
+    private static final int POPUP_ACTIVE_DURATION = 6000;
     private static final String changeText = "Change";
     private static final String hideText = "Hide";
     private static final List<Character> TERMINATORS = Arrays.asList('\n', ';', ',');
@@ -467,38 +467,28 @@ public class GiverFormActivity extends AppCompatActivity implements OnMapReadyCa
         airTimeTooltipTask = new Runnable() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d(TAG, "tooltip timed out!");
-                        if (airTimeToolTipView != null)
-                            airTimeToolTipView.remove();
-                        airTimeHelpBtn.setAlpha(0.7f);
-                        isAirtimeTooltipOpen = false;
-                        if (!isAirtimeTooltipOpen && !isTagsTooltipOpen) {
-                            tooltipsPlaceholder.setVisibility(View.GONE);
-                        }
-                    }
-                });
+                Log.d(TAG, "tooltip timed out!");
+                if (airTimeToolTipView != null)
+                    airTimeToolTipView.remove();
+                airTimeHelpBtn.setAlpha(0.7f);
+                isAirtimeTooltipOpen = false;
+                if (!isAirtimeTooltipOpen && !isTagsTooltipOpen) {
+                    tooltipsPlaceholder.setVisibility(View.GONE);
+                }
             }
         };
 
         tagsTooltipTask = new Runnable() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d(TAG, "tooltip timed out!");
-                        if (tagsToolTipView != null)
-                            tagsToolTipView.remove();
-                        tagsHelpBtn.setAlpha(0.7f);
-                        isTagsTooltipOpen = false;
-                        if (!isAirtimeTooltipOpen && !isTagsTooltipOpen) {
-                            tooltipsPlaceholder.setVisibility(View.GONE);
-                        }
-                    }
-                });
+                Log.d(TAG, "tooltip timed out!");
+                if (tagsToolTipView != null)
+                    tagsToolTipView.remove();
+                tagsHelpBtn.setAlpha(0.7f);
+                isTagsTooltipOpen = false;
+                if (!isAirtimeTooltipOpen && !isTagsTooltipOpen) {
+                    tooltipsPlaceholder.setVisibility(View.GONE);
+                }
             }
         };
 
@@ -600,13 +590,8 @@ public class GiverFormActivity extends AppCompatActivity implements OnMapReadyCa
         suggestionsTask = new Runnable() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d(TAG, "detected keyword suggestions changes");
-                        setAutoCompleteAdapter();
-                    }
-                });
+                Log.d(TAG, "detected keyword suggestions changes");
+                setAutoCompleteAdapter();
             }
         };
 
@@ -664,13 +649,8 @@ public class GiverFormActivity extends AppCompatActivity implements OnMapReadyCa
         suggestionsTask = new Runnable() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d(TAG, "detected keyword suggestions changes");
-                        setAutoCompleteAdapter();
-                    }
-                });
+                Log.d(TAG, "detected keyword suggestions changes");
+                setAutoCompleteAdapter();
             }
         };
     }

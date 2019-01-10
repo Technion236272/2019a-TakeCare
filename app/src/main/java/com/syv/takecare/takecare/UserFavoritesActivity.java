@@ -66,7 +66,7 @@ public class UserFavoritesActivity extends AppCompatActivity {
     private static final int TAGS_SEPARATING_LENGTH = 4;
     private static final int CHIP_MAX_LENGTH = 15;
     private static final int CHIP_MIN_LENGTH = 3;
-    private static final int POPUP_ACTIVE_DURATION = 6000;
+    private static final int POPUP_ACTIVE_DURATION = 5000;
 
     private LinearLayout rootLayout;
     private NachoTextView tagsBox;
@@ -111,7 +111,6 @@ public class UserFavoritesActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         user = auth.getCurrentUser();
-
 
 
         addAutoCompleteOptions();
@@ -260,7 +259,7 @@ public class UserFavoritesActivity extends AppCompatActivity {
                 boolean removedDuplicateKeywords = uniqueTags.size() != chosenTags.size(),
                         removedLongKeywords = false, removedShortKeywords = false;
 
-                for (Iterator<String> iterator = uniqueTags.iterator(); iterator.hasNext();) {
+                for (Iterator<String> iterator = uniqueTags.iterator(); iterator.hasNext(); ) {
                     String tag = iterator.next();
                     if (tag.length() > CHIP_MAX_LENGTH) {
                         iterator.remove();
@@ -337,15 +336,10 @@ public class UserFavoritesActivity extends AppCompatActivity {
         tooltipTask = new Runnable() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d(TAG, "tooltip timed out!");
-                        toolTipView.remove();
-                        tagsHelpBtn.setAlpha(0.7f);
-                        isPopupOpen = false;
-                    }
-                });
+                Log.d(TAG, "tooltip timed out!");
+                toolTipView.remove();
+                tagsHelpBtn.setAlpha(0.7f);
+                isPopupOpen = false;
             }
         };
 
@@ -354,7 +348,7 @@ public class UserFavoritesActivity extends AppCompatActivity {
                 .withColor(getResources().getColor(R.color.colorPrimaryDark))
                 .withTextColor(Color.WHITE)
                 .withShadow()
-                .withAnimationType(ToolTip.AnimationType.FROM_TOP);
+                .withAnimationType(ToolTip.AnimationType.FROM_MASTER_VIEW);
 
         tagsHelpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -413,16 +407,12 @@ public class UserFavoritesActivity extends AppCompatActivity {
         suggestionsTask = new Runnable() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d(TAG, "detected keyword suggestions changes");
-                        setAutoCompleteAdapter();
-                    }
-                });
+                Log.d(TAG, "detected keyword suggestions changes");
+                setAutoCompleteAdapter();
             }
         };
     }
+
 
     private void setAutoCompleteAdapter() {
         autoCompleteSuggestions.clear();
