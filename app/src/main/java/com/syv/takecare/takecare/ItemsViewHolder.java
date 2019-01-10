@@ -8,10 +8,7 @@ import android.widget.TextView;
 
 class ItemsViewHolder extends RecyclerView.ViewHolder {
 
-    private static final String TAG = "TakeCare";
-
     LinearLayout itemRoot;
-//    private ViewGroup.LayoutParams params;
 
     CardView card;
     TextView itemTitle;
@@ -21,9 +18,8 @@ class ItemsViewHolder extends RecyclerView.ViewHolder {
     ImageView itemCategory;
     ImageView itemPickupMethod;
     ImageView itemReport;
+    ImageView itemFavorite;
     View itemView;
-
-    private LinearLayout scaleLayout;
 
     ItemsViewHolder(View itemView) {
         super(itemView);
@@ -37,44 +33,7 @@ class ItemsViewHolder extends RecyclerView.ViewHolder {
         itemCategory = (ImageView) itemView.findViewById(R.id.item_category);
         itemPickupMethod = (ImageView) itemView.findViewById(R.id.item_pickup_method);
         itemReport = (ImageView) itemView.findViewById(R.id.item_report);
+        itemFavorite = (ImageView) itemView.findViewById(R.id.item_favorite);
         this.itemView = itemView;
-
-        scaleLayout = itemView.findViewById(R.id.card_scale);
-
-        itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    card.setCardElevation((float)8.0);
-                    if(scaleLayout != null) {
-                        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                0,
-                                1.0f
-                        );
-                        scaleLayout.setLayoutParams(param);
-                    }
-                } else {
-                    card.setCardElevation((float)1.0);
-                    if(scaleLayout != null) {
-                        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                0,
-                                0.8f
-                        );
-                        scaleLayout.setLayoutParams(param);
-                    }
-                }
-            }
-        });
     }
-
-    /*
-    void hideLayout() {
-        params.height = 0;
-        params.width = 0;
-        //itemView.setLayoutParams(params); //This One.
-        itemRoot.setLayoutParams(params);
-        itemRoot.setVisibility(View.GONE);
-    }*/
 }

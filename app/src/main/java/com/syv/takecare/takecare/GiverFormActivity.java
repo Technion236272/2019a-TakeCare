@@ -323,7 +323,7 @@ public class GiverFormActivity extends AppCompatActivity implements OnMapReadyCa
                         pickupDescription.setVisibility(View.GONE);
                         break;
                     default:
-                        Log.d(TAG, "formStatus: Error in spinner position: " + pickup.getSelectedItemPosition());
+                        Log.d(TAG, "Error in spinner position: " + pickup.getSelectedItemPosition());
                         pickupMethod = "ERROR";
                         break;
                 }

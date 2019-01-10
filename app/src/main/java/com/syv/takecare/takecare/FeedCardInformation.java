@@ -1,11 +1,14 @@
 package com.syv.takecare.takecare;
 
+import java.util.List;
+
 public class FeedCardInformation {
     private String title;
     private String photo;
     private String publisher;
     private String category;
     private String pickupMethod;
+    private List<String> tags;
     private int status;
 
     /**
@@ -25,6 +28,10 @@ public class FeedCardInformation {
         this.status = status;
     }
 
+    public List<String> getTags() {
+        return tags;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -32,7 +39,6 @@ public class FeedCardInformation {
     public String getPhoto() {
         return photo;
     }
-
 
     public String getPublisher() {
         return publisher;

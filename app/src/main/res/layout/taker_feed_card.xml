@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -31,9 +32,11 @@
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_above="@+id/item_photo"
-                    android:layout_alignEnd="@+id/item_photo"
-                    android:layout_alignRight="@+id/item_photo"
+                    android:layout_alignEnd="@+id/item_favorite"
+                    android:layout_alignRight="@+id/item_favorite"
                     android:layout_alignParentTop="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:maxLines="2"
                     android:textColor="@color/primary_text"
@@ -41,9 +44,8 @@
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@+id/item_photo"
                     app:layout_constraintEnd_toStartOf="@id/item_report"
-                    app:layout_constraintStart_toStartOf="@id/item_photo"
                     app:layout_constraintTop_toTopOf="parent"
-                    card_view:layout_constraintHorizontal_bias="0.0" />
+                    card_view:layout_constraintStart_toEndOf="@+id/item_favorite" />
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/item_report"
@@ -76,6 +78,21 @@
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:id="@+id/item_favorite"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="4dp"
+                    android:alpha="0"
+                    android:src="@drawable/ic_favorite"
+                    android:visibility="gone"
+                    app:elevation="4dp"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/item_title"
+                    card_view:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintTop_toTopOf="parent" />
 
                 <FrameLayout
                     android:id="@+id/item_publisher_frame"
