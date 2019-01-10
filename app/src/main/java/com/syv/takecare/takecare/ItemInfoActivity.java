@@ -11,6 +11,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -28,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -89,9 +91,11 @@ public class ItemInfoActivity extends AppCompatActivity {
     private ImageButton deleteItem;
     private View imageSpaceView;
     private ScrollView itemInfoScrollView;
+    private ImageView expandedImageView;
 
     private Animator mCurrentAnimator;
     private int mShortAnimationDuration;
+    private boolean isImageFullscreen;
 
     private CardView locationCard;
     private CardView phoneCard;
@@ -130,6 +134,9 @@ public class ItemInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_info);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            postponeEnterTransition();
+        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.item_info_toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -153,6 +160,7 @@ public class ItemInfoActivity extends AppCompatActivity {
         phoneCard = (CardView) findViewById(R.id.phone_card);
         imageSpaceView = findViewById(R.id.image_space);
         itemInfoScrollView = (ScrollView) findViewById(R.id.item_info_scroll_view);
+        expandedImageView = (ImageView) findViewById(R.id.item_image_fullscreen);
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -169,6 +177,17 @@ public class ItemInfoActivity extends AppCompatActivity {
         if (isPublisher) {
             setUpRecyclerView();
         }
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isImageFullscreen) {
+                    expandedImageView.callOnClick();
+                } else {
+                    ItemInfoActivity.super.onBackPressed();
+                }
+            }
+        });
 
         //phoneCard.setVisibility(View.GONE);     // FOR NOW
 
@@ -206,11 +225,14 @@ public class ItemInfoActivity extends AppCompatActivity {
                                         + Uri.parse(document.getString("photo")));
 
                                 RequestOptions requestOptions = new RequestOptions();
-                                requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
                                 Glide.with(getApplicationContext())
                                         .load(document.getString("photo"))
-                                        .apply(requestOptions)
                                         .into(itemImageView);
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    //startPostponedEnterTransition();
+                                    scheduleStartPostponedTransition(itemImageView, uploaderProfilePictureView);
+                                }
 
                                 imageSpaceView.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -486,7 +508,8 @@ public class ItemInfoActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                supportFinishAfterTransition();
+                //finish();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -610,7 +633,8 @@ public class ItemInfoActivity extends AppCompatActivity {
                                         Log.d(TAG, "Item successfully deleted");
                                         Toast.makeText(getApplicationContext(), "Item successfully deleted!",
                                                 Toast.LENGTH_SHORT).show();
-                                        finish();
+                                        supportFinishAfterTransition();
+                                        //finish();
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -647,13 +671,13 @@ public class ItemInfoActivity extends AppCompatActivity {
             mCurrentAnimator.cancel();
         }
 
-        final ImageView expandedImageView = (ImageView) findViewById(R.id.item_image_fullscreen);
         expandedImageView.setVisibility(View.VISIBLE);
         itemInfoScrollView.setVisibility(View.GONE);
         requestButton.setVisibility(View.GONE);
         Glide.with(getApplicationContext())
                 .load(document.getString("photo"))
                 .into(expandedImageView);
+        isImageFullscreen = true;
 
         Log.d(TAG, "zoomImageFromThumb: Inflated fullscreen image");
 
@@ -784,10 +808,41 @@ public class ItemInfoActivity extends AppCompatActivity {
                 });
                 set.start();
                 mCurrentAnimator = set;
+                isImageFullscreen = false;
             }
         });
+    }
 
+    private static boolean itemImageFinished = false;
+    private static boolean publisherPictureFinished = false;
 
+    private void scheduleStartPostponedTransition(final View sharedElement, final View publisherPicture) {
+        sharedElement.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
+                        //startPostponedEnterTransition();
+                        itemImageFinished = true;
+                        attemptStartPostponedTransition();
+                        return true;
+                    }
+                });
+        publisherPicture.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        publisherPicture.getViewTreeObserver().removeOnPreDrawListener(this);
+                        //startPostponedEnterTransition();
+                        publisherPictureFinished = true;
+                        attemptStartPostponedTransition();
+                        return true;
+                    }
+                });
+    }
 
+    private void attemptStartPostponedTransition() {
+        if (itemImageFinished && publisherPictureFinished)
+            startPostponedEnterTransition();
     }
 }

@@ -14,6 +14,9 @@
 
         <!--App AppBar settings-->
         <item name="android:actionOverflowButtonStyle">@style/UserSettings</item>
+
+        <!-- Works only for API 21 and above -->
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
     <style name="UserSettings" parent="@android:style/Widget.Holo.ActionButton.Overflow">
