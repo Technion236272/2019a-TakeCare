@@ -544,12 +544,14 @@ public class ItemInfoActivity extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        db.collection("items").document(userId)
-                                                .update("status", 1)
+                                        db.collection("items").document(itemId)
+                                                .update("status", 0)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
-
+                                                        Log.d(TAG, "item requested successfully!");
+                                                        //TODO: eliminate post from user feed, and finish the activity
+                                                        Toast.makeText(getApplicationContext(), "You've successfully requested the item!", Toast.LENGTH_SHORT).show();
                                                     }
                                                 })
                                                 .addOnFailureListener(new OnFailureListener() {
@@ -564,8 +566,6 @@ public class ItemInfoActivity extends AppCompatActivity {
                                                     }
 
                                                 });
-                                        //TODO: eliminate post from user feed, and finish the activity
-                                        Toast.makeText(getApplicationContext(), "You've successfully requested the item!", Toast.LENGTH_SHORT).show();
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
