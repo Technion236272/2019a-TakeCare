@@ -50,6 +50,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -68,6 +69,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 
 public class ItemInfoActivity extends AppCompatActivity {
 
@@ -430,7 +433,8 @@ public class ItemInfoActivity extends AppCompatActivity {
                                     public void onSuccess(Void aVoid) {
                                         Log.d(TAG, "accepted request: committed changes");
                                         db.collection("items").document(itemId)
-                                                .update("status", 2);
+                                                .update("status", 2,
+                                                        "takenTimestamp", serverTimestamp());
                                         recyclerView.setVisibility(View.GONE);
                                         (findViewById(R.id.item_info_root))
                                                 .setBackgroundColor(getResources().getColor(R.color.colorPrimaryLite));
