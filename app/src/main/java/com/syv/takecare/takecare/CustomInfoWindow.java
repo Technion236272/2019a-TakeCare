@@ -22,7 +22,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
-import com.squareup.picasso.Picasso;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.syv.takecare.takecare.R;
 
 import java.io.IOException;
@@ -48,7 +48,9 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
         ImageView picture = view.findViewById(R.id.info_window_picture);
         title.setText(marker.getTitle());
         snippet.setText(marker.getSnippet());
-        Glide.with(context).asBitmap().load((String)marker.getTag()).apply(new RequestOptions().centerCrop()).listener(new RequestListener<Bitmap>(){
+        DocumentSnapshot doc = (DocumentSnapshot) marker.getTag();
+        String photo = (String) doc.get("photo");
+        Glide.with(context).asBitmap().load(photo).apply(new RequestOptions().centerCrop()).listener(new RequestListener<Bitmap>(){
 
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {

@@ -121,6 +121,7 @@ public class TakerMenuActivity extends AppCompatActivity
     private TextView userName;
     private MenuItem currentDrawerChecked;
     private View emptyFeedView;
+    private Toolbar toolbar;
 
     private ConstraintLayout filterPopupMenu;
     private AppCompatImageButton chosenPickupMethod;
@@ -149,7 +150,7 @@ public class TakerMenuActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_taker_menu);
         //Set the toolbar as the AppBar for this activity
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         //Set up the onClick listener for the giver form button
@@ -919,10 +920,14 @@ public class TakerMenuActivity extends AppCompatActivity
                 if (!mapViewEnabled) {
                     mapViewWrapper.setVisibility(VISIBLE);
                     recyclerView.setVisibility(View.GONE);
+                    toolbar.getMenu().findItem(R.id.action_change_display).setIcon(R.drawable.ic_item_appbar);
+                    toolbar.getMenu().findItem(R.id.action_change_display).setTitle(R.string.action_switch_to_list);
                     mapViewEnabled = true;
                 } else {
                     mapViewWrapper.setVisibility(View.GONE);
                     recyclerView.setVisibility(VISIBLE);
+                    toolbar.getMenu().findItem(R.id.action_change_display).setIcon(R.drawable.ic_map_display);
+                    toolbar.getMenu().findItem(R.id.action_change_display).setTitle(R.string.action_switch_to_map);
                     mapViewEnabled = false;
                 }
                 tryToggleJumpButton();
@@ -1191,6 +1196,7 @@ public class TakerMenuActivity extends AppCompatActivity
         mMap.setOnMyLocationButtonClickListener(onMyLocationButtonClickListener);
         mMap.setOnMyLocationClickListener(onMyLocationClickListener);
         enableMyLocationIfPermitted();
+        mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setMinZoomPreference(11);
         Query query = db.collection("items");
@@ -1245,7 +1251,6 @@ public class TakerMenuActivity extends AppCompatActivity
                         }
                         String title = (String) doc.get("title");
                         String pickupMethod = (String) doc.get("pickupMethod");
-                        String photoURL = (String) doc.get("photo");
                         testMarker.position(new LatLng(itemLocation.getLatitude(), itemLocation.getLongitude()))
                                 .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(iconId, 170, 170)))
                                 .title(title)
@@ -1253,14 +1258,24 @@ public class TakerMenuActivity extends AppCompatActivity
                         CustomInfoWindow customInfoWindow = new CustomInfoWindow(TakerMenuActivity.this);
                         mMap.setInfoWindowAdapter(customInfoWindow);
                         Marker m = mMap.addMarker(testMarker);
-                        m.setTag(photoURL);
+                        m.setTag(doc);
                         markers.put(itemId, m);
 
                     }
                 }
             }
         });
-
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                DocumentSnapshot doc = (DocumentSnapshot) marker.getTag();
+                String itemId = (String) doc.getReference().getId();
+                Intent intent = new Intent(getApplicationContext(), ItemInfoActivity.class);
+                intent.putExtra(EXTRA_ITEM_ID, itemId);
+                intent.putExtra(Intent.EXTRA_UID, user.getUid());
+                startActivity(intent);
+            }
+        });
 
     }
 

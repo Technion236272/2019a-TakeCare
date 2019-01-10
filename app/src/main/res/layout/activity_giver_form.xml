@@ -377,17 +377,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/item_information_prompt" />
 
-                    <View
-                        android:id="@+id/title_description_separator"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:background="@color/divider"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/title_input" />
-
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -483,20 +472,8 @@
                             android:id="@+id/item_time"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/enter_time_hint"
-                            android:paddingBottom="20dp" />
+                            android:hint="@string/enter_time_hint" />
                     </android.support.design.widget.TextInputLayout>
-
-                    <View
-                        android:id="@+id/time_location_separator"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:background="@color/divider"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/text_input_layout_time" />
 
 
                     <android.support.design.widget.TextInputLayout
@@ -510,14 +487,13 @@
                         android:layout_marginRight="8dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/time_location_separator">
+                        app:layout_constraintTop_toBottomOf="@id/text_input_layout_time">
 
                         <android.support.design.widget.TextInputEditText
                             android:id="@+id/item_location"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/enter_location_hint"
-                            android:paddingBottom="20dp" />
+                            android:hint="@string/enter_location_hint" />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
@@ -529,6 +505,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginBottom="8dp"
                         android:visibility="gone"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -538,9 +515,51 @@
                             android:id="@+id/item_location_to"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/enter_location_to_hint"
-                            android:paddingBottom="20dp" />
+                            android:hint="@string/enter_location_to_hint" />
                     </android.support.design.widget.TextInputLayout>
+
+                    <android.support.v7.widget.AppCompatButton
+                        android:id="@+id/add_location_button"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:padding="15dp"
+                        android:text="@string/add_location_button_text"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        android:tint="@color/icons"
+                        app:autoSizeMaxTextSize="20sp"
+                        app:autoSizeMinTextSize="14sp"
+                        app:autoSizeTextType="uniform"
+                        app:backgroundTint="@color/colorAccent"
+                        app:layout_constraintBottom_toTopOf="@id/choose_map_wrapper"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/text_input_layout_location_hitchhiking_extension" />
+
+                    <FrameLayout
+                        android:id="@+id/choose_map_wrapper"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:focusable="true">
+
+                        <fragment
+                            android:id="@+id/choose_map"
+                            android:name="com.google.android.gms.maps.SupportMapFragment"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            class="com.syv.takecare.takecare.WorkaroundMapFragment"/>
+                    </FrameLayout>
+
                 </android.support.constraint.ConstraintLayout>
 
             </android.support.v7.widget.CardView>
@@ -629,12 +648,12 @@
                 android:layout_marginTop="24dp"
                 android:clickable="true"
                 android:focusable="true"
+                android:onClick="onTagsTogglerClick"
                 android:text="@string/tags_box_show_text"
                 android:textColor="@color/colorPrimary"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:visibility="gone"
-                android:onClick="onTagsTogglerClick"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/air_time_seek_bar" />
 
@@ -669,16 +688,16 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:background="@drawable/edit_text_box_frame"
+                android:completionThreshold="1"
                 android:fontFamily="serif"
                 android:gravity="top"
                 android:hint="@string/favorites_tag_hint"
-                android:minLines="2"
                 android:maxLength="200"
+                android:minLines="2"
                 android:textColor="@color/secondary_text"
                 android:textSize="14sp"
                 android:visibility="gone"
                 android:windowSoftInputMode="stateVisible|adjustResize"
-                android:completionThreshold="1"
                 app:chipBackground="@color/colorPrimary"
                 app:chipHeight="30dp"
                 app:chipSpacing="2sp"

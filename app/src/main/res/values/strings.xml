@@ -52,7 +52,8 @@
 
     <!--Taker activity AppBar elements-->
     <string name="title_activity_taker_menu">TakeCare</string>
-    <string name="action_change_display">Change Display Mode</string>
+    <string name="action_switch_to_map">Map Display</string>
+    <string name="action_switch_to_list">List Display</string>
     <string name="action_search">Search</string>
     <string name="action_filter">Filter</string>
     <string name="action_chat">Chat</string>
@@ -183,6 +184,7 @@
     <string name="credits_title">Credits</string>
     <string name="item_notifications">Receive Notifications from Item Matches</string>
     <string name="title_activity_feed_map">Map</string>
+    <string name="add_location_button_text">Choose a location</string>
 
     <!---->
 </resources>

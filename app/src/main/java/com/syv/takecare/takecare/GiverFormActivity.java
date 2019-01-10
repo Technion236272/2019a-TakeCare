@@ -1,6 +1,7 @@
 package com.syv.takecare.takecare;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -10,6 +11,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -18,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewCompat;
@@ -25,6 +30,7 @@ import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.AppCompatImageView;
@@ -35,11 +41,13 @@ import android.transition.Scene;
 import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -50,9 +58,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -95,13 +117,13 @@ import javax.annotation.Nullable;
 
 import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 
-public class GiverFormActivity extends AppCompatActivity {
+public class GiverFormActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private final static String TAG = "TakeCare";
     private static final int POPUP_ACTIVE_DURATION = 7000;
     private static final String changeText = "Change";
     private static final String hideText = "Hide";
-    private static final List<Character> TERMINATORS =  Arrays.asList('\n', ';', ',');
+    private static final List<Character> TERMINATORS = Arrays.asList('\n', ';', ',');
     private static final int CHIP_MAX_LENGTH = 15;
     private static final int CHIP_MIN_LENGTH = 3;
     private static final int TAGS_SEPARATING_LENGTH = 4;
@@ -149,7 +171,7 @@ public class GiverFormActivity extends AppCompatActivity {
     private byte[] uploadBytes;
     private ProgressBar picturePB;
     private Button formBtn;
-
+    private AppCompatButton addLocationButton;
     private AppCompatImageButton chosenCategory = null;
     private int airTime = 0;
 
@@ -162,7 +184,17 @@ public class GiverFormActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private StorageReference storage;
-
+    private boolean mLocationPermissionGranted;
+    private FrameLayout mapWrapper;
+    private GoogleMap mMap;
+    private Marker marker;
+    private Fragment mapView;
+    enum locationButtonStateEnum{
+        ENTER_LOCATION,
+        EDIT_LOCATION,
+        SAVE_LOCATION
+    }
+    private locationButtonStateEnum locationButtonState;
     enum formResult {
         ERROR_UNKNOWN,
         ERROR_TITLE,
@@ -174,6 +206,7 @@ public class GiverFormActivity extends AppCompatActivity {
 
     int APP_PERMISSION_REQUEST_CAMERA;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -280,17 +313,14 @@ public class GiverFormActivity extends AppCompatActivity {
                     case 0:
                         pickupMethod = "In Person";
                         pickupDescription.setVisibility(View.VISIBLE);
-                        findViewById(R.id.time_location_separator).setVisibility(View.VISIBLE);
                         break;
                     case 1:
                         pickupMethod = "Giveaway";
                         pickupDescription.setVisibility(View.VISIBLE);
-                        findViewById(R.id.time_location_separator).setVisibility(View.VISIBLE);
                         break;
                     case 2:
                         pickupMethod = "Race";
                         pickupDescription.setVisibility(View.GONE);
-                        findViewById(R.id.time_location_separator).setVisibility(View.GONE);
                         break;
                     default:
                         Log.d(TAG, "formStatus: Error in spinner position: " + pickup.getSelectedItemPosition());
@@ -298,7 +328,7 @@ public class GiverFormActivity extends AppCompatActivity {
                         break;
                 }
             }
- 
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 // Do nothing
@@ -307,8 +337,97 @@ public class GiverFormActivity extends AppCompatActivity {
 
         initTooltips();
         configureTagsBox();
+        addLocationButton = (AppCompatButton) findViewById(R.id.add_location_button);
+        mapWrapper = (FrameLayout) findViewById(R.id.choose_map_wrapper);
+        addLocationButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_map_display), null, null, null);
+        addLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mLocationPermissionGranted) {
+                    getLocationPermission();
+                }
+                switch (locationButtonState){
+                    case ENTER_LOCATION:
+                        mapWrapper.setVisibility(View.VISIBLE);
+                        locationButtonState = locationButtonStateEnum.SAVE_LOCATION;
+                        ViewCompat.setBackgroundTintList(addLocationButton, getResources().getColorStateList(R.color.colorAccent));
+                        addLocationButton.setText("Save location");
+                        break;
+                    case SAVE_LOCATION:
+                        mapWrapper.setVisibility(View.GONE);
+                        locationButtonState = locationButtonStateEnum.EDIT_LOCATION;
+                        ViewCompat.setBackgroundTintList(addLocationButton, getResources().getColorStateList(R.color.colorPrimary));
+                        addLocationButton.setText("Edit location");
+                        break;
+                    case EDIT_LOCATION:
+                        mapWrapper.setVisibility(View.VISIBLE);
+                        locationButtonState = locationButtonStateEnum.SAVE_LOCATION;
+                        ViewCompat.setBackgroundTintList(addLocationButton, getResources().getColorStateList(R.color.colorAccent));
+                        addLocationButton.setText("Save Location");
+                        break;
+                }
+            }
+        });
+        WorkaroundMapFragment mapFragment =
+                (WorkaroundMapFragment) getSupportFragmentManager().findFragmentById(R.id.choose_map);
+        mapFragment.getMapAsync(this);
+        ((WorkaroundMapFragment) getSupportFragmentManager().findFragmentById(R.id.choose_map)).setListener(new WorkaroundMapFragment.OnTouchListener() {
+            @Override
+            public void onTouch() {
+                scrollView.requestDisallowInterceptTouchEvent(true);
+            }
+        });
+        locationButtonState = locationButtonStateEnum.ENTER_LOCATION;
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            getLocationPermission();
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+        LocationManager locationManager = (LocationManager)
+                getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+
+        Location location = locationManager.getLastKnownLocation(locationManager
+                .getBestProvider(criteria, false));
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+        CameraUpdate cu = CameraUpdateFactory.newCameraPosition(CameraPosition.builder().target(new LatLng(latitude, longitude)).zoom(15).build());
+        mMap.moveCamera(cu);
+        mMap.animateCamera(cu);
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if(marker != null){
+                    marker.remove();
+                }
+                MarkerOptions selection = new MarkerOptions();
+                selection.position(latLng).draggable(true);
+                marker = mMap.addMarker(selection);
+            }
+        });
+    }
+    private void getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+        }
+    }
     private void initWidgets() {
         scrollView = (ScrollView) findViewById(R.id.form_scroll);
         pickup = (Spinner) findViewById(R.id.pickup_method_spinner);
@@ -608,6 +727,9 @@ public class GiverFormActivity extends AppCompatActivity {
         dialog.setMessage("Publishing item...");
         dialog.show();
         Map<String, Object> itemInfo = new HashMap<>();
+        if(marker != null){
+            itemInfo.put("location",new GeoPoint(marker.getPosition().latitude,marker.getPosition().longitude));
+        }
         final FirebaseUser user = auth.getCurrentUser();
         FieldValue timestamp = serverTimestamp();
         switch (formStatus(itemInfo, user, timestamp)) {
@@ -804,7 +926,7 @@ public class GiverFormActivity extends AppCompatActivity {
         List<String> chosenTags = tagsBox.getChipValues();
         Set<String> uniqueTags = new HashSet<>(chosenTags);
 
-        for (Iterator<String> iterator = uniqueTags.iterator(); iterator.hasNext();) {
+        for (Iterator<String> iterator = uniqueTags.iterator(); iterator.hasNext(); ) {
             String tag = iterator.next();
             if (tag.length() > CHIP_MAX_LENGTH || tag.length() < CHIP_MIN_LENGTH) {
                 iterator.remove();
@@ -991,7 +1113,6 @@ public class GiverFormActivity extends AppCompatActivity {
         if (category.equals("Hitchhikes") || category.equals("Lost & Found")) {
             pickupMethod = "In Person";
             pickupDescription.setVisibility(View.VISIBLE);
-            findViewById(R.id.time_location_separator).setVisibility(View.VISIBLE);
             pickup.setVisibility(View.GONE);
             findViewById(R.id.type_time_separator).setVisibility(View.GONE);
         } else {
@@ -999,17 +1120,14 @@ public class GiverFormActivity extends AppCompatActivity {
                 case 0:
                     pickupMethod = "In Person";
                     pickupDescription.setVisibility(View.VISIBLE);
-                    findViewById(R.id.time_location_separator).setVisibility(View.VISIBLE);
                     break;
                 case 1:
                     pickupMethod = "Giveaway";
                     pickupDescription.setVisibility(View.VISIBLE);
-                    findViewById(R.id.time_location_separator).setVisibility(View.VISIBLE);
                     break;
                 case 2:
                     pickupMethod = "Race";
                     pickupDescription.setVisibility(View.GONE);
-                    findViewById(R.id.time_location_separator).setVisibility(View.GONE);
                     break;
                 default:
                     Log.d(TAG, "formStatus: Error in spinner position: " + pickup.getSelectedItemPosition());
