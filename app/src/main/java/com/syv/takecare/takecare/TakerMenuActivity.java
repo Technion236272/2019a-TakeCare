@@ -1,115 +1,47 @@
 package com.syv.takecare.takecare;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.ImageViewCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.content.res.AppCompatResources;
-import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.AppCompatImageButton;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.Spanned;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.FrameLayout;
+import android.view.View;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
-import com.firebase.ui.common.ChangeEventType;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.internal.location.zzas;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static android.view.View.VISIBLE;
 
@@ -125,16 +57,6 @@ public class TakerMenuActivity extends AppCompatActivity
     private TextView userName;
     private MenuItem currentDrawerChecked;
     private Toolbar toolbar;
-
-    public int getAbsolutePosition() {
-        return absolutePosition;
-    }
-
-    public void setAbsolutePosition(int absolutePosition) {
-        this.absolutePosition = absolutePosition;
-    }
-
-    private int absolutePosition;
 
     private ConstraintLayout filterPopupMenu;
     private AppCompatImageButton chosenPickupMethod;
@@ -393,17 +315,9 @@ public class TakerMenuActivity extends AppCompatActivity
 
     private void toggleFilterMenu() {
         if (filterPopupMenu.getVisibility() == View.GONE) {
-//            jumpButton.setVisibility(View.GONE);
             filterPopupMenu.setVisibility(VISIBLE);
-//            if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
-//                (findViewById(R.id.empty_feed_arrow)).setVisibility(View.GONE);
-//            }
         } else {
             filterPopupMenu.setVisibility(View.GONE);
-//            tryToggleJumpButton();
-//            if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
-//                (findViewById(R.id.empty_feed_arrow)).setVisibility(VISIBLE);
-//            }
         }
     }
 
@@ -437,13 +351,8 @@ public class TakerMenuActivity extends AppCompatActivity
                 queryPickupMethodFilter = "Race";
                 break;
         }
-        //setUpAdapter();
         changeFragment();
         filterPopupMenu.setVisibility(View.GONE);
-//        jumpButton.setVisibility(View.GONE);
-//        if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
-//            ((findViewById(R.id.empty_feed_arrow))).setVisibility(VISIBLE);
-//        }
     }
 
 
@@ -460,7 +369,6 @@ public class TakerMenuActivity extends AppCompatActivity
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
             mapViewEnabled = false;
-//            mapViewWrapper.setVisibility(View.GONE);
             return false;
         } else if (id == R.id.nav_my_items) {
             intent = new Intent(this, SharedItemsActivity.class);
@@ -468,7 +376,6 @@ public class TakerMenuActivity extends AppCompatActivity
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
             mapViewEnabled = false;
-//            mapViewWrapper.setVisibility(View.GONE);
             return false;
         } else if (id == R.id.nav_manage_favorites) {
             intent = new Intent(this, UserFavoritesActivity.class);
@@ -476,7 +383,6 @@ public class TakerMenuActivity extends AppCompatActivity
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
             mapViewEnabled = false;
-//            mapViewWrapper.setVisibility(View.GONE);
             return false;
         } else if (id == R.id.nav_chat) {
             //TODO: change this when chat is implemented
@@ -536,7 +442,6 @@ public class TakerMenuActivity extends AppCompatActivity
                     break;
                 //TODO: add favorites filter in the future. For now we ignore this
             }
-//            jumpButton.setVisibility(View.GONE);
             changeFragment();
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);

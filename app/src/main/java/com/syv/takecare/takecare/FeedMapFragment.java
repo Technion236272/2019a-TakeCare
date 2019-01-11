@@ -1,28 +1,23 @@
 package com.syv.takecare.takecare;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -33,6 +28,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.api.LogDescriptor;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
@@ -147,7 +143,11 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
                     String itemId = (String) doc.getReference().getId();
                     if (dc.getType() == DocumentChange.Type.REMOVED) {
                         Marker markerToDelete = markers.get(itemId);
-                        markerToDelete.remove();
+                        try {
+                            markerToDelete.remove();
+                        }catch(NullPointerException nullptrExc){
+                            Log.d(TAG, "onEvent: tried to remove a non-existing marker");
+                        }
                         markers.remove(itemId);
                         continue;
                     }
@@ -186,7 +186,7 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
                         } catch (Exception exc) {
                             return;
                         }
-                        CustomInfoWindow customInfoWindow = new CustomInfoWindow(getContext()); // TODO: ????????????
+                        CustomInfoWindow customInfoWindow = new CustomInfoWindow(getContext());
                         mMap.setInfoWindowAdapter(customInfoWindow);
                         Marker m = mMap.addMarker(testMarker);
                         m.setTag(doc);
