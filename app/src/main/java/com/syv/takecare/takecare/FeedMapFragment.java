@@ -102,6 +102,31 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
 
         mMap.setMinZoomPreference(11);
         Query query = db.collection("items");
+        String queryCategoriesFilter = ((TakerMenuActivity)getActivity()).getQueryCategoriesFilter();
+        String queryPickupMethodFilter = ((TakerMenuActivity)getActivity()).getQueryPickupMethodFilter();
+        if (queryCategoriesFilter != null && queryPickupMethodFilter != null) {
+            // Filter by categories and pickup method
+            Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter + " pickup: " + queryPickupMethodFilter);
+            query = db.collection("items")
+                    .whereEqualTo("category", queryCategoriesFilter)
+                    .whereEqualTo("pickupMethod", queryPickupMethodFilter)
+                    .whereEqualTo("status", 1)
+                    .orderBy("timestamp", Query.Direction.DESCENDING);
+        } else if (queryCategoriesFilter != null) {
+            // Filter by categories
+            Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter);
+            query = db.collection("items")
+                    .whereEqualTo("category", queryCategoriesFilter)
+                    .whereEqualTo("status", 1)
+                    .orderBy("timestamp", Query.Direction.DESCENDING);
+        } else if (queryPickupMethodFilter != null) {
+            // Filter by pickup method
+            Log.d(TAG, "setUpAdapter: query has: pickup: " + queryPickupMethodFilter);
+            query = db.collection("items")
+                    .whereEqualTo("pickupMethod", queryPickupMethodFilter)
+                    .whereEqualTo("status", 1)
+                    .orderBy("timestamp", Query.Direction.DESCENDING);
+        }
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
 
 
