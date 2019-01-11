@@ -230,8 +230,8 @@ public class ItemInfoActivity extends AppCompatActivity {
                                         .into(itemImageView);
 
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    //startPostponedEnterTransition();
-                                    scheduleStartPostponedTransition(itemImageView, uploaderProfilePictureView);
+                                    startPostponedEnterTransition();
+                                    //scheduleStartPostponedTransition(itemImageView);
                                 }
 
                                 imageSpaceView.setOnClickListener(new View.OnClickListener() {
@@ -508,6 +508,9 @@ public class ItemInfoActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    finishAfterTransition();
+                }
                 supportFinishAfterTransition();
                 //finish();
         }
@@ -633,6 +636,9 @@ public class ItemInfoActivity extends AppCompatActivity {
                                         Log.d(TAG, "Item successfully deleted");
                                         Toast.makeText(getApplicationContext(), "Item successfully deleted!",
                                                 Toast.LENGTH_SHORT).show();
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                            finishAfterTransition();
+                                        }
                                         supportFinishAfterTransition();
                                         //finish();
                                     }
@@ -813,36 +819,15 @@ public class ItemInfoActivity extends AppCompatActivity {
         });
     }
 
-    private static boolean itemImageFinished = false;
-    private static boolean publisherPictureFinished = false;
-
-    private void scheduleStartPostponedTransition(final View sharedElement, final View publisherPicture) {
+    private void scheduleStartPostponedTransition(final View sharedElement) {
         sharedElement.getViewTreeObserver().addOnPreDrawListener(
                 new ViewTreeObserver.OnPreDrawListener() {
                     @Override
                     public boolean onPreDraw() {
                         sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
-                        //startPostponedEnterTransition();
-                        itemImageFinished = true;
-                        attemptStartPostponedTransition();
+                        startPostponedEnterTransition();
                         return true;
                     }
                 });
-        publisherPicture.getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    public boolean onPreDraw() {
-                        publisherPicture.getViewTreeObserver().removeOnPreDrawListener(this);
-                        //startPostponedEnterTransition();
-                        publisherPictureFinished = true;
-                        attemptStartPostponedTransition();
-                        return true;
-                    }
-                });
-    }
-
-    private void attemptStartPostponedTransition() {
-        if (itemImageFinished && publisherPictureFinished)
-            startPostponedEnterTransition();
     }
 }
