@@ -186,5 +186,8 @@
     <string name="title_activity_feed_map">Map</string>
     <string name="add_location_button_text">Choose a location</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <!---->
 </resources>

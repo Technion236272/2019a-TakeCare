@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- TODO: CHANGE REQUIRED TO FALSE AFTER IT WORKS! -->
@@ -44,11 +44,9 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
-        <service
-            android:name = ".utilities.MessagingService">
+        <service android:name=".utilities.MessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
@@ -63,8 +61,7 @@
             android:name="io.fabric.ApiKey"
             android:value="7f7506f3cfaf9acbb75e34b8b44d610c12a1dccf" />
 
-        <activity android:name=".GatewayActivity">
-        </activity>
+        <activity android:name=".GatewayActivity"></activity>
         <activity
             android:name=".TakerMenuActivity"
             android:label="@string/title_activity_taker_menu"
@@ -136,7 +133,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
+        
     </application>
 
 </manifest>

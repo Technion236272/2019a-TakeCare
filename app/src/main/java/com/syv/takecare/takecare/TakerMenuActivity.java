@@ -22,6 +22,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.ViewCompat;
@@ -113,50 +114,41 @@ import java.util.concurrent.locks.ReentrantLock;
 import static android.view.View.VISIBLE;
 
 public class TakerMenuActivity extends AppCompatActivity
-        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
     private final static String TAG = "TakeCare";
-    private static final int LIST_JUMP_THRESHOLD = 4;
-    private static final int ICON_FILL_ITERATIONS = 12;
-    private static final int ICON_FILL_DURATION = 200;
-    private static final int ICON_ACTIVATED_DURATION = 400;
-    private static final String RECYCLER_STATE_POSITION_KEY = "RECYCLER POSITION";
+
     private static final String FILTER_CATEGORY_KEY = "CATEGORY FILTER";
     private static final String FILTER_PICKUP_KEY = "PICKUP FILTER";
-    private ReentrantLock iconLock = new ReentrantLock();
-    private static final String EXTRA_ITEM_ID = "Item Id";
+    private static final String MAP_VIEW_ENABLED_KEY = "MAP VIEW ENABLED";
     private RelativeLayout rootLayout;
-    private RecyclerView recyclerView;
     private ImageView userProfilePicture;
     private TextView userName;
     private MenuItem currentDrawerChecked;
-    private View emptyFeedView;
     private Toolbar toolbar;
+
+    public int getAbsolutePosition() {
+        return absolutePosition;
+    }
+
+    public void setAbsolutePosition(int absolutePosition) {
+        this.absolutePosition = absolutePosition;
+    }
+
+    private int absolutePosition;
 
     private ConstraintLayout filterPopupMenu;
     private AppCompatImageButton chosenPickupMethod;
-    private AppCompatButton jumpButton;
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private StorageReference storage;
     private FirebaseUser user;
-    private int position = 0;
 
-    private FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder> currentAdapter = null;
 
     private String queryCategoriesFilter = null;
     private String queryPickupMethodFilter = null;
-
-    private int orientation;
-    private int absolutePosition;
-    GoogleMap mMap;
     private boolean mapViewEnabled;
-    private FrameLayout mapViewWrapper;
-    private HashMap<String, Marker> markers;
     private boolean mLocationPermissionGranted;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
-    private Location mLastKnownLocation;
-    private final LatLng mDefaultLocation = new LatLng(32.777751, 35.021508);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,7 +185,6 @@ public class TakerMenuActivity extends AppCompatActivity
 
         filterPopupMenu = (ConstraintLayout) findViewById(R.id.filter_menu_popup);
         chosenPickupMethod = (AppCompatImageButton) findViewById(R.id.pickup_any_button);
-        jumpButton = (AppCompatButton) findViewById(R.id.jump_button);
         View header = navigationView.getHeaderView(0);
         userProfilePicture = (ImageView) header.findViewById(R.id.nav_user_picture);
         userName = (TextView) header.findViewById(R.id.nav_user_name);
@@ -221,39 +212,11 @@ public class TakerMenuActivity extends AppCompatActivity
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
         user = auth.getCurrentUser();
+        mLocationPermissionGranted = ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+        changeFragment();
 
-        Log.d(TAG, "onCreate: getting screen orientation");
-        orientation = getResources().getConfiguration().orientation;
-
-        Log.d(TAG, "onCreate: getting screen orientation");
-        orientation = getResources().getConfiguration().orientation;
-        setUpRecyclerView();
-
-        jumpButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                recyclerView.smoothScrollToPosition(0);
-                jumpButton.setVisibility(View.GONE);
-            }
-        });
-        int orientation = getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            jumpButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_back), null, null, null);
-        } else {
-            jumpButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_up), null);
-        }
-        /**
-         * Map related stuff goes here
-         */
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        mapViewEnabled = false;
-        mapViewWrapper = (FrameLayout) findViewById(R.id.map_wrapper_layout);
-        mapViewWrapper.setVisibility(View.GONE);
-        markers = new HashMap<String, Marker>();
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     @Override
@@ -266,31 +229,22 @@ public class TakerMenuActivity extends AppCompatActivity
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        Log.d(TAG, "onSaveInstanceState: writing position " + absolutePosition);
-        savedInstanceState.putInt(RECYCLER_STATE_POSITION_KEY, absolutePosition);
         savedInstanceState.putString(FILTER_CATEGORY_KEY, queryCategoriesFilter);
         savedInstanceState.putString(FILTER_PICKUP_KEY, queryPickupMethodFilter);
+        savedInstanceState.putBoolean(MAP_VIEW_ENABLED_KEY, mapViewEnabled);
         super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         Log.d(TAG, "onRestoreInstanceState: started");
-        if (savedInstanceState.containsKey(RECYCLER_STATE_POSITION_KEY)) {
-            absolutePosition = savedInstanceState.getInt(RECYCLER_STATE_POSITION_KEY);
+        if (savedInstanceState.containsKey(FILTER_CATEGORY_KEY)) {
             queryCategoriesFilter = savedInstanceState.getString(FILTER_CATEGORY_KEY);
             queryPickupMethodFilter = savedInstanceState.getString(FILTER_PICKUP_KEY);
+            mapViewEnabled = savedInstanceState.getBoolean(MAP_VIEW_ENABLED_KEY);
             setDrawerItem();
             setPickupItem();
-            Log.d(TAG, "onRestoreInstanceState: fetched position: " + absolutePosition);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(TAG, "thread run: moving to " + absolutePosition);
-                    recyclerView.getLayoutManager().scrollToPosition(absolutePosition);
-                    updatePosition();
-                }
-            }, 300);
+            changeFragment();
         }
         super.onRestoreInstanceState(savedInstanceState);
     }
@@ -357,519 +311,9 @@ public class TakerMenuActivity extends AppCompatActivity
 
     }
 
-
-    private void setUpRecyclerView() {
-        recyclerView = (RecyclerView) findViewById(R.id.taker_feed_list);
-        emptyFeedView = findViewById(R.id.empty_feed_view);
-        Log.d(TAG, "setUpRecyclerView: setting layout manager for the current orientation");
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
-        } else {
-            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
-        }
-        //Optimizing recycler view's performance:
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemViewCacheSize(10);
-        recyclerView.setDrawingCacheEnabled(true);
-        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
-        setUpAdapter();
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    updatePosition();
-                } else {
-                    jumpButton.setVisibility(View.GONE);
-                }
-                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    int pos = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
-                    if (pos == RecyclerView.NO_POSITION)
-                        absolutePosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-                    else
-                        absolutePosition = pos;
-                } else {
-                    absolutePosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
-                }
-            }
-        });
-    }
-
-    private void setUpAdapter() {
-        Log.d(TAG, "setUpAdapter: setting up adapter");
-        if (currentAdapter != null)
-            currentAdapter.stopListening();
-
-        // Default: no filters
-        Query query = db.collection("items")
-                .whereEqualTo("status", 1)
-                .orderBy("timestamp", Query.Direction.DESCENDING);
-
-        if (queryCategoriesFilter != null && queryPickupMethodFilter != null) {
-            // Filter by categories and pickup method
-            Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter + " pickup: " + queryPickupMethodFilter);
-            query = db.collection("items")
-                    .whereEqualTo("category", queryCategoriesFilter)
-                    .whereEqualTo("pickupMethod", queryPickupMethodFilter)
-                    .whereEqualTo("status", 1)
-                    .orderBy("timestamp", Query.Direction.DESCENDING);
-        } else if (queryCategoriesFilter != null) {
-            // Filter by categories
-            Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter);
-            query = db.collection("items")
-                    .whereEqualTo("category", queryCategoriesFilter)
-                    .whereEqualTo("status", 1)
-                    .orderBy("timestamp", Query.Direction.DESCENDING);
-        } else if (queryPickupMethodFilter != null) {
-            // Filter by pickup method
-            Log.d(TAG, "setUpAdapter: query has: pickup: " + queryPickupMethodFilter);
-            query = db.collection("items")
-                    .whereEqualTo("pickupMethod", queryPickupMethodFilter)
-                    .whereEqualTo("status", 1)
-                    .orderBy("timestamp", Query.Direction.DESCENDING);
-        }
-
-
-        FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
-                .setQuery(query, FeedCardInformation.class)
-                .build();
-
-        currentAdapter = new FirestoreRecyclerAdapter<FeedCardInformation, ItemsViewHolder>(response) {
-
-            private int focusedItem = 0;
-
-            @Override
-            public void onAttachedToRecyclerView(final RecyclerView recyclerView) {
-                super.onAttachedToRecyclerView(recyclerView);
-
-                // Handle key up and key down and attempt to move selection
-                recyclerView.setOnKeyListener(new View.OnKeyListener() {
-                    @Override
-                    public boolean onKey(View v, int keyCode, KeyEvent event) {
-                        RecyclerView.LayoutManager lm = recyclerView.getLayoutManager();
-
-                        // Return false if scrolled to the bounds and allow focus to move off the list
-                        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                                return tryMoveSelection(lm, 1);
-                            } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                                return tryMoveSelection(lm, -1);
-                            }
-                        }
-
-                        return false;
-                    }
-                });
-            }
-
-            private boolean tryMoveSelection(RecyclerView.LayoutManager layoutManager, int direction) {
-                int tryFocusItem = focusedItem + direction;
-
-                // If still within valid bounds, move the selection, notify to redraw, and scroll
-                if (tryFocusItem >= 0 && tryFocusItem < getItemCount()) {
-                    notifyItemChanged(focusedItem);
-                    focusedItem = tryFocusItem;
-                    notifyItemChanged(focusedItem);
-                    layoutManager.scrollToPosition(focusedItem);
-                    return true;
-                }
-                return false;
-            }
-
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, final int position, @NonNull final FeedCardInformation model) {
-                // Attempt to remove item from feed if reported by the user
-                final String itemId = getSnapshots().getSnapshot(holder.getAdapterPosition()).getId();
-
-                /*
-                Log.d(TAG, "onBindViewHolder: checking if item is blocked");
-                db.collection("items").document(itemId)
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if(task.isSuccessful()) {
-                                    Log.d(TAG, "found item. checking if needs to block");
-                                    DocumentSnapshot documentSnapshot = task.getResult();
-                                    List<String> blocked = (List<String>) documentSnapshot.get("hideFrom");
-                                    Log.d(TAG, "blocked list: " + blocked);
-                                    if(blocked == null) {
-                                        return;
-                                    }
-                                    if(blocked.contains(user.getUid())) {
-                                        Log.d(TAG, "item should be blocked");
-                                        holder.hideLayout();
-                                        recyclerView.getLayoutManager().removeViewAt(position);
-                                    }
-                                } else {
-                                    Log.d(TAG, "could not find item");
-                                }
-                            }
-                        });*/
-
-                holder.itemTitle.setText(model.getTitle());
-                RequestOptions requestOptions = new RequestOptions();
-                requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
-                if (model.getPhoto() == null) {
-                    holder.itemPhoto.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    switch (model.getCategory()) {
-                        case "Food":
-                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_pizza_slice_purple));
-                            break;
-                        case "Study Material":
-                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_book_purple));
-                            break;
-                        case "Households":
-                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_lamp_purple));
-                            break;
-                        case "Lost & Found":
-                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_lost_and_found_purple));
-                            break;
-                        case "Hitchhikes":
-                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_car_purple));
-                            break;
-                        default:
-                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_treasure_purple));
-                            break;
-                    }
-                    holder.itemPhoto.setScaleType(ImageView.ScaleType.CENTER);
-                } else {
-                    Glide.with(getApplicationContext())
-                            .load(model.getPhoto())
-                            .apply(requestOptions)
-                            .into(holder.itemPhoto);
-                }
-
-                // Category selection
-                int categoryId;
-                switch (model.getCategory()) {
-                    case "Food":
-                        categoryId = R.drawable.ic_pizza_slice_purple;
-                        break;
-                    case "Study Material":
-                        categoryId = R.drawable.ic_book_purple;
-                        break;
-                    case "Households":
-                        categoryId = R.drawable.ic_lamp_purple;
-                        break;
-                    case "Lost & Found":
-                        categoryId = R.drawable.ic_lost_and_found_purple;
-                        break;
-                    case "Hitchhikes":
-                        categoryId = R.drawable.ic_car_purple;
-                        break;
-                    default:
-                        categoryId = R.drawable.ic_treasure_purple;
-                        break;
-                }
-
-                int pickupMethodId;
-                switch (model.getPickupMethod()) {
-                    case "In Person":
-                        pickupMethodId = R.drawable.ic_in_person_purple;
-                        break;
-                    case "Giveaway":
-                        pickupMethodId = R.drawable.ic_giveaway_purple;
-                        break;
-                    default:
-                        pickupMethodId = R.drawable.ic_race_purple;
-                        break;
-                }
-
-                holder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
-                db.collection("users").document(model.getPublisher())
-                        .get()
-                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                holder.itemPublisher.setText(documentSnapshot.getString("name"));
-                                if (documentSnapshot.getString("profilePicture") != null) {
-                                    Glide.with(getApplicationContext())
-                                            .load(documentSnapshot.getString("profilePicture"))
-                                            .apply(RequestOptions.circleCropTransform())
-                                            .into(holder.profilePhoto);
-                                }
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-
-                            }
-                        });
-                holder.itemCategory.setImageResource(categoryId);
-                holder.itemPickupMethod.setImageResource(pickupMethodId);
-
-                activateViewHolderIcons(holder, model);
-
-                holder.card.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getApplicationContext(), ItemInfoActivity.class);
-                        intent.putExtra(EXTRA_ITEM_ID, itemId);
-                        intent.putExtra(Intent.EXTRA_UID, user.getUid());
-                        startActivity(intent);
-                    }
-                });
-
-                holder.itemReport.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PopupMenu menu = new PopupMenu(getApplicationContext(), v);
-                        menu.getMenuInflater().inflate(R.menu.report_menu, menu.getMenu());
-                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                // Using HTML tags for bold substrings inside the alert message
-                                String msg, warning;
-                                Spanned alertMsg;
-                                switch (item.getItemId()) {
-                                    case R.id.report_inappropriate:
-                                        //TODO: add logic to this report reason
-                                        msg = getString(R.string.report_inappropriate_alert);
-                                        warning = "<b><small><i>" + getString(R.string.report_alert_warning) + "</i></small></b>";
-                                        alertMsg = Html.fromHtml(msg + "<br><br>" + warning);
-                                        showBlockAlertMessage(alertMsg, itemId, item.getItemId());
-                                        break;
-                                    case R.id.report_no_fit:
-                                        //TODO: add logic to this report reason
-                                        msg = getString(R.string.report_inappropriate_alert);
-                                        warning = "<b><small>" + getString(R.string.report_alert_warning) + "</small></b>";
-                                        alertMsg = Html.fromHtml(msg + "<br><br>" + warning);
-                                        showBlockAlertMessage(alertMsg, itemId, item.getItemId());
-                                        break;
-                                    case R.id.report_spam:
-                                        //TODO: add logic to this report reason
-                                        msg = getString(R.string.report_spam_alert);
-                                        warning = "<b><small>" + getString(R.string.report_alert_warning) + "</small></b>";
-                                        alertMsg = Html.fromHtml(msg + "<br><br>" + warning);
-                                        showBlockAlertMessage(alertMsg, itemId, item.getItemId());
-                                        break;
-                                    case R.id.report_hide:
-                                        msg = getString(R.string.report_hide_alert);
-                                        alertMsg = Html.fromHtml(msg);
-                                        showBlockAlertMessage(alertMsg, itemId, item.getItemId());
-                                        break;
-                                    default:
-                                        return false;
-                                }
-                                return true;
-                            }
-                        });
-                        menu.show();
-                    }
-                });
-
-                holder.itemView.setSelected(focusedItem == position);
-            }
-
-            @NonNull
-            @Override
-            public ItemsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-                View view = null;
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card_carousel, viewGroup, false);
-
-                } else {
-                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card, viewGroup, false);
-                }
-                return new ItemsViewHolder(view);
-            }
-
-            @Override
-            public void onError(FirebaseFirestoreException e) {
-                Log.e("error", e.getMessage());
-            }
-
-            @Override
-            public void onDataChanged() {
-                super.onDataChanged();
-                toggleVisibility();
-                if (position == 0 && recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
-                    recyclerView.scrollToPosition(0);
-                }
-                if (getItemCount() == 0) {
-                    filterPopupMenu.setVisibility(View.GONE);
-                }
-            }
-
-            class AdapterViewHolder extends ItemsViewHolder {
-                public AdapterViewHolder(View itemView) {
-                    super(itemView);
-
-                    // Handle item click and set the selection
-                    itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Redraw the old selection and the new
-                            notifyItemChanged(focusedItem);
-                            focusedItem = getLayoutPosition();
-                            notifyItemChanged(focusedItem);
-                        }
-                    });
-                }
-            }
-        };
-
-        Log.d(TAG, "setUpAdapter: created adapter");
-        currentAdapter.notifyDataSetChanged();
-        recyclerView.setAdapter(currentAdapter);
-        toggleVisibility();
-        currentAdapter.startListening();
-        Log.d(TAG, "setUpAdapter: done");
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void activateViewHolderIcons(final ItemsViewHolder holder, final FeedCardInformation model) {
-
-        holder.itemCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                if (iconLock.isLocked()) {
-                    return;
-                }
-
-                new Thread(new Runnable() {
-                    public void run() {
-                        iconLock.lock();
-                        float alpha = (float) 0.6;
-                        for (int i = 0; i < ICON_FILL_ITERATIONS; i++) {
-                            v.setAlpha(alpha);
-                            try {
-                                Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            alpha += (float) (1 - 0.6) / ICON_FILL_ITERATIONS;
-                        }
-
-                        try {
-                            Thread.sleep(ICON_ACTIVATED_DURATION);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                        for (int i = 0; i < ICON_FILL_ITERATIONS; i++) {
-                            v.setAlpha(alpha);
-                            try {
-                                Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            alpha -= (float) (1 - 0.6) / ICON_FILL_ITERATIONS;
-                        }
-                        iconLock.unlock();
-                    }
-                }).start();
-
-                String str;
-                switch (model.getCategory()) {
-                    case "Food":
-                        str = "This item's category is food";
-                        break;
-                    case "Study Material":
-                        str = "This item's category is study material";
-                        break;
-                    case "Households":
-                        str = "This item's category is household objects";
-                        break;
-                    case "Lost & Found":
-                        str = "This item's category is lost&founds";
-                        break;
-                    case "Hitchhikes":
-                        str = "This item's category is hitchhiking";
-                        break;
-                    default:
-                        str = "This item is in a category of its own";
-                        break;
-                }
-
-                Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        holder.itemPickupMethod.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                if (iconLock.isLocked()) {
-                    return;
-                }
-
-                new Thread(new Runnable() {
-                    public void run() {
-                        iconLock.lock();
-                        float alpha = (float) 0.6;
-                        for (int i = 0; i < ICON_FILL_ITERATIONS; i++) {
-                            v.setAlpha(alpha);
-                            try {
-                                Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            alpha += (float) (0.9 - 0.6) / ICON_FILL_ITERATIONS;
-                        }
-
-                        try {
-                            Thread.sleep(ICON_ACTIVATED_DURATION);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                        for (int i = 0; i < ICON_FILL_ITERATIONS; i++) {
-                            v.setAlpha(alpha);
-                            try {
-                                Thread.sleep(ICON_FILL_DURATION / ICON_FILL_ITERATIONS);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            alpha -= (float) (0.9 - 0.6) / ICON_FILL_ITERATIONS;
-                        }
-                        iconLock.unlock();
-                    }
-                }).start();
-
-                String str;
-                switch (model.getPickupMethod()) {
-                    case "In Person":
-                        str = "This item is available for pick-up in person";
-                        break;
-                    case "Giveaway":
-                        str = "This item is available in a public giveaway";
-                        break;
-                    default:
-                        str = "Race to get this item before anyone else!";
-                        break;
-                }
-
-                Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void updatePosition() {
-        assert recyclerView.getLayoutManager() != null;
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            int pos = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
-            if (pos == RecyclerView.NO_POSITION)
-                position = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-            else
-                position = pos;
-        } else {
-            position = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
-        }
-
-        Log.d(TAG, "onScrollStateChanged: POSITION IS: " + position);
-        tryToggleJumpButton();
-    }
-
     @Override
     public void onStart() {
         super.onStart();
-        currentAdapter.startListening();
-        toggleVisibility();
         // Update user name and picture if necessary (changed via user profile)
         Log.d("TAG", "Checking for user");
         if (user != null) {
@@ -901,12 +345,6 @@ public class TakerMenuActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        currentAdapter.stopListening();
-        toggleVisibility();
-    }
 
     @Override
     public void onBackPressed() {
@@ -926,25 +364,26 @@ public class TakerMenuActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        //TODO: fragment changes
         switch (item.getItemId()) {
             case R.id.action_filter:
                 toggleFilterMenu();
                 break;
             case R.id.action_change_display:
                 if (!mapViewEnabled) {
-                    mapViewWrapper.setVisibility(VISIBLE);
-                    recyclerView.setVisibility(View.GONE);
-                    toolbar.getMenu().findItem(R.id.action_change_display).setIcon(R.drawable.ic_item_appbar);
-                    toolbar.getMenu().findItem(R.id.action_change_display).setTitle(R.string.action_switch_to_list);
+                    if(mLocationPermissionGranted) {
+                        toolbar.getMenu().findItem(R.id.action_change_display).setIcon(R.drawable.ic_item_appbar);
+                        toolbar.getMenu().findItem(R.id.action_change_display).setTitle(R.string.action_switch_to_list);
+                    }
                     mapViewEnabled = true;
                 } else {
-                    mapViewWrapper.setVisibility(View.GONE);
-                    recyclerView.setVisibility(VISIBLE);
+
                     toolbar.getMenu().findItem(R.id.action_change_display).setIcon(R.drawable.ic_map_display);
                     toolbar.getMenu().findItem(R.id.action_change_display).setTitle(R.string.action_switch_to_map);
                     mapViewEnabled = false;
                 }
-                tryToggleJumpButton();
+                changeFragment();
+                //tryToggleJumpButton();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -952,17 +391,17 @@ public class TakerMenuActivity extends AppCompatActivity
 
     private void toggleFilterMenu() {
         if (filterPopupMenu.getVisibility() == View.GONE) {
-            jumpButton.setVisibility(View.GONE);
+//            jumpButton.setVisibility(View.GONE);
             filterPopupMenu.setVisibility(VISIBLE);
-            if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
-                (findViewById(R.id.empty_feed_arrow)).setVisibility(View.GONE);
-            }
+//            if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
+//                (findViewById(R.id.empty_feed_arrow)).setVisibility(View.GONE);
+//            }
         } else {
             filterPopupMenu.setVisibility(View.GONE);
-            tryToggleJumpButton();
-            if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
-                (findViewById(R.id.empty_feed_arrow)).setVisibility(VISIBLE);
-            }
+//            tryToggleJumpButton();
+//            if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
+//                (findViewById(R.id.empty_feed_arrow)).setVisibility(VISIBLE);
+//            }
         }
     }
 
@@ -996,35 +435,17 @@ public class TakerMenuActivity extends AppCompatActivity
                 queryPickupMethodFilter = "Race";
                 break;
         }
-        setUpAdapter();
+        //setUpAdapter();
+        changeFragment();
         filterPopupMenu.setVisibility(View.GONE);
-        jumpButton.setVisibility(View.GONE);
-        if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
-            ((findViewById(R.id.empty_feed_arrow))).setVisibility(VISIBLE);
-        }
+//        jumpButton.setVisibility(View.GONE);
+//        if (orientation == Configuration.ORIENTATION_PORTRAIT && currentAdapter.getItemCount() == 0) {
+//            ((findViewById(R.id.empty_feed_arrow))).setVisibility(VISIBLE);
+//        }
     }
 
-    private void tryToggleJumpButton() {
-        if (position >= LIST_JUMP_THRESHOLD && filterPopupMenu.getVisibility() == View.GONE && !mapViewEnabled) {
-            jumpButton.setVisibility(VISIBLE);
-            Log.d(TAG, "tryToggleJumpButton: jump button is visible");
-        } else {
-            jumpButton.setVisibility(View.GONE);
-        }
-    }
 
-    public void toggleVisibility() {
-        if (emptyFeedView != null && !mapViewEnabled) {
-            //Make the emptyFeedView visible of the adapter has no items (feed is empty)
-            emptyFeedView.setVisibility(
-                    (recyclerView.getAdapter() == null || recyclerView.getAdapter().getItemCount() == 0) ?
-                            VISIBLE : View.GONE);
-            //The list itself is set to be invisible if there are no items, in order to display emptyFeedView in its stead
-            recyclerView.setVisibility(
-                    (recyclerView.getAdapter() == null || recyclerView.getAdapter().getItemCount() == 0) ?
-                            View.GONE : View.VISIBLE);
-        }
-    }
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -1037,7 +458,7 @@ public class TakerMenuActivity extends AppCompatActivity
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
             mapViewEnabled = false;
-            mapViewWrapper.setVisibility(View.GONE);
+//            mapViewWrapper.setVisibility(View.GONE);
             return false;
         } else if (id == R.id.nav_my_items) {
             intent = new Intent(this, SharedItemsActivity.class);
@@ -1045,7 +466,7 @@ public class TakerMenuActivity extends AppCompatActivity
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
             mapViewEnabled = false;
-            mapViewWrapper.setVisibility(View.GONE);
+//            mapViewWrapper.setVisibility(View.GONE);
             return false;
         } else if (id == R.id.nav_manage_favorites) {
             intent = new Intent(this, UserFavoritesActivity.class);
@@ -1053,7 +474,7 @@ public class TakerMenuActivity extends AppCompatActivity
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
             mapViewEnabled = false;
-            mapViewWrapper.setVisibility(View.GONE);
+//            mapViewWrapper.setVisibility(View.GONE);
             return false;
         } else if (id == R.id.nav_chat) {
             //TODO: change this when chat is implemented
@@ -1113,8 +534,8 @@ public class TakerMenuActivity extends AppCompatActivity
                     break;
                 //TODO: add favorites filter in the future. For now we ignore this
             }
-            jumpButton.setVisibility(View.GONE);
-            setUpAdapter();
+//            jumpButton.setVisibility(View.GONE);
+            changeFragment();
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
             Log.d(TAG, "onNavigationItemSelected: here");
@@ -1123,47 +544,6 @@ public class TakerMenuActivity extends AppCompatActivity
         return true;
     }
 
-    private void showBlockAlertMessage(final Spanned msg, final String itemId, final int cause) {
-        AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(this);
-        builder.setTitle("Block Item")
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        hideItem(itemId);
-                        switch (cause) {
-                            //TODO: add
-                            case R.id.report_inappropriate:
-                                break;
-                            case R.id.report_no_fit:
-                                break;
-                            case R.id.report_spam:
-                                break;
-                            default:
-                                // User hides item - do nothing
-                                break;
-                        }
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Do nothing
-                    }
-                })
-                .show();
-    }
-
-    private void hideItem(final String itemId) {
-        if (user == null) {
-            return;
-        }
-        // Atomic operation - no need for transactions!
-        Log.d(TAG, "hideItem: hiding item from user");
-        db.collection("items").document(itemId)
-                .update("hideFrom", FieldValue.arrayUnion(user.getUid()));
-    }
 
     private void makeHighlightedSnackbar(String str) {
         Snackbar snackbar = Snackbar
@@ -1174,142 +554,57 @@ public class TakerMenuActivity extends AppCompatActivity
         snackbar.show();
     }
 
-    /**
-     * Map related listeners and methods
-     */
-    private GoogleMap.OnMyLocationClickListener onMyLocationClickListener =
-            new GoogleMap.OnMyLocationClickListener() {
-                @Override
-                public void onMyLocationClick(@NonNull Location location) {
+    private void changeFragment(){
 
-                    mMap.setMinZoomPreference(12);
-
-                    CircleOptions circleOptions = new CircleOptions();
-                    circleOptions.center(new LatLng(location.getLatitude(),
-                            location.getLongitude()));
-
-                    circleOptions.radius(200);
-                    circleOptions.fillColor(Color.RED);
-                    circleOptions.strokeWidth(6);
-
-                    mMap.addCircle(circleOptions);
-                }
-            };
-    private GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener =
-            new GoogleMap.OnMyLocationButtonClickListener() {
-                @Override
-                public boolean onMyLocationButtonClick() {
-                    mMap.setMinZoomPreference(15);
-                    return false;
-                }
-            };
-
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        if(mapViewEnabled) {
+            if(mLocationPermissionGranted) {
+                ft.replace(R.id.fragment_container, new FeedMapFragment());
+            } else{
+                getLocationPermission();
+                return;
+            }
+        }  else {
+            ft.replace(R.id.fragment_container, new FeedListFragment());
+        }
+        ft.disallowAddToBackStack().commit();
+    }
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        mMap.setPadding(0,0,40,200);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.setOnMyLocationButtonClickListener(onMyLocationButtonClickListener);
-        mMap.setOnMyLocationClickListener(onMyLocationClickListener);
-
-        getLocationPermission();
-        updateLocationUI();
-        getDeviceLocation();
-
-        mMap.setMinZoomPreference(11);
-        Query query = db.collection("items");
-        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-
-
-            @Override
-            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.d(TAG, "error loading documents: " + e.getMessage());
-                    return;
-                }
-                if (queryDocumentSnapshots == null || queryDocumentSnapshots.isEmpty()) {
-                    Log.d(TAG, "did not find any documents");
-                    return;
-                }
-
-
-
-                for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
-                    DocumentSnapshot doc = dc.getDocument();
-                    String itemId = (String) doc.getReference().getId();
-                    if(dc.getType() == DocumentChange.Type.REMOVED){
-                        Marker markerToDelete = markers.get(itemId);
-                        markerToDelete.remove();
-                        markers.remove(itemId);
-                        continue;
-                    }
-                    GeoPoint itemLocation = (GeoPoint) doc.get("location");
-                    if (itemLocation != null) {
-                        MarkerOptions testMarker = new MarkerOptions();
-                        String category = (String) doc.get("category");
-                        int iconId = R.drawable.pizza_markernobg;
-                        switch (category) {
-                            case "Food":
-                                iconId = R.drawable.pizza_markernobg;
-                                break;
-                            case "Study Material":
-                                iconId = R.drawable.book_marker;
-                                break;
-                            case "Households":
-                                iconId = R.drawable.households_marker;
-                                break;
-                            case "Lost & Found":
-                                iconId = R.drawable.lost_and_found_marker;
-                                break;
-                            case "Hitchhikes":
-                                iconId = R.drawable.car_marker;
-                                break;
-                            default:
-                                iconId = R.drawable.treasure_marker;
-                        }
-                        String title = (String) doc.get("title");
-                        String pickupMethod = (String) doc.get("pickupMethod");
-                        testMarker.position(new LatLng(itemLocation.getLatitude(), itemLocation.getLongitude()))
-                                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(iconId, 170, 170)))
-                                .title(title)
-                                .snippet(pickupMethod);
-                        CustomInfoWindow customInfoWindow = new CustomInfoWindow(TakerMenuActivity.this);
-                        mMap.setInfoWindowAdapter(customInfoWindow);
-                        Marker m = mMap.addMarker(testMarker);
-                        m.setTag(doc);
-                        markers.put(itemId, m);
-
-                    }
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mLocationPermissionGranted = true;
+                    toolbar.getMenu().findItem(R.id.action_change_display).setIcon(R.drawable.ic_item_appbar);
+                    toolbar.getMenu().findItem(R.id.action_change_display).setTitle(R.string.action_switch_to_list);
+                    changeFragment();
+                } else{
+                    makeHighlightedSnackbar("Please allow location to use the map feature!");
+                    toolbar.getMenu().findItem(R.id.action_change_display).setIcon(R.drawable.ic_map_display);
+                    toolbar.getMenu().findItem(R.id.action_change_display).setTitle(R.string.action_switch_to_map);
+                    mapViewEnabled = false;
                 }
             }
-        });
-        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                DocumentSnapshot doc = (DocumentSnapshot) marker.getTag();
-                String itemId = (String) doc.getReference().getId();
-                Intent intent = new Intent(getApplicationContext(), ItemInfoActivity.class);
-                intent.putExtra(EXTRA_ITEM_ID, itemId);
-                intent.putExtra(Intent.EXTRA_UID, user.getUid());
-                startActivity(intent);
-            }
-        });
-
+        }
+    }
+    public String getQueryPickupMethodFilter(){
+        return queryPickupMethodFilter;
     }
 
-    public Bitmap resizeMapIcons(int markerIcon, int width, int height) {
-        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), markerIcon);
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
-        return resizedBitmap;
+    public String getQueryCategoriesFilter() {
+        return queryCategoriesFilter;
     }
-
     private void getLocationPermission() {
         /*
          * Request location permission, so that we can get the location of the
          * device. The result of the permission request is handled by a callback,
          * onRequestPermissionsResult.
          */
-        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+        if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
@@ -1319,73 +614,4 @@ public class TakerMenuActivity extends AppCompatActivity
                     1);
         }
     }
-    private void getDeviceLocation() {
-        /*
-         * Get the best and most recent location of the device, which may be null in rare
-         * cases when a location is not available.
-         */
-        try {
-            if (mLocationPermissionGranted) {
-                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        if (task.isSuccessful()) {
-                            // Set the map's camera position to the current location of the device.
-                            mLastKnownLocation = task.getResult();
-                            if(mLastKnownLocation == null){
-                                return;
-                            }
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(mLastKnownLocation.getLatitude(),
-                                            mLastKnownLocation.getLongitude()), 15));
-                        } else {
-                            Log.d(TAG, "Current location is null. Using defaults.");
-                            Log.e(TAG, "Exception: %s", task.getException());
-                            mMap.moveCamera(CameraUpdateFactory
-                                    .newLatLngZoom(mDefaultLocation, 15));
-                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                        }
-                    }
-                });
-            }
-        } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
-        }
-    }
-    private void updateLocationUI() {
-        if (mMap == null) {
-            return;
-        }
-        try {
-            if (mLocationPermissionGranted) {
-                mMap.setMyLocationEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            } else {
-                mMap.setMyLocationEnabled(false);
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                mLastKnownLocation = null;
-                getLocationPermission();
-            }
-        } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
-        }
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        mLocationPermissionGranted = false;
-        switch (requestCode) {
-            case 1: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mLocationPermissionGranted = true;
-                }
-            }
-        }
-        updateLocationUI();
-    }
-
 }
