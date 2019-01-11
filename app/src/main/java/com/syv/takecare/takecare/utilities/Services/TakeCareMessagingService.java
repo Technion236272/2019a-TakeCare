@@ -1,11 +1,12 @@
 package com.syv.takecare.takecare.utilities.Services;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -19,88 +20,88 @@ import com.syv.takecare.takecare.LoginActivity;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.TakeCareActivity;
 
+import java.util.Map;
+
 
 public class TakeCareMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "TakeCare";
-    private static final int BROADCAST_NOTIFICATION_ID = 0;
+    private static final String EXTRA_ITEM_ID = "Item Id";
+    private static final int BROADCAST_NOTIFICATION_ID = 2;
 
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+        Log.d(TAG, "onMessageReceived: started");
 
-        /*String notificationData = "",
-                notificationTitle = "",
-                notificationBody = "";
-        try {
-            notificationData = remoteMessage.getData().toString();
-            notificationTitle = remoteMessage.getData().toString();
-            notificationBody = remoteMessage.getData().toString();
-        } catch (NullPointerException e) {
-            Log.d(TAG, "onMessageReceived: NullPointerException " + e.getMessage());
+        if (remoteMessage.getData() == null) {
+            Log.d(TAG, "onMessageReceived: notification data is null");
+            return;
         }
 
-        Log.d(TAG, "onMessageReceived: data: " + notificationData);
-        Log.d(TAG, "onMessageReceived: notification body: " + notificationBody);
-        Log.d(TAG, "onMessageReceived: notification title: " + notificationTitle);*/
+        Log.d(TAG, "onMessageReceived: message is: " + remoteMessage.getData());
 
         String payloadDisplayStatus = remoteMessage.getData().get(getString(R.string.payload_display_status));
-
-        if (payloadDisplayStatus != null) {
-            // Notification has a display status
-            if (isApplicationInForeground()) {
-                // Application is in the foreground: some activity is currently running on user's device
-                if (payloadDisplayStatus.equals(getString(R.string.payload_admin_broadcast))) {
-                    buildAdminBroadcastNotification(remoteMessage);
-                }
-            } else {
-                // Application is either in the background or it is closed
-                if (payloadDisplayStatus.equals(getString(R.string.payload_admin_broadcast))) {
-                    buildAdminBroadcastNotification(remoteMessage);
-                } else if (payloadDisplayStatus.equals(getString(R.string.payload_item_request_message))) {
-                    // Build chat message notification
-                }
-            }
-        } else {
-            // Notification does not have a display status
-            // Do nothing.
+        if (payloadDisplayStatus == null) {
+            Log.d(TAG, "onMessageReceived: did not find a display status field");
+            // Do something about it
+            return;
         }
 
+        if (payloadDisplayStatus.equals(getString(R.string.payload_admin_broadcast))) {
+            Log.d(TAG, "onMessageReceived: notification is an admin notification");
+            buildAdminBroadcastNotification(remoteMessage.getData());
+        }
     }
 
-    private void buildAdminBroadcastNotification(RemoteMessage remoteMessage) {
-        String title = remoteMessage.getData().get(getString(R.string.payload_data_title));
-        String message = remoteMessage.getData().get(getString(R.string.payload_data_message));
-        sendBroadcastNotification(title, message);
+    private void buildAdminBroadcastNotification(Map<String,String> messageData) {
+            String title = messageData.get(getString(R.string.payload_data_message_title));
+            String message = messageData.get(getString(R.string.payload_data_message_body));
+            sendBroadcastNotification(title, message);
     }
+
 
     private void sendBroadcastNotification(String title, String message) {
         Log.d(TAG, "sendBroadcastNotification: building an admin broadcast notification");
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
-                getString(R.string.common_google_play_services_notification_channel_name));
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),
+                getString(R.string.takecare_notification_channel_name));
         //TODO: change the intent
-        Intent notificationIntent = new Intent(this, LoginActivity.class);
+        Intent notificationIntent = new Intent(getApplicationContext(), LoginActivity.class);
 
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        // This intent will start when the user clicks the notification
+        // This intent will start when the user clicks the notification.
+        // A pending intent is required because it's "lazy" - a regular intent is instantaneous
+        // and requires a context. We wrap it in a pending intent
         PendingIntent notificationPendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        // Add notification display properties
-        builder.setSmallIcon(R.mipmap.ic_launcher_round)
-                .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
-                        R.mipmap.ic_launcher))
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+        // Add the notification's properties
+        builder.setSmallIcon(R.drawable.ic_heart_muffin)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
                 .setContentTitle(title)
                 .setContentText(message)
-                .setColor(getResources().getColor(R.color.colorPrimaryLite))
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(message))
+                .setContentIntent(notificationPendingIntent)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setColor(getResources().getColor(R.color.colorPrimary))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(true);
 
-        builder.setContentIntent(notificationPendingIntent);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+        Log.d(TAG, "sendBroadcastNotification: firing notification");
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // On newer APIs - need to set the channel ID for the notification
+            builder.setChannelId(getString(R.string.takecare_notification_channel_name));
+        }
+
         // Notification ID prevents spamming the device's notification tray -
-        // notifications of the same ID override one another
+        // notifications of the same ID will override one another
         notificationManager.notify(BROADCAST_NOTIFICATION_ID, builder.build());
     }
 

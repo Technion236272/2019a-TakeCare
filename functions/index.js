@@ -6,10 +6,10 @@ const db = functions.firestore;
 // -- End of initialization --
 
 
-
+// Listens to item request changes.
+// Sends a notification to the user who requested the item when their item is accepted
 exports.onRequestedItemUpdated = db.document('users/{userId}/requestedItems/{itemId}').onUpdate((snap, context) => {
-
-	console.log("Request status change!");
+	console.log("Request status change event");
 	console.log("Snapshot: ", snap);
 	console.log("snap.after: ", snap.after);
 	console.log("snap.after.data(): ", snap.after.data());
@@ -29,8 +29,8 @@ exports.onRequestedItemUpdated = db.document('users/{userId}/requestedItems/{ite
 				let tokens = doc.data().tokens
 				const payload = {
 
-					notification: {
-//						data_type: "request_accepted_message",
+					data: {
+						display_status: "admin_broadcast",
 						title: "TakeCare",
 						body: msg
 					}
@@ -50,4 +50,40 @@ exports.onRequestedItemUpdated = db.document('users/{userId}/requestedItems/{ite
 	}
 	// Event was not an accepted item for the user
 	return null;
+});
+
+
+// Listens to item deletions.
+// Removes all requests for this item in all existing users' documents
+exports.onItemRemoved = db.document('items/{itemId}').onDelete((snap, context) => {
+	console.log("Item deleted event");
+	console.log("Item information: ", snap.data());
+	const itemId = context.params.itemId;
+
+	return admin.firestore()
+		.collection('items')
+		.doc(itemId)
+		.collection('requestedBy')
+		.get()
+		.then(function(querySnapshot) {
+			return querySnapshot.forEach(function(doc) {
+				const userRef = doc.data().userRef;
+				console.log("Found a user who requested the deleted item: ", userRef);
+				return admin.firestore()
+					.doc(userRef.path)
+					.collection('requestedItems')
+					.doc(itemId)
+					.delete()
+					.then(function() {
+						console.log("Request successfully deleted!");
+						return null;
+					}).catch(function(error) {
+						console.error("Error removing request: ", error);
+						return null;
+					});
+			})
+		})
+		.catch(function(error) {
+			console.log("Error getting requested users documents: ", error);
+		});
 });

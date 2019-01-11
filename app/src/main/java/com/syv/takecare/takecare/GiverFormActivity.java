@@ -884,6 +884,10 @@ public class GiverFormActivity extends TakeCareActivity {
         itemInfo.put("status", 1);
         Log.d(TAG, "filled item's status");
 
+        // displayStatus means whether or not the item should be displayed in the feed
+        itemInfo.put("displayStatus", true);
+        Log.d(TAG, "filled item's display status");
+
         List<String> keywords = getAllKeywords();
         if (!keywords.isEmpty()) {
             itemInfo.put("tags", keywords);

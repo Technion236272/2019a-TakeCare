@@ -420,7 +420,7 @@ public class RequestedItemsBaseFragment extends Fragment {
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(final DocumentSnapshot documentSnapshot) {
-                                if (getActivity() == null) {
+                                if (getActivity() == null || documentSnapshot == null) {
                                     return;
                                 }
                                 switch (status) {
