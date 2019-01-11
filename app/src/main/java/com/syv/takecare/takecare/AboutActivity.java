@@ -7,7 +7,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class AboutActivity extends AppCompatActivity {
+public class AboutActivity extends TakeCareActivity {
 
     private final static String TAG = "TakeCare";
 

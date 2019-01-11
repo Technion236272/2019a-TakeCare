@@ -187,5 +187,15 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+
+    <!--FCM-->
+    <string name="takecare_notification_channel_name">TakeCare</string>
+    <string name="payload_display_status">display_status</string>
+    <string name="payload_admin_broadcast">admin_broadcast</string>
+    <string name="payload_item_request_message">item_request_message</string>
+    <string name="payload_data_title">title</string>
+    <string name="payload_data_message">message</string>
+
+
     <!---->
 </resources>

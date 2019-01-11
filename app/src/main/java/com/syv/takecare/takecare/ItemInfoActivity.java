@@ -72,7 +72,7 @@ import java.util.Map;
 
 import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 
-public class ItemInfoActivity extends AppCompatActivity {
+public class ItemInfoActivity extends TakeCareActivity {
 
     private final static String TAG = "ItemInfoActivity";
     private static final String EXTRA_ITEM_ID = "Item Id";

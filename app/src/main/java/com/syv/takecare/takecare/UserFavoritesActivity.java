@@ -60,7 +60,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-public class UserFavoritesActivity extends AppCompatActivity {
+public class UserFavoritesActivity extends TakeCareActivity {
     private static final String TAG = "TakeCare";
     private static final List<Character> TERMINATORS = Arrays.asList('\n', ';', ',');
     private static final int TAGS_SEPARATING_LENGTH = 4;

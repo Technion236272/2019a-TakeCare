@@ -62,7 +62,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserProfileActivity extends AppCompatActivity {
+public class UserProfileActivity extends TakeCareActivity {
 
     private final static String TAG = "TakeCare";
 

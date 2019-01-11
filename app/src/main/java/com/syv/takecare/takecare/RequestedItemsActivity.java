@@ -48,7 +48,7 @@ import com.syv.takecare.takecare.utilities.RequestedItemsInformation;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-public class RequestedItemsActivity extends AppCompatActivity {
+public class RequestedItemsActivity extends TakeCareActivity {
 
     private static final String TAG = "RequestedItemsActivity";
 

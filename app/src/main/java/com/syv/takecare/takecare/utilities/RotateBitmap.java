@@ -10,6 +10,9 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * This utility class has the purpose of rotating front-camera pictures uploaded by Samsung devices
+ */
 public class RotateBitmap {
 
     private static final String TAG = "RotateBitmap";

@@ -22,7 +22,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends TakeCareActivity {
 
     private static final String TAG = "TakeCare";
     private static final int REQ_GOOGLE_SIGN_IN = 1;

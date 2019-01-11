@@ -9,7 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
-public class SharedItemsActivity extends AppCompatActivity {
+public class SharedItemsActivity extends TakeCareActivity {
 
     private static final String TAG = "RequestedItemsActivity";
 

@@ -117,7 +117,7 @@ import javax.annotation.Nullable;
 
 import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 
-public class GiverFormActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class GiverFormActivity extends TakeCareActivity {
 
     private final static String TAG = "TakeCare";
     private static final int POPUP_ACTIVE_DURATION = 6000;

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -21,9 +20,8 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.syv.takecare.takecare.utilities.TokenServiceFCM;
 
-public class GatewayActivity extends AppCompatActivity {
+public class GatewayActivity extends TakeCareActivity {
     private final static String TAG = "TakeCare";
 
     private FirebaseAuth auth;
@@ -46,9 +44,6 @@ public class GatewayActivity extends AppCompatActivity {
         Intent intent = getIntent();
         boolean welcomeToast = intent.getBooleanExtra(Intent.EXTRA_TEXT, false);
         makeWelcomeToast(welcomeToast);
-//        String token = TokenServiceFCM.getToken(getApplicationContext());
-//        Log.d(TAG, "onCreate: token is " + token);
-//        Toast.makeText(getApplicationContext(), token, Toast.LENGTH_LONG).show();
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
