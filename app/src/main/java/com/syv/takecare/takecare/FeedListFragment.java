@@ -9,6 +9,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -91,6 +92,7 @@ public class FeedListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: Starting");
         View view = inflater.inflate(R.layout.fragment_feed_list,container, false);
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -115,26 +117,29 @@ public class FeedListFragment extends Fragment {
         } else {
             jumpButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_arrow_up), null);
         }
-        if(savedInstanceState == null){
-            return view;
-        }
-        Log.d(TAG, "onActivityCreated: started");
-        if (savedInstanceState.containsKey(RECYCLER_STATE_POSITION_KEY)) {
-            Log.d(TAG, "YUVAL POSITION IS " + savedInstanceState.getInt(RECYCLER_STATE_POSITION_KEY));
-            absolutePosition = savedInstanceState.getInt(RECYCLER_STATE_POSITION_KEY);
-            Log.d(TAG, "onRestoreInstanceState: fetched position: " + absolutePosition);
-            recyclerView.scrollToPosition(absolutePosition);
 
+        Log.d(TAG, "onCreateView: Starting taking care of savedInstanceState");
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(RECYCLER_STATE_POSITION_KEY)) {
+                this.absolutePosition = savedInstanceState.getInt(RECYCLER_STATE_POSITION_KEY);
+                Log.d(TAG, "onCreateView: absolute position is: " + this.absolutePosition);
+            }
         }
+        Log.d(TAG, "onCreateView: Ending. Absolute position is: " + absolutePosition);
         return view;
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         Log.d(TAG, "onSaveInstanceState: writing position " + absolutePosition);
         savedInstanceState.putInt(RECYCLER_STATE_POSITION_KEY, absolutePosition);
+        //savedInstanceState.putParcelable("ADAPTER", (Parcelable)currentAdapter);
+        Bundle recyclerViewState = new Bundle();
+        Parcelable listState = recyclerView.getLayoutManager().onSaveInstanceState();
+        recyclerViewState.putParcelable("KEY_RECYCLER_STATE", listState);
         super.onSaveInstanceState(savedInstanceState);
     }
+
     private void setUpRecyclerView() {
         Log.d(TAG, "setUpRecyclerView: setting layout manager for the current orientation");
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -158,7 +163,7 @@ public class FeedListFragment extends Fragment {
                 } else {
                     jumpButton.setVisibility(View.GONE);
                 }
-                absolutePosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+                absolutePosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
             }
         });
     }
@@ -599,8 +604,17 @@ public class FeedListFragment extends Fragment {
     }
     @Override
     public void onStart(){
-        super.onStart();
+        Log.d(TAG, "onStart: Starting.");
         currentAdapter.startListening();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "thread run: moving to " + absolutePosition);
+                recyclerView.scrollToPosition(absolutePosition);
+                updatePosition();
+            }
+        }, 300);
+        super.onStart();
     }
     @Override
     public void onStop() {

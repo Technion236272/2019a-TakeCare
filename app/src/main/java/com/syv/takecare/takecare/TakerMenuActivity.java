@@ -115,7 +115,7 @@ import static android.view.View.VISIBLE;
 
 public class TakerMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private final static String TAG = "TakeCare";
+    private final static String TAG = "TakerMenuActivity";
 
     private static final String FILTER_CATEGORY_KEY = "CATEGORY FILTER";
     private static final String FILTER_PICKUP_KEY = "PICKUP FILTER";
@@ -215,7 +215,10 @@ public class TakerMenuActivity extends AppCompatActivity
         mLocationPermissionGranted = ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED;
-        changeFragment();
+        if (savedInstanceState == null) {
+            Log.d(TAG, "onCreate: saveInstanceState is null");
+            changeFragment();
+        }
 
     }
 
@@ -244,7 +247,6 @@ public class TakerMenuActivity extends AppCompatActivity
             mapViewEnabled = savedInstanceState.getBoolean(MAP_VIEW_ENABLED_KEY);
             setDrawerItem();
             setPickupItem();
-            changeFragment();
         }
         super.onRestoreInstanceState(savedInstanceState);
     }
@@ -555,7 +557,7 @@ public class TakerMenuActivity extends AppCompatActivity
     }
 
     private void changeFragment(){
-
+        Log.d(TAG, "changeFragment: Starting");
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if(mapViewEnabled) {
             if(mLocationPermissionGranted) {
