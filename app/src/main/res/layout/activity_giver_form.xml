@@ -7,7 +7,7 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
-    tools:context=".GiverFormActivity">
+    tools:context=".activities.GiverFormActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -557,7 +557,7 @@
                             android:name="com.google.android.gms.maps.SupportMapFragment"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            class="com.syv.takecare.takecare.WorkaroundMapFragment"/>
+                            class="com.syv.takecare.takecare.fragments.WorkaroundMapFragment"/>
                     </FrameLayout>
 
                 </android.support.constraint.ConstraintLayout>

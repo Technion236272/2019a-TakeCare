@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    tools:context=".ItemInfoActivity">
+    tools:context=".activities.ItemInfoActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/item_info_toolbar_layout"
@@ -397,7 +397,7 @@
 
                 </android.support.v7.widget.CardView>
 
-                <com.syv.takecare.takecare.FeedRecyclerView
+                <com.syv.takecare.takecare.customViews.FeedRecyclerView
                     android:id="@+id/requested_by_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -414,7 +414,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/phone_card">
 
-                </com.syv.takecare.takecare.FeedRecyclerView>
+                </com.syv.takecare.takecare.customViews.FeedRecyclerView>
 
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/send_message_button"

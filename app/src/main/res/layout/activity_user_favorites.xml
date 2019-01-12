@@ -9,7 +9,7 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
-    tools:context=".UserFavoritesActivity">
+    tools:context=".activities.UserFavoritesActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

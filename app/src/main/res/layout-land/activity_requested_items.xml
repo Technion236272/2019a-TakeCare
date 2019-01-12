@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".RequestedItemsActivity">
+    tools:context=".fragments.FeedMapFragment$RequestedItemsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <com.syv.takecare.takecare.CustomViewPager
+    <com.syv.takecare.takecare.customViews.CustomViewPager
         android:id="@+id/requested_items_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

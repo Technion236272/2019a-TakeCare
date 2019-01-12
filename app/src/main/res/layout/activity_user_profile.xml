@@ -9,7 +9,7 @@
     android:focusableInTouchMode="true"
     android:orientation="vertical"
     android:windowSoftInputMode="stateAlwaysHidden"
-    tools:context=".UserProfileActivity">
+    tools:context=".activities.UserProfileActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

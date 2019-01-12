@@ -4,7 +4,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
@@ -20,9 +19,9 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.syv.takecare.takecare.LoginActivity;
+import com.syv.takecare.takecare.activities.LoginActivity;
 import com.syv.takecare.takecare.R;
-import com.syv.takecare.takecare.TakeCareActivity;
+import com.syv.takecare.takecare.activities.TakeCareActivity;
 
 import java.util.Map;
 

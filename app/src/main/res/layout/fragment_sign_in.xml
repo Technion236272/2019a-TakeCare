@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".SignInFragment"
+    tools:context=".fragments.SignInFragment"
     android:background="@android:color/black">
 
 
@@ -51,7 +51,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.syv.takecare.takecare.CustomEditText
+        <com.syv.takecare.takecare.customViews.CustomEditText
             android:id="@+id/sign_in_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.syv.takecare.takecare.CustomEditText
+        <com.syv.takecare.takecare.customViews.CustomEditText
             android:id="@+id/sign_in_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
