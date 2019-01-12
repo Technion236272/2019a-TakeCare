@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 
 /**
  * Base class that represents an activity of the app.
- * This activity is abstract - it does not contain a .xml layout and it's registered in the manifest
+ * This activity is abstract - it does not contain a .xml layout and it's not registered in the manifest
  */
 @SuppressLint("Registered")
 public class TakeCareActivity extends AppCompatActivity {
