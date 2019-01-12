@@ -134,9 +134,7 @@ public class ItemInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_info);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            postponeEnterTransition();
-        }
+        supportPostponeEnterTransition();
         Toolbar toolbar = (Toolbar) findViewById(R.id.item_info_toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -165,6 +163,12 @@ public class ItemInfoActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bundle extras = getIntent().getExtras();
+            String transitionName = extras.getParcelable(TakerMenuActivity.EXTRA_ITEM);
+            itemImageView.setTransitionName(transitionName);
+        }
 
         final FirebaseUser currentUser = auth.getCurrentUser();
         final FirebaseUser publisher;
@@ -229,10 +233,7 @@ public class ItemInfoActivity extends AppCompatActivity {
                                         .load(document.getString("photo"))
                                         .into(itemImageView);
 
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    startPostponedEnterTransition();
-                                    //scheduleStartPostponedTransition(itemImageView);
-                                }
+                                supportStartPostponedEnterTransition();
 
                                 imageSpaceView.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -246,7 +247,7 @@ public class ItemInfoActivity extends AppCompatActivity {
                                         android.R.integer.config_shortAnimTime);
 
                             } else {
-                                switch(document.getString("category")) {
+                                switch (document.getString("category")) {
                                     case "Food":
                                         itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_pizza_96_big_purple));
                                         break;
@@ -485,7 +486,7 @@ public class ItemInfoActivity extends AppCompatActivity {
                             Long publisherRatingSum = document.getLong("rating");
                             Long publisherRatingCount = document.getLong("ratingCount");
                             float publisherRating;
-                            if(publisherRatingSum == null || publisherRatingCount == null ||
+                            if (publisherRatingSum == null || publisherRatingCount == null ||
                                     publisherRatingCount == 0) {
                                 publisherRating = 0;
                             } else {
@@ -784,7 +785,7 @@ public class ItemInfoActivity extends AppCompatActivity {
                         .ofFloat(expandedImageView, View.X, startBounds.left))
                         .with(ObjectAnimator
                                 .ofFloat(expandedImageView,
-                                        View.Y,startBounds.top))
+                                        View.Y, startBounds.top))
                         .with(ObjectAnimator
                                 .ofFloat(expandedImageView,
                                         View.SCALE_X, startScaleFinal))
@@ -817,17 +818,5 @@ public class ItemInfoActivity extends AppCompatActivity {
                 isImageFullscreen = false;
             }
         });
-    }
-
-    private void scheduleStartPostponedTransition(final View sharedElement) {
-        sharedElement.getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    public boolean onPreDraw() {
-                        sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
-                        startPostponedEnterTransition();
-                        return true;
-                    }
-                });
     }
 }

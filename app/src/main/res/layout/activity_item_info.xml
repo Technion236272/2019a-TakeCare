@@ -39,7 +39,6 @@
 
     <ImageView
         android:id="@+id/item_image"
-        android:transitionName="item_image"
         android:layout_width="match_parent"
         android:layout_height="360dp"
         android:layout_below="@+id/item_info_toolbar_layout"

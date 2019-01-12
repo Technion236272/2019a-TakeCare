@@ -78,6 +78,8 @@ public class TakerMenuActivity extends AppCompatActivity
     private static final String FILTER_CATEGORY_KEY = "CATEGORY FILTER";
     private static final String FILTER_PICKUP_KEY = "PICKUP FILTER";
     private static final String MAP_VIEW_ENABLED_KEY = "MAP VIEW ENABLED";
+    private static final String EXTRA_ITEM_ID = "Item Id";
+    public static final String EXTRA_ITEM = "EXTRA_ITEM";
     private RelativeLayout rootLayout;
     private ImageView userProfilePicture;
     private TextView userName;
