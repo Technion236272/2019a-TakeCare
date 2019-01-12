@@ -311,6 +311,13 @@ public class TakerMenuActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.taker_menu, menu);
+        if (mapViewEnabled) {
+            toolbar.getMenu().findItem(R.id.action_change_display).setIcon(R.drawable.ic_item_appbar);
+            toolbar.getMenu().findItem(R.id.action_change_display).setTitle(R.string.action_switch_to_list);
+        } else {
+            toolbar.getMenu().findItem(R.id.action_change_display).setIcon(R.drawable.ic_map_display);
+            toolbar.getMenu().findItem(R.id.action_change_display).setTitle(R.string.action_switch_to_map);
+        }
         return true;
     }
 
