@@ -6,14 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".FeedListFragment"
     android:animateLayoutChanges="true">
-
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/jump_button"
         android:layout_width="150dp"
         android:layout_height="40dp"
         android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
         android:layout_marginTop="12dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:alpha="0.9"
         android:background="@drawable/floating_button_shape"
         android:paddingLeft="12dp"
@@ -25,8 +25,8 @@
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="16sp"
-        android:visibility="gone"
-        app:elevation="@dimen/fab_margin" />
+        app:elevation="@dimen/fab_margin"
+        android:visibility="gone"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

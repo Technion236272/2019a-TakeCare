@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -79,12 +80,12 @@ public class FeedListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: Starting");
+        orientation = getResources().getConfiguration().orientation;
         View view = inflater.inflate(R.layout.fragment_feed_list,container, false);
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
         user = auth.getCurrentUser();
-        orientation = getResources().getConfiguration().orientation;
         recyclerView = (RecyclerView) view.findViewById(R.id.taker_feed_list);
         emptyFeedView = view.findViewById(R.id.empty_feed_view);
         emptyFeedView.setVisibility(View.GONE);
@@ -98,10 +99,14 @@ public class FeedListFragment extends Fragment {
                 jumpButton.setVisibility(View.GONE);
             }
         });
+
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            jumpButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_arrow_back), null, null, null);
+            jumpButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getContext(), R.drawable.ic_arrow_back), null, null, null);
+            jumpButton.setText(R.string.jump_to_top_button_landscape);
         } else {
-            jumpButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_arrow_up), null);
+            jumpButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getContext(), R.drawable.ic_arrow_up), null);
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) jumpButton.getLayoutParams();
+            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         }
 
         Log.d(TAG, "onCreateView: Starting taking care of savedInstanceState");
@@ -597,9 +602,14 @@ public class FeedListFragment extends Fragment {
             public void run() {
                 Log.d(TAG, "thread run: moving to " + absolutePosition);
                 recyclerView.scrollToPosition(absolutePosition);
-                updatePosition();
+                position = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
             }
         }, 300);
+        if (absolutePosition >= LIST_JUMP_THRESHOLD) {
+            jumpButton.setVisibility(VISIBLE);
+        } else {
+            jumpButton.setVisibility(View.GONE);
+        }
         super.onStart();
     }
     @Override
