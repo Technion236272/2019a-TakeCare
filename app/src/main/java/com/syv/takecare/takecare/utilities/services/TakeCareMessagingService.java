@@ -1,4 +1,4 @@
-package com.syv.takecare.takecare.utilities.Services;
+package com.syv.takecare.takecare.utilities.services;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class TakeCareMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = "TakeCare";
+    private static final String TAG = "TakeCare/Messaging";
     private static final String EXTRA_ITEM_ID = "Item Id";
     private static final int BROADCAST_NOTIFICATION_ID = 2;
 

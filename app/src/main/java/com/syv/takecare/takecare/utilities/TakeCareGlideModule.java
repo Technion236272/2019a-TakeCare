@@ -1,4 +1,4 @@
-package com.syv.takecare.takecare.utilities.Services;
+package com.syv.takecare.takecare.utilities;
 
 import android.content.Context;
 

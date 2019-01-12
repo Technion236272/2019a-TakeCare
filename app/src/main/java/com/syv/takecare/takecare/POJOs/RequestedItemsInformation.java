@@ -1,4 +1,4 @@
-package com.syv.takecare.takecare.utilities;
+package com.syv.takecare.takecare.POJOs;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.ServerTimestamp;

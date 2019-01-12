@@ -28,7 +28,8 @@ import com.syv.takecare.takecare.R;
 
 /**
  * Base class that represents an activity of the app.
- * This activity is abstract - it does not contain an xml layout and it's not registered in the manifest
+ * This activity is abstract - it does not contain an xml layout.
+ * The activity is, however, registered in the manifest (to gain access to the alert dialog style)
  */
 @SuppressLint("Registered")
 public class TakeCareActivity extends AppCompatActivity {

@@ -108,7 +108,7 @@ import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 
 public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCallback{
 
-    private final static String TAG = "TakeCare";
+    private final static String TAG = "TakeCare/GiverForm";
     private static final int POPUP_ACTIVE_DURATION = 6000;
     private static final String changeText = "Change";
     private static final String hideText = "Hide";
@@ -773,7 +773,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                         dialog.dismiss();
                         Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
                                 Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
+                        Intent intent = new Intent(GiverFormActivity.this, TakerMenuActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -813,7 +813,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                                                         dialog.dismiss();
                                                         Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
                                                                 Toast.LENGTH_SHORT).show();
-                                                        Intent intent = new Intent(GiverFormActivity.this, GatewayActivity.class);
+                                                        Intent intent = new Intent(GiverFormActivity.this, TakerMenuActivity.class);
                                                         startActivity(intent);
                                                         finish();
                                                     }

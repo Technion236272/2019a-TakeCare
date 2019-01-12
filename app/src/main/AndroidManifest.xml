@@ -39,7 +39,7 @@
         </provider>
 
         <service
-            android:name = ".utilities.Services.TakeCareMessagingService">
+            android:name = ".utilities.services.TakeCareMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -63,15 +63,16 @@
             android:name="io.fabric.ApiKey"
             android:value="7f7506f3cfaf9acbb75e34b8b44d610c12a1dccf" />
 
+        <!--Gateway activity is currently not in use-->
         <activity android:name=".activities.GatewayActivity"></activity>
         <activity
             android:name=".activities.TakerMenuActivity"
             android:label="@string/title_activity_taker_menu"
-            android:parentActivityName=".activities.GatewayActivity"
+            android:parentActivityName=".activities.TakerMenuActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.syv.takecare.takecare.activities.GatewayActivity" />
+                android:value="com.syv.takecare.takecare.activities.TakerMenuActivity" />
         </activity>
         <activity
             android:name="com.facebook.FacebookActivity"

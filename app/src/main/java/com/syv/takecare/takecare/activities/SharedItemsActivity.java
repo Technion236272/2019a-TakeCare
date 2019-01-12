@@ -18,7 +18,7 @@ import com.syv.takecare.takecare.adapters.SectionsPageAdapter;
 
 public class SharedItemsActivity extends TakeCareActivity {
 
-    private static final String TAG = "RequestedItemsActivity";
+    private static final String TAG = "TakeCare/Login";
 
     private SectionsPageAdapter sectionsPageAdapter;
     private CustomViewPager viewPager;

@@ -1,7 +1,10 @@
 package com.syv.takecare.takecare.activities;
 
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -25,11 +28,15 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         changeFragment(null);
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
+        // We create our notification channel here to allow notifications in the future -
+        // if the user has entered the app in the past, the notification channel won't be overridden
+        createNotificationChannel();
+
+    FirebaseAuth auth = FirebaseAuth.getInstance();
 
         FirebaseUser currentUser = auth.getCurrentUser();
         if (currentUser != null) {
-            Intent intent = new Intent(this, GatewayActivity.class);
+            Intent intent = new Intent(this, TakerMenuActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
@@ -66,6 +73,20 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         } else {
             super.onBackPressed();
+        }
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.takecare_notification_channel_name);
+            String description = getString(R.string.takecare_notification_channel_name);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(name.toString(), name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 }

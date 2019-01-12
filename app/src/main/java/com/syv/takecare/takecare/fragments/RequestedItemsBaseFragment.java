@@ -38,7 +38,7 @@ import com.syv.takecare.takecare.customViews.FeedRecyclerView;
 import com.syv.takecare.takecare.activities.ItemInfoActivity;
 import com.syv.takecare.takecare.POJOs.*;
 import com.syv.takecare.takecare.R;
-import com.syv.takecare.takecare.utilities.RequestedItemsInformation;
+import com.syv.takecare.takecare.POJOs.RequestedItemsInformation;
 
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;

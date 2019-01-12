@@ -26,13 +26,18 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.syv.takecare.takecare.fragments.FeedListFragment;
 import com.syv.takecare.takecare.fragments.FeedMapFragment;
 import com.syv.takecare.takecare.R;
@@ -44,7 +49,7 @@ import static android.view.View.VISIBLE;
 
 public class TakerMenuActivity extends TakeCareActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private final static String TAG = "TakerMenuActivity";
+    private final static String TAG = "TakeCare/TakerMenu";
 
     private static final String FILTER_CATEGORY_KEY = "CATEGORY FILTER";
     private static final String FILTER_PICKUP_KEY = "PICKUP FILTER";
@@ -72,6 +77,23 @@ public class TakerMenuActivity extends TakeCareActivity
         //Set the toolbar as the AppBar for this activity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        // Update user's tokens
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful() || task.getResult() == null) {
+                            Log.w(TAG, "getInstanceId failed", task.getException());
+                            return;
+                        }
+                        String token = task.getResult().getToken();
+                        Log.d(TAG, "Token is: "+ token);
+                        db.collection("users").document(user.getUid())
+                                .update("tokens", FieldValue.arrayUnion(token));
+                    }
+                });
 
         //Set up the onClick listener for the giver form button
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -131,6 +153,11 @@ public class TakerMenuActivity extends TakeCareActivity
             changeFragment();
         }
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            boolean welcomeToast = intent.getBooleanExtra(Intent.EXTRA_TEXT, false);
+            makeWelcomeToast(welcomeToast);
+        }
     }
 
     @Override
@@ -447,16 +474,6 @@ public class TakerMenuActivity extends TakeCareActivity
         return true;
     }
 
-
-    private void makeHighlightedSnackbar(String str) {
-        Snackbar snackbar = Snackbar
-                .make(rootLayout, str, Snackbar.LENGTH_SHORT);
-        View sbView = snackbar.getView();
-        TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.YELLOW);
-        snackbar.show();
-    }
-
     private void changeFragment(){
         Log.d(TAG, "changeFragment: Starting");
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -516,5 +533,32 @@ public class TakerMenuActivity extends TakeCareActivity
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     1);
         }
+    }
+
+    private void makeWelcomeToast(boolean fromLoginScreen) {
+        if (!fromLoginScreen) {
+            return;
+        }
+        final String toastText = "Welcome, ";
+        final FirebaseUser user = auth.getCurrentUser();
+        DocumentReference docRef = db.collection("users").document(user.getUid());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "Found user");
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Toast.makeText(getApplicationContext(), toastText
+                                + document.getString("name") + "!", Toast.LENGTH_LONG).show();
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d("TAG", "get failed with ", task.getException());
+                }
+            }
+        });
     }
 }

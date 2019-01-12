@@ -23,7 +23,7 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.syv.takecare.takecare.R;
 
 public class GatewayActivity extends TakeCareActivity {
-    private final static String TAG = "TakeCare";
+    private final static String TAG = "TakeCare/Gateway";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

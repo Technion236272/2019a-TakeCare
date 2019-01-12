@@ -25,7 +25,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.syv.takecare.takecare.activities.GatewayActivity;
+import com.syv.takecare.takecare.activities.TakerMenuActivity;
 import com.syv.takecare.takecare.customViews.CustomEditText;
 import com.syv.takecare.takecare.R;
 
@@ -98,7 +98,7 @@ public class SignInFragment extends Fragment  implements View.OnClickListener {
                                 assert auth.getCurrentUser() != null;
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "signInWithEmail:success");
-                                Intent intent = new Intent(getActivity(), GatewayActivity.class);
+                                Intent intent = new Intent(getActivity(), TakerMenuActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 intent.putExtra(Intent.EXTRA_TEXT, true);
                                 dialog.dismiss();

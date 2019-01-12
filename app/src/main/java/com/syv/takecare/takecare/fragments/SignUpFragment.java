@@ -49,8 +49,8 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.syv.takecare.takecare.activities.GatewayActivity;
 import com.syv.takecare.takecare.activities.LoginActivity;
+import com.syv.takecare.takecare.activities.TakerMenuActivity;
 import com.syv.takecare.takecare.customViews.CustomEditText;
 import com.syv.takecare.takecare.R;
 
@@ -84,11 +84,10 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
-        mNameView = (AppCompatEditText) view.findViewById(R.id.user_name);
-        mEmailView = (AutoCompleteTextView) view.findViewById(R.id.email);
-        populateAutoComplete();
-        mPasswordView = (CustomEditText) view.findViewById(R.id.password);
-        mRePasswordView = (CustomEditText) view.findViewById(R.id.confirm_password);
+        mNameView = view.findViewById(R.id.user_name);
+        mEmailView = view.findViewById(R.id.email);
+        mPasswordView = view.findViewById(R.id.password);
+        mRePasswordView = view.findViewById(R.id.confirm_password);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -104,10 +103,10 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
             }
         });
 
-        backButton = (ImageButton) view.findViewById(R.id.sign_up_back_button);
+        backButton = view.findViewById(R.id.sign_up_back_button);
         backButton.setOnClickListener(this);
 
-        Button mEmailSignInButton = (Button) view.findViewById(R.id.email_sign_in_button);
+        Button mEmailSignInButton = view.findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,7 +119,7 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
 
         FirebaseUser currentUser = auth.getCurrentUser();
         if(currentUser!=null) {
-            Intent intent = new Intent(getActivity(), GatewayActivity.class);
+            Intent intent = new Intent(getActivity(), TakerMenuActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
@@ -133,13 +132,7 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
         return view;
     }
 
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
 
-        //getLoaderManager().initLoader(0, null, getActivity());
-    }
 
     private boolean mayRequestContacts() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -163,18 +156,6 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
         return false;
     }
 
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
-    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -363,7 +344,7 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
                             setUserInfo(auth.getCurrentUser(), name, email, password);
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            Intent intent = new Intent(getActivity(), GatewayActivity.class);
+                            Intent intent = new Intent(getActivity(), TakerMenuActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             intent.putExtra(Intent.EXTRA_TEXT, true);
                             dialog.dismiss();
@@ -379,11 +360,7 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
                                         .setMessage("Entered email is already registered")
                                         .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
-                                                //close login session of the user
-                                                FirebaseAuth.getInstance().signOut();
-                                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                startActivity(intent);
+                                                // Dismiss the alert - do nothing
                                             }
                                         })
                                         .show();
@@ -395,11 +372,7 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
                                         .setMessage("You have entered an illegal email")
                                         .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
-                                                //close login session of the user
-                                                FirebaseAuth.getInstance().signOut();
-                                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                startActivity(intent);
+                                                // Dismiss the alert - do nothing
                                             }
                                         })
                                         .show();
@@ -407,7 +380,6 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
                                 //Do nothing
                             }
                         }
-//                        pd.hide();
                     }
                 });
     }

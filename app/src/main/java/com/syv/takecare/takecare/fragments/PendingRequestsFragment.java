@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.syv.takecare.takecare.R;
-import com.syv.takecare.takecare.utilities.RequestedItemsInformation;
+import com.syv.takecare.takecare.POJOs.RequestedItemsInformation;
 
 public class PendingRequestsFragment extends RequestedItemsBaseFragment {
     private static final String TAG = "PendingRequestsFrag";

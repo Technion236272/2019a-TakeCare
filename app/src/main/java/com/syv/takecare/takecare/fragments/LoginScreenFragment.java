@@ -50,9 +50,9 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.syv.takecare.takecare.activities.GatewayActivity;
 import com.syv.takecare.takecare.activities.LoginActivity;
 import com.syv.takecare.takecare.R;
+import com.syv.takecare.takecare.activities.TakerMenuActivity;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -305,7 +305,7 @@ public class LoginScreenFragment extends Fragment {
                         Log.d(TAG, "Existing user document fetched!" + documentSnapshot);
                         if (documentSnapshot.exists()) {
                             dialog.dismiss();
-                            Intent intent = new Intent(getActivity(), GatewayActivity.class);
+                            Intent intent = new Intent(getActivity(), TakerMenuActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             intent.putExtra(Intent.EXTRA_TEXT, true);
                             startActivity(intent);
@@ -317,7 +317,7 @@ public class LoginScreenFragment extends Fragment {
                                         public void onSuccess(Void aVoid) {
                                             Log.d(TAG, "New user document successfully written!");
                                             dialog.dismiss();
-                                            Intent intent = new Intent(getActivity(), GatewayActivity.class);
+                                            Intent intent = new Intent(getActivity(), TakerMenuActivity.class);
                                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                             intent.putExtra(Intent.EXTRA_TEXT, true);
                                             startActivity(intent);

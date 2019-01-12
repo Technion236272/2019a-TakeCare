@@ -62,7 +62,7 @@ import java.util.Map;
 
 public class UserProfileActivity extends TakeCareActivity {
 
-    private final static String TAG = "TakeCare";
+    private final static String TAG = "TakeCare/UserProfile";
 
     private ImageView profilePictureView;
     private ProgressBar picturePB;

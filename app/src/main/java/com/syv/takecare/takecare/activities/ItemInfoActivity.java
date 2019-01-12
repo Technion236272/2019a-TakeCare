@@ -63,7 +63,7 @@ import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 
 public class ItemInfoActivity extends TakeCareActivity {
 
-    private final static String TAG = "ItemInfoActivity";
+    private final static String TAG = "TakeCare/ItemInfo";
     private static final String EXTRA_ITEM_ID = "Item Id";
 
     private ImageView itemImageView;
