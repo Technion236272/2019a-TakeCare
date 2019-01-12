@@ -202,7 +202,7 @@ public class FeedListFragment extends Fragment {
 
         // Default: no filters
         Query query = db.collection("items")
-                .whereEqualTo("status", 1)
+                .whereEqualTo("displayStatus", true)
                 .orderBy("timestamp", Query.Direction.DESCENDING);
 
         if (queryCategoriesFilter != null && queryPickupMethodFilter != null) {
@@ -211,21 +211,21 @@ public class FeedListFragment extends Fragment {
             query = db.collection("items")
                     .whereEqualTo("category", queryCategoriesFilter)
                     .whereEqualTo("pickupMethod", queryPickupMethodFilter)
-                    .whereEqualTo("status", 1)
+                    .whereEqualTo("displayStatus", true)
                     .orderBy("timestamp", Query.Direction.DESCENDING);
         } else if (queryCategoriesFilter != null) {
             // Filter by categories
             Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter);
             query = db.collection("items")
                     .whereEqualTo("category", queryCategoriesFilter)
-                    .whereEqualTo("status", 1)
+                    .whereEqualTo("displayStatus", true)
                     .orderBy("timestamp", Query.Direction.DESCENDING);
         } else if (queryPickupMethodFilter != null) {
             // Filter by pickup method
             Log.d(TAG, "setUpAdapter: query has: pickup: " + queryPickupMethodFilter);
             query = db.collection("items")
                     .whereEqualTo("pickupMethod", queryPickupMethodFilter)
-                    .whereEqualTo("status", 1)
+                    .whereEqualTo("displayStatus", true)
                     .orderBy("timestamp", Query.Direction.DESCENDING);
         }
 
@@ -500,7 +500,7 @@ public class FeedListFragment extends Fragment {
         Log.d(TAG, "setUpAdapter: created adapter");
         currentAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(currentAdapter);
-        //toggleVisibility();
+        toggleVisibility();
         currentAdapter.startListening();
         Log.d(TAG, "setUpAdapter: done");
     }

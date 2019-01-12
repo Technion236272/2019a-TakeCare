@@ -100,12 +100,12 @@
     <string name="empty_feed_text_2">you can share the first one!</string>>
     <string name="shared_items_empty_feed_text">You didn\'t share any items yet</string>
     <string name="accepted_items_empty_feed_text">None of your requests was accepted yet</string>
-    <string name="pending_items_empty_feed_text">There are no requested items available at the moment</string>
+    <string name="pending_items_empty_feed_text">You have no requested items at the moment</string>
     <string name="rejected_items_empty_feed_text">None of your requests was rejected</string>
-    <string name="my_requested_items_empty_feed_text">You have no requested items at the moment</string>
-    <string name="my_available_items_empty_feed_text">You have no items available at the moment</string>
-    <string name="my_taken_items_empty_feed_text">None of your items were already given to someone</string>
-    <string name="my_expired_items_empty_feed_text">You have no expired items</string>
+    <string name="my_requested_items_empty_feed_text">None of your items are requested at the moment</string>
+    <string name="my_available_items_empty_feed_text">You don\'t have any available items at the moment</string>
+    <string name="my_taken_items_empty_feed_text">None of your items were given to someone</string>
+    <string name="my_expired_items_empty_feed_text">None of your items have expired</string>
 
 
     <!--Favorites page elements-->

@@ -78,7 +78,6 @@ public class TakerMenuActivity extends TakeCareActivity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         // Update user's tokens
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {

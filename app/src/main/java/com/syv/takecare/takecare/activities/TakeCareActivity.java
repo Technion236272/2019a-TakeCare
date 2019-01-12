@@ -82,9 +82,17 @@ public class TakeCareActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initialize();
+        if (user == null) {
+            // User should not be here: re-direct them to the login screen
+            Log.d(TAKECARE_TAG, "TakeCare onCreate: user is null. Redirecting to login activity");
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
     }
 
     /**

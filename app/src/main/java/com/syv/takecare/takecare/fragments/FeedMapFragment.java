@@ -101,7 +101,9 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
         getDeviceLocation();
 
         mMap.setMinZoomPreference(11);
-        Query query = db.collection("items");
+        Query query = db.collection("items")
+                .whereEqualTo("displayStatus", true);
+
         String queryCategoriesFilter = ((TakerMenuActivity) getActivity()).getQueryCategoriesFilter();
         String queryPickupMethodFilter = ((TakerMenuActivity) getActivity()).getQueryPickupMethodFilter();
         if (queryCategoriesFilter != null && queryPickupMethodFilter != null) {
@@ -110,22 +112,19 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
             query = db.collection("items")
                     .whereEqualTo("category", queryCategoriesFilter)
                     .whereEqualTo("pickupMethod", queryPickupMethodFilter)
-                    .whereEqualTo("status", 1)
-                    .orderBy("timestamp", Query.Direction.DESCENDING);
+                    .whereEqualTo("displayStatus", true);
         } else if (queryCategoriesFilter != null) {
             // Filter by categories
             Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter);
             query = db.collection("items")
                     .whereEqualTo("category", queryCategoriesFilter)
-                    .whereEqualTo("status", 1)
-                    .orderBy("timestamp", Query.Direction.DESCENDING);
+                    .whereEqualTo("displayStatus", true);
         } else if (queryPickupMethodFilter != null) {
             // Filter by pickup method
             Log.d(TAG, "setUpAdapter: query has: pickup: " + queryPickupMethodFilter);
             query = db.collection("items")
                     .whereEqualTo("pickupMethod", queryPickupMethodFilter)
-                    .whereEqualTo("status", 1)
-                    .orderBy("timestamp", Query.Direction.DESCENDING);
+                    .whereEqualTo("displayStatus", true);
         }
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -142,6 +141,7 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
                 for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
                     String itemId = doc.getReference().getId();
+
                     if (dc.getType() == DocumentChange.Type.REMOVED) {
                         Marker markerToDelete = markers.get(itemId);
                         try {
@@ -152,6 +152,20 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
                         markers.remove(itemId);
                         continue;
                     }
+
+                    if (dc.getType() == DocumentChange.Type.MODIFIED) {
+                        if (doc.get("displayStatus") == null || !(boolean) doc.get("displayStatus")) {
+                            Marker markerToDelete = markers.get(itemId);
+                            try {
+                                markerToDelete.remove();
+                            } catch (NullPointerException nullptrExc) {
+                                Log.d(TAG, "onEvent: tried to remove a non-existing marker");
+                            }
+                            markers.remove(itemId);
+                            continue;
+                        }
+                    }
+
                     GeoPoint itemLocation = (GeoPoint) doc.get("location");
                     if (itemLocation != null) {
                         MarkerOptions testMarker = new MarkerOptions();
