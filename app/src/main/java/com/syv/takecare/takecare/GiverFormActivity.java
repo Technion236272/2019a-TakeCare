@@ -117,7 +117,7 @@ import javax.annotation.Nullable;
 
 import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 
-public class GiverFormActivity extends TakeCareActivity {
+public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCallback{
 
     private final static String TAG = "TakeCare";
     private static final int POPUP_ACTIVE_DURATION = 6000;
@@ -188,6 +188,9 @@ public class GiverFormActivity extends TakeCareActivity {
     private FrameLayout mapWrapper;
     private GoogleMap mMap;
     private Marker marker;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Location mLastKnownLocation;
+    private final LatLng mDefaultLocation = new LatLng(32.777751, 35.021508);
     private Fragment mapView;
     enum locationButtonStateEnum{
         ENTER_LOCATION,
@@ -378,6 +381,7 @@ public class GiverFormActivity extends TakeCareActivity {
             }
         });
         locationButtonState = locationButtonStateEnum.ENTER_LOCATION;
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
     }
 
     @Override
@@ -388,18 +392,8 @@ public class GiverFormActivity extends TakeCareActivity {
             getLocationPermission();
             return;
         }
-        mMap.setMyLocationEnabled(true);
-        LocationManager locationManager = (LocationManager)
-                getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-
-        Location location = locationManager.getLastKnownLocation(locationManager
-                .getBestProvider(criteria, false));
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-        CameraUpdate cu = CameraUpdateFactory.newCameraPosition(CameraPosition.builder().target(new LatLng(latitude, longitude)).zoom(15).build());
-        mMap.moveCamera(cu);
-        mMap.animateCamera(cu);
+        updateLocationUI();
+        getDeviceLocation();
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -411,6 +405,49 @@ public class GiverFormActivity extends TakeCareActivity {
                 marker = mMap.addMarker(selection);
             }
         });
+    }
+    private void updateLocationUI() {
+        if (mMap == null) {
+            return;
+        }
+        try {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        } catch (SecurityException e) {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+    private void getDeviceLocation() {
+        /*
+         * Get the best and most recent location of the device, which may be null in rare
+         * cases when a location is not available.
+         */
+        try {
+            Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+            locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                @Override
+                public void onComplete(@NonNull Task<Location> task) {
+                    if (task.isSuccessful()) {
+                        // Set the map's camera position to the current location of the device.
+                        mLastKnownLocation = task.getResult();
+                        if (mLastKnownLocation == null) {
+                            return;
+                        }
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(mLastKnownLocation.getLatitude(),
+                                        mLastKnownLocation.getLongitude()), 15));
+                    } else {
+                        Log.d(TAG, "Current location is null. Using defaults.");
+                        Log.e(TAG, "Exception: %s", task.getException());
+                        mMap.moveCamera(CameraUpdateFactory
+                                .newLatLngZoom(mDefaultLocation, 15));
+                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                    }
+                }
+            });
+        } catch (SecurityException e) {
+            Log.e("Exception: %s", e.getMessage());
+        }
     }
     private void getLocationPermission() {
         /*

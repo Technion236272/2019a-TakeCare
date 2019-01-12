@@ -46,6 +46,9 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static android.view.View.VISIBLE;
@@ -58,8 +61,11 @@ public class FeedListFragment extends Fragment {
     private static final int ICON_FILL_DURATION = 200;
     private static final int ICON_ACTIVATED_DURATION = 400;
     private static final String RECYCLER_STATE_POSITION_KEY = "RECYCLER POSITION";
-    private ReentrantLock iconLock = new ReentrantLock();
+    private static final int LOAD_FAVORITES_INTERVAL_WAIT_TIME = 200;
+    private static final int TOAST_MSG_TAGS_MAX_LENGTH = 48;
     private static final String EXTRA_ITEM_ID = "Item Id";
+
+    private ReentrantLock iconLock = new ReentrantLock();
     private RecyclerView recyclerView;
     private View emptyFeedView;
 
@@ -76,6 +82,9 @@ public class FeedListFragment extends Fragment {
     private int orientation;
     private int absolutePosition;
 
+    private HashSet<String> userKeywords = new HashSet<>();
+    private boolean keywordsLoaded = false;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -89,6 +98,7 @@ public class FeedListFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.taker_feed_list);
         emptyFeedView = view.findViewById(R.id.empty_feed_view);
         emptyFeedView.setVisibility(View.GONE);
+        initUserKeywords();
         setUpRecyclerView();
         jumpButton = view.findViewById(R.id.jump_button);
         jumpButton.setOnClickListener(new View.OnClickListener() {
@@ -133,10 +143,16 @@ public class FeedListFragment extends Fragment {
 
     private void setUpRecyclerView() {
         Log.d(TAG, "setUpRecyclerView: setting layout manager for the current orientation");
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
-        } else {
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+
+        try {
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
+            } else {
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+            }
+        } catch (NullPointerException e) {
+            Log.d(TAG, "Activity is null: " + e.getMessage());
+            return;
         }
         //Optimizing recycler view's performance:
         recyclerView.setHasFixedSize(true);
@@ -154,13 +170,23 @@ public class FeedListFragment extends Fragment {
                 } else {
                     jumpButton.setVisibility(View.GONE);
                 }
-                absolutePosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                try {
+                    absolutePosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "Failed to find first visible item: activity is destroyed" + e.getMessage());
+                }
             }
         });
     }
 
     private void setUpAdapter() {
         Log.d(TAG, "setUpAdapter: setting up adapter");
+
+        if (getActivity() == null) {
+            Log.d(TAG, "Activity is null");
+            return;
+        }
+
         String queryCategoriesFilter = ((TakerMenuActivity)getActivity()).getQueryCategoriesFilter();
         String queryPickupMethodFilter = ((TakerMenuActivity)getActivity()).getQueryPickupMethodFilter();
         if (currentAdapter != null)
@@ -404,6 +430,35 @@ public class FeedListFragment extends Fragment {
                 });
 
                 holder.itemView.setSelected(focusedItem == position);
+
+                (new Thread() {
+                    @Override
+                    public void run() {
+                        synchronized (this) {
+                            int attempts = 20;
+                            for (int i = 0; i < attempts; i++) {
+                                if (keywordsLoaded) {
+                                    // User keywords finished loading: safe to check favorites
+                                    if (getActivity() == null) return;
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            checkFavoriteKeywords(holder, model);
+                                        }
+                                    });
+                                    break;
+                                }
+                                try {
+                                    // Still loading user keywords: wait and try again
+                                    Thread.sleep(LOAD_FAVORITES_INTERVAL_WAIT_TIME);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                        }
+                    }
+                }).start();
             }
 
             @NonNull
@@ -430,26 +485,6 @@ public class FeedListFragment extends Fragment {
                 toggleVisibility();
                 if (position == 0 && recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
                     recyclerView.scrollToPosition(0);
-                }
-//                if (getItemCount() == 0) {
-//                    filterPopupMenu.setVisibility(View.GONE);
-//                }
-            }
-
-            class AdapterViewHolder extends ItemsViewHolder {
-                public AdapterViewHolder(View itemView) {
-                    super(itemView);
-
-                    // Handle item click and set the selection
-                    itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Redraw the old selection and the new
-                            notifyItemChanged(focusedItem);
-                            focusedItem = getLayoutPosition();
-                            notifyItemChanged(focusedItem);
-                        }
-                    });
                 }
             }
         };
@@ -526,7 +561,11 @@ public class FeedListFragment extends Fragment {
                         break;
                 }
 
-                Toast.makeText(getActivity().getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+                try {
+                    Toast.makeText(getActivity().getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "Activity is null: " + e.getMessage());
+                }
             }
         });
 
@@ -583,7 +622,11 @@ public class FeedListFragment extends Fragment {
                         break;
                 }
 
-                Toast.makeText(getActivity().getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+                try {
+                    Toast.makeText(getActivity().getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "Activity is null: " + e.getMessage());
+                }
             }
         });
     }
@@ -602,7 +645,11 @@ public class FeedListFragment extends Fragment {
             public void run() {
                 Log.d(TAG, "thread run: moving to " + absolutePosition);
                 recyclerView.scrollToPosition(absolutePosition);
-                position = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                try {
+                    position = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                } catch (NullPointerException e ) {
+                    Log.d(TAG, "Activity is null");
+                }
             }
         }, 300);
         if (absolutePosition >= LIST_JUMP_THRESHOLD) {
@@ -629,8 +676,6 @@ public class FeedListFragment extends Fragment {
                             View.GONE : View.VISIBLE);
         }
     }
-    // TODO: add togglefiltermenu related stuff here
-
 
     private void tryToggleJumpButton() {
         if (position >= LIST_JUMP_THRESHOLD) {
@@ -641,35 +686,39 @@ public class FeedListFragment extends Fragment {
         }
     }
     private void showBlockAlertMessage(final Spanned msg, final String itemId, final int cause) {
-        AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(getActivity().getApplicationContext());
-        builder.setTitle("Block Item")
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        hideItem(itemId);
-                        switch (cause) {
-                            //TODO: add
-                            case R.id.report_inappropriate:
-                                break;
-                            case R.id.report_no_fit:
-                                break;
-                            case R.id.report_spam:
-                                break;
-                            default:
-                                // User hides item - do nothing
-                                break;
+        try {
+            AlertDialog.Builder builder;
+            builder = new AlertDialog.Builder(getActivity().getApplicationContext());
+            builder.setTitle("Block Item")
+                    .setMessage(msg)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            hideItem(itemId);
+                            switch (cause) {
+                                //TODO: add
+                                case R.id.report_inappropriate:
+                                    break;
+                                case R.id.report_no_fit:
+                                    break;
+                                case R.id.report_spam:
+                                    break;
+                                default:
+                                    // User hides item - do nothing
+                                    break;
+                            }
                         }
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Do nothing
-                    }
-                })
-                .show();
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing
+                        }
+                    })
+                    .show();
+        } catch (NullPointerException e) {
+            Log.d(TAG, "Activity is null: " + e.getMessage());
+        }
     }
     private void hideItem(final String itemId) {
         if (user == null) {
@@ -680,4 +729,89 @@ public class FeedListFragment extends Fragment {
         db.collection("items").document(itemId)
                 .update("hideFrom", FieldValue.arrayUnion(user.getUid()));
     }
+
+    private void initUserKeywords() {
+        db.collection("users").document(user.getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Log.d(TAG, "found user's favorite keywords");
+                        if (documentSnapshot.get("tags") == null) {
+                            keywordsLoaded = true;
+                            userKeywords.clear();
+                            return;
+                        }
+                        userKeywords = new HashSet<>((List<String>) documentSnapshot.get("tags"));
+                        keywordsLoaded = true;
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "error trying to find favorite keywords in card");
+                    }
+                });
+    }
+
+    private void checkFavoriteKeywords(final ItemsViewHolder holder, final FeedCardInformation model) {
+
+        if (model.getTags() == null) {
+            return;
+        }
+
+        Set<String> intersection = new HashSet<>();
+        for (String keyword : model.getTags()) {
+            if (userKeywords.contains(keyword)) {
+                intersection.add(keyword);
+            }
+        }
+
+        if (!intersection.isEmpty()) {
+            // Item is wish-listed by the user!
+            customizeFavoriteCard(holder, intersection);
+        }
+    }
+
+    private void customizeFavoriteCard(final ItemsViewHolder holder, final Set<String> keywords) {
+        holder.itemFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: favorite icon clicked");
+                int keywordsAmount = keywords.size();
+                String msg = "Associated tags: ";
+                int tagsTextLength = 0;
+                StringBuilder tagsBuilder = new StringBuilder();
+                for (String keyword : keywords) {
+                    if (tagsTextLength + keyword.length() > TOAST_MSG_TAGS_MAX_LENGTH) {
+                        break;
+                    }
+                    tagsTextLength -= keyword.length() + 2;
+                    keywordsAmount--;
+                    tagsBuilder.append(keyword)
+                            .append(", ");
+                }
+
+                if (tagsBuilder.length() > 0) {
+                    tagsBuilder.deleteCharAt(tagsBuilder.length() - 2);
+                }
+
+                msg += (tagsBuilder.toString());
+                if (keywordsAmount > 0) {
+                    msg += "and " + keywordsAmount + " more";
+                }
+
+                try {
+                    Toast.makeText(getActivity().getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "Activity is null: " + e.getMessage());
+                }
+            }
+        });
+
+        holder.itemFavorite.setVisibility(View.VISIBLE);
+        holder.itemFavorite.animate().alpha(0.9f);
+    }
+
+
 }

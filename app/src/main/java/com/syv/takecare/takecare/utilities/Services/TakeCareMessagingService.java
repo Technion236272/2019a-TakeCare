@@ -1,11 +1,15 @@
 package com.syv.takecare.takecare.utilities.Services;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioAttributes;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -86,8 +90,10 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
                         .bigText(message))
                 .setContentIntent(notificationPendingIntent)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setVibrate(new long[]{500, 500})
+                .setLights(getResources().getColor(R.color.colorPrimary), 3000, 3000)
                 .setColor(getResources().getColor(R.color.colorPrimary))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -95,14 +101,37 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
 
         Log.d(TAG, "sendBroadcastNotification: firing notification");
 
+        Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // On newer APIs - need to set the channel ID for the notification
-            builder.setChannelId(getString(R.string.takecare_notification_channel_name));
+            // On newer APIs - need to set the channel ID for our notification
+//            builder.setChannelId(getString(R.string.takecare_notification_channel_name));
+
+            AudioAttributes attributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+
+            NotificationChannel notificationChannel = new NotificationChannel(getString(R.string.takecare_notification_channel_name),
+                    getString(R.string.app_name),
+                    NotificationManager.IMPORTANCE_HIGH);
+
+
+            // Configure the notification channel.
+            notificationChannel.setDescription(message);
+            notificationChannel.enableLights(true);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setSound(sound, attributes);
+
+
+            if (notificationManager != null)
+                notificationManager.createNotificationChannel(notificationChannel);
         }
 
         // Notification ID prevents spamming the device's notification tray -
         // notifications of the same ID will override one another
-        notificationManager.notify(BROADCAST_NOTIFICATION_ID, builder.build());
+        if (notificationManager != null) {
+            notificationManager.notify(BROADCAST_NOTIFICATION_ID, builder.build());
+        }
     }
 
     @Override

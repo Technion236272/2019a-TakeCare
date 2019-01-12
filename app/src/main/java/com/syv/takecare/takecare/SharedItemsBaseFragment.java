@@ -283,7 +283,7 @@ public class SharedItemsBaseFragment extends Fragment {
                                 holder.itemPublisher.setText(documentSnapshot.getString("name"));
                                 if (documentSnapshot.getString("profilePicture") != null) {
                                     try {
-                                        Glide.with(holder.card)
+                                        Glide.with(getActivity().getApplicationContext())
                                                 .load(documentSnapshot.getString("profilePicture"))
                                                 .apply(RequestOptions.circleCropTransform())
                                                 .into(holder.profilePhoto);
