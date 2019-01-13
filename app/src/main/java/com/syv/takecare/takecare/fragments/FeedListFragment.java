@@ -442,27 +442,29 @@ public class FeedListFragment extends Fragment {
                 (new Thread() {
                     @Override
                     public void run() {
-                        int attempts = 20;
-                        for (int i = 0; i < attempts; i++) {
-                            if (keywordsLoaded) {
-                                if (getActivity() == null) return;
-                                // User keywords finished loading: safe to check favorites
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        checkFavoriteKeywords(holder, model);
-                                    }
-                                });
-                                break;
+                        synchronized (this) {
+                            int attempts = 20;
+                            for (int i = 0; i < attempts; i++) {
+                                if (keywordsLoaded) {
+                                    // User keywords finished loading: safe to check favorites
+                                    if (getActivity() == null) return;
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            checkFavoriteKeywords(holder, model);
+                                        }
+                                    });
+                                    break;
+                                }
+                                try {
+                                    // Still loading user keywords: wait and try again
+                                    Thread.sleep(LOAD_FAVORITES_INTERVAL_WAIT_TIME);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                            try {
-                                // Still loading user keywords: wait and try again
-                                Thread.sleep(LOAD_FAVORITES_INTERVAL_WAIT_TIME);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
 
+                        }
                     }
                 }).start();
             }
@@ -498,7 +500,7 @@ public class FeedListFragment extends Fragment {
         Log.d(TAG, "setUpAdapter: created adapter");
         currentAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(currentAdapter);
-        toggleVisibility();
+//        toggleVisibility();
         currentAdapter.startListening();
         Log.d(TAG, "setUpAdapter: done");
     }
@@ -656,7 +658,7 @@ public class FeedListFragment extends Fragment {
                 try {
                     recyclerView.getLayoutManager().onRestoreInstanceState(listState);
                     position = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-                } catch (NullPointerException e) {
+                } catch (NullPointerException e ) {
                     Log.d(TAG, "Activity is null");
                 }
             }
