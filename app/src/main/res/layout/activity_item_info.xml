@@ -3,9 +3,9 @@
     android:id="@+id/item_root"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@android:color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
     tools:context=".activities.ItemInfoActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -23,17 +23,35 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/enlarged_item_info_toolbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/enlarged_item_info_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#960b040b"
+            android:visibility="gone"
+            app:title=""
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
     <RelativeLayout
         android:id="@+id/fullscreen_image_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/item_info_toolbar_layout">
+        android:layout_height="match_parent">
 
-        <ImageView
+        <com.ortiz.touchview.TouchImageView
             android:id="@+id/item_image_fullscreen"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"/>
+
 
     </RelativeLayout>
 

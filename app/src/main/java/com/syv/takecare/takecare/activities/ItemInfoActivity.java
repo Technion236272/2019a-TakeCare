@@ -6,11 +6,13 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.content.res.AppCompatResources;
@@ -37,17 +39,19 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
+import com.ortiz.touchview.TouchImageView;
 import com.syv.takecare.takecare.customViews.FeedRecyclerView;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.POJOs.RequestedByCardHolder;
@@ -66,6 +70,9 @@ public class ItemInfoActivity extends TakeCareActivity {
     private final static String TAG = "TakeCare/ItemInfo";
     private static final String EXTRA_ITEM_ID = "Item Id";
 
+
+    private Toolbar toolbar;
+    private Toolbar enlargedPhotoToolbar;
     private ImageView itemImageView;
     private TextView itemTitleView;
     private TextView itemDescriptionView;
@@ -98,6 +105,8 @@ public class ItemInfoActivity extends TakeCareActivity {
     private String publisherID;
     private boolean isPublisher = false;
 
+    private View.OnClickListener minimizer = null;
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -121,12 +130,9 @@ public class ItemInfoActivity extends TakeCareActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_info);
         supportPostponeEnterTransition();
-        Toolbar toolbar = findViewById(R.id.item_info_toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
+        toolbar = findViewById(R.id.item_info_toolbar);
+        enlargedPhotoToolbar = findViewById(R.id.enlarged_item_info_toolbar);
+        setToolbar(toolbar);
 
         itemImageView = findViewById(R.id.item_image);
         itemTitleView = findViewById(R.id.item_title);
@@ -152,30 +158,17 @@ public class ItemInfoActivity extends TakeCareActivity {
             itemImageView.setTransitionName(transitionName);
         }
 
-        final FirebaseUser currentUser = auth.getCurrentUser();
         Intent intent = getIntent();
         itemId = intent.getStringExtra(EXTRA_ITEM_ID);
         publisherID = intent.getStringExtra(Intent.EXTRA_UID);
 
-        String uid = auth.getCurrentUser().getUid();
+        final String uid = user.getUid();
         isPublisher = publisherID.equals(uid);
         if (isPublisher) {
             setUpRecyclerView();
         }
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isImageFullscreen) {
-                    expandedImageView.callOnClick();
-                } else {
-                    ItemInfoActivity.super.onBackPressed();
-                }
-            }
-        });
-
-
-        if (currentUser != null) {
+        if (user != null) {
             DocumentReference docRef = db.collection("items").document(itemId);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -185,11 +178,14 @@ public class ItemInfoActivity extends TakeCareActivity {
                         final DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                            itemTitleView.setText(document.getString("title"));
+                            String title = document.getString("title");
+                            itemTitleView.setText(title);
+                            enlargedPhotoToolbar.setTitle(title);
+
                             if (document.getString("publisher") != null) {
                                 Log.d(TAG, "Found publisher. Fetched id: "
                                         + document.getString("publisher"));
-                                if (document.getString("publisher").equals(currentUser.getUid())) {
+                                if (document.getString("publisher").equals(uid)) {
                                     request_button_layout = findViewById(R.id.request_button_layout);
                                     request_button_layout.setVisibility(View.GONE);
                                     deleteItem.setVisibility(View.VISIBLE);
@@ -488,15 +484,30 @@ public class ItemInfoActivity extends TakeCareActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    finishAfterTransition();
-                }
-                supportFinishAfterTransition();
-                //finish();
+        if (isImageFullscreen) {
+            Log.d(TAG, "onOptionsItemSelected: fake toolbar clicked");
+            if (!minimizeFullscreenImage()) {
+                super.onBackPressed();
+            }
+        } else {
+            Log.d(TAG, "onOptionsItemSelected: real toolbar clicked");
+            super.onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (isImageFullscreen) {
+            Log.d(TAG, "onBackPressed: closing fullscreen image");
+            if (!minimizeFullscreenImage()) {
+                super.onBackPressed();
+            }
+        } else {
+            Log.d(TAG, "onBackPressed: finishing activity");
+            super.onBackPressed();
+        }
     }
 
     public void requestItem(View view) {
@@ -653,10 +664,19 @@ public class ItemInfoActivity extends TakeCareActivity {
         expandedImageView.setVisibility(View.VISIBLE);
         itemInfoScrollView.setVisibility(View.GONE);
         requestButton.setVisibility(View.GONE);
+
         Glide.with(getApplicationContext())
+                .asBitmap()
                 .load(document.getString("photo"))
-                .into(expandedImageView);
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        expandedImageView.setImageBitmap(resource);
+                    }
+                });
+
         isImageFullscreen = true;
+        toggleToolbars();
 
         Log.d(TAG, "zoomImageFromThumb: Inflated fullscreen image");
 
@@ -743,7 +763,7 @@ public class ItemInfoActivity extends TakeCareActivity {
         // to the original bounds and show the thumbnail instead of
         // the expanded image.
         final float startScaleFinal = startScale;
-        expandedImageView.setOnClickListener(new View.OnClickListener() {
+        minimizer = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mCurrentAnimator != null) {
@@ -788,7 +808,41 @@ public class ItemInfoActivity extends TakeCareActivity {
                 set.start();
                 mCurrentAnimator = set;
                 isImageFullscreen = false;
+                toggleToolbars();
             }
-        });
+        };
+    }
+
+    private boolean minimizeFullscreenImage() {
+        if (minimizer == null) {
+            return false;
+        }
+        ((TouchImageView) expandedImageView).resetZoom();
+        minimizer.onClick(expandedImageView);
+        return true;
+    }
+
+    private void toggleToolbars() {
+        if (!isImageFullscreen) {
+            Log.d(TAG, "toggleToolbars: setting the real toolbar");
+            enlargedPhotoToolbar.setVisibility(View.GONE);
+            toolbar.setVisibility(View.VISIBLE);
+            setToolbar(toolbar);
+            changeStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        } else {
+            Log.d(TAG, "toggleToolbars: setting the fake toolbar");
+            toolbar.setVisibility(View.GONE);
+            enlargedPhotoToolbar.setVisibility(View.VISIBLE);
+            setToolbar(enlargedPhotoToolbar);
+            changeStatusBarColor(getResources().getColor(android.R.color.black));
+        }
+    }
+
+    private void setToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
     }
 }

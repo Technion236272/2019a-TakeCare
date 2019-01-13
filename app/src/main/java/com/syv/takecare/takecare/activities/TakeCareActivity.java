@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -15,6 +16,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -81,6 +84,7 @@ public class TakeCareActivity extends AppCompatActivity {
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,17 +97,6 @@ public class TakeCareActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
-    }
-
-    /**
-     * Invoked to initialize application-wide variables (such as backend services' instances),
-     * which are stored in every activity
-     */
-    private void initialize() {
-        db = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance().getReference();
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
     }
 
     @Override
@@ -125,6 +118,17 @@ public class TakeCareActivity extends AppCompatActivity {
         super.onPause();
         isActivityRunning = false;
         setVisible(false);
+    }
+
+    /**
+     * Invoked to initialize application-wide variables (such as backend services' instances),
+     * which are stored in every activity
+     */
+    private void initialize() {
+        db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance().getReference();
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
     }
 
     /**
@@ -151,6 +155,13 @@ public class TakeCareActivity extends AppCompatActivity {
         snackbar.show();
     }
 
+    /**
+     * Blocks user interaction and displays a progress dialog.
+     * After a timeout, progress dialog is dismissed and an alert dialog pops up to inform the user about an error.
+     * This method should be invoked when some asynchronous task is running in the background
+     * @param msg: message to display to the user while loading
+     * @param timeout: amount of time to pass (in milliseconds) before the progress dialog is dismissed
+     */
     protected void startLoading(final String msg, @Nullable Integer timeout) {
         progress = new ProgressDialog(this);
         progress.setCancelable(false);
@@ -166,12 +177,27 @@ public class TakeCareActivity extends AppCompatActivity {
         progressHandler.postDelayed(loadTimeoutTask, loadTime);
     }
 
+    /**
+     * Dismisses a loading progress dialog. Should be called after {@link #startLoading}
+     */
     protected void stopLoading() {
         if (progress == null || !progress.isShowing())
             return;
         progress.dismiss();
         if (progressHandler != null) {
             progressHandler.removeCallbacks(loadTimeoutTask);
+        }
+    }
+
+    /**
+     * Changes the status bar's color
+     * @param color: the selected color for the status bar
+     */
+    protected void changeStatusBarColor(int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(color);
         }
     }
 }
