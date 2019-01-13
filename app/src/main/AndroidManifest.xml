@@ -38,8 +38,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <service
-            android:name = ".utilities.services.TakeCareMessagingService">
+        <service android:name=".utilities.services.TakeCareMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -51,7 +50,6 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorPrimaryLite" />
-
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
@@ -59,13 +57,12 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id"
             tools:replace="android:value" />
-
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="7f7506f3cfaf9acbb75e34b8b44d610c12a1dccf" />
 
-        <!--Gateway activity is currently not in use-->
-        <activity android:name=".activities.GatewayActivity"></activity>
+        <!-- Gateway activity is currently not in use -->
+        <activity android:name=".activities.GatewayActivity" />
         <activity
             android:name=".activities.TakerMenuActivity"
             android:label="@string/title_activity_taker_menu"
@@ -126,11 +123,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.syv.takecare.takecare.activities.GatewayActivity" />
         </activity>
-
         <activity
             android:name=".activities.TakeCareActivity"
-            android:theme="@style/Theme.AppCompat.Light">
-        </activity>
+            android:theme="@style/Theme.AppCompat.Light"></activity>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -144,6 +139,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <activity android:name=".activities.ChatRoomActivity"></activity>
     </application>
 
 </manifest>
