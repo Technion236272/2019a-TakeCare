@@ -389,53 +389,6 @@ public class FeedListFragment extends Fragment {
                     }
                 });
 
-                holder.itemReport.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PopupMenu menu = new PopupMenu(getActivity().getApplicationContext(), v);
-                        menu.getMenuInflater().inflate(R.menu.report_menu, menu.getMenu());
-                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                // Using HTML tags for bold substrings inside the alert message
-                                String msg, warning;
-                                Spanned alertMsg;
-                                switch (item.getItemId()) {
-                                    case R.id.report_inappropriate:
-                                        //TODO: add logic to this report reason
-                                        msg = getString(R.string.report_inappropriate_alert);
-                                        warning = "<b><small><i>" + getString(R.string.report_alert_warning) + "</i></small></b>";
-                                        alertMsg = Html.fromHtml(msg + "<br><br>" + warning);
-                                        showBlockAlertMessage(alertMsg, itemId, item.getItemId());
-                                        break;
-                                    case R.id.report_no_fit:
-                                        //TODO: add logic to this report reason
-                                        msg = getString(R.string.report_inappropriate_alert);
-                                        warning = "<b><small>" + getString(R.string.report_alert_warning) + "</small></b>";
-                                        alertMsg = Html.fromHtml(msg + "<br><br>" + warning);
-                                        showBlockAlertMessage(alertMsg, itemId, item.getItemId());
-                                        break;
-                                    case R.id.report_spam:
-                                        //TODO: add logic to this report reason
-                                        msg = getString(R.string.report_spam_alert);
-                                        warning = "<b><small>" + getString(R.string.report_alert_warning) + "</small></b>";
-                                        alertMsg = Html.fromHtml(msg + "<br><br>" + warning);
-                                        showBlockAlertMessage(alertMsg, itemId, item.getItemId());
-                                        break;
-                                    case R.id.report_hide:
-                                        msg = getString(R.string.report_hide_alert);
-                                        alertMsg = Html.fromHtml(msg);
-                                        showBlockAlertMessage(alertMsg, itemId, item.getItemId());
-                                        break;
-                                    default:
-                                        return false;
-                                }
-                                return true;
-                            }
-                        });
-                        menu.show();
-                    }
-                });
 
                 holder.itemView.setSelected(focusedItem == position);
 

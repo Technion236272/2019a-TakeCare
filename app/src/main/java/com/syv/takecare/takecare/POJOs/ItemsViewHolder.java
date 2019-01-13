@@ -19,7 +19,6 @@ public class ItemsViewHolder extends RecyclerView.ViewHolder {
     public TextView itemPublisher;
     public ImageView itemCategory;
     public ImageView itemPickupMethod;
-    public ImageView itemReport;
     public ImageView itemFavorite;
     public View itemView;
 
@@ -33,7 +32,6 @@ public class ItemsViewHolder extends RecyclerView.ViewHolder {
         itemPublisher = itemView.findViewById(R.id.item_published_name);
         itemCategory = itemView.findViewById(R.id.item_category);
         itemPickupMethod = itemView.findViewById(R.id.item_pickup_method);
-        itemReport = itemView.findViewById(R.id.item_report);
         itemFavorite = itemView.findViewById(R.id.item_favorite);
         this.itemView = itemView;
     }

@@ -74,39 +74,17 @@
                             android:layout_marginStart="8dp"
                             android:layout_marginLeft="8dp"
                             android:layout_marginTop="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginRight="8dp"
                             android:gravity="center"
                             android:maxLines="2"
-                            app:autoSizeTextType="uniform"
-                            app:autoSizeMinTextSize="10sp"
                             android:textColor="@color/primary_text"
                             android:textSize="16sp"
                             android:textStyle="bold"
+                            app:autoSizeMinTextSize="10sp"
+                            app:autoSizeTextType="uniform"
                             card_view:layout_constraintBottom_toBottomOf="parent"
-                            card_view:layout_constraintEnd_toStartOf="@+id/item_report"
-                            card_view:layout_constraintHorizontal_bias="1.0"
                             card_view:layout_constraintStart_toEndOf="@+id/item_favorite"
                             card_view:layout_constraintTop_toTopOf="parent"
                             card_view:layout_constraintVertical_bias="0.0" />
-
-                        <android.support.v7.widget.AppCompatImageButton
-                            android:id="@+id/item_report"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginRight="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:alpha="0.9"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:backgroundTint="@android:color/transparent"
-                            app:srcCompat="@drawable/ic_report"
-                            card_view:layout_constraintBottom_toBottomOf="parent"
-                            card_view:layout_constraintEnd_toEndOf="parent"
-                            card_view:layout_constraintTop_toTopOf="parent" />
 
                     </android.support.constraint.ConstraintLayout>
 
