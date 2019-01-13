@@ -24,50 +24,34 @@
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/requester_info_layout"
-                android:layout_width="80dp"
+                android:layout_width="96dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/request_timestamp_title"
                 app:layout_constraintStart_toEndOf="@+id/requester_profile_pic"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/requester_name"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_marginLeft="4dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="4dp"
                     android:layout_marginRight="4dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="4dp"
                     android:gravity="center"
-                    android:maxLength="12"
-                    android:maxLines="2"
-                    android:text="User"
+                    android:maxLines="3"
                     android:textColor="@color/primary_text"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toTopOf="@+id/requester_rating"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
-
-                <RatingBar
-                    android:id="@+id/requester_rating"
-                    style="@style/Widget.AppCompat.RatingBar.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:numStars="5"
-                    android:rating="4.5"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
 
             </android.support.constraint.ConstraintLayout>
 

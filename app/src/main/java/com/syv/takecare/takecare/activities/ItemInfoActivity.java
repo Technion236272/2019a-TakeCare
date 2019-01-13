@@ -4,11 +4,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.MediaRouteButton;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -28,18 +30,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RatingBar;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -77,13 +82,10 @@ public class ItemInfoActivity extends TakeCareActivity {
     private TextView itemDescriptionView;
     private ImageView uploaderProfilePictureView;
     private TextView uploaderNameView;
-    private RatingBar uploaderRatingBar;
     private TextView itemPickupTimeView;
     private TextView itemLocationView;
-    private TextView itemPhoneView;
     private AppCompatButton messageButton;
     private AppCompatButton requestButton;
-    private Button reportButton;
     private ImageButton deleteItem;
     private View imageSpaceView;
     private ScrollView itemInfoScrollView;
@@ -94,7 +96,6 @@ public class ItemInfoActivity extends TakeCareActivity {
     private boolean isImageFullscreen;
 
     private CardView locationCard;
-    private CardView phoneCard;
     private RelativeLayout request_button_layout;
 
     private FeedRecyclerView recyclerView;
@@ -105,6 +106,8 @@ public class ItemInfoActivity extends TakeCareActivity {
     private boolean isPublisher = false;
 
     private View.OnClickListener minimizer = null;
+    private ProgressBar uploaderProgress;
+    private TextView recyclerViewText;
 
     @Override
     protected void onStart() {
@@ -137,16 +140,13 @@ public class ItemInfoActivity extends TakeCareActivity {
         itemTitleView = findViewById(R.id.item_title);
         itemDescriptionView = findViewById(R.id.item_description);
         uploaderProfilePictureView = findViewById(R.id.item_profile_pic);
+        uploaderProgress = findViewById(R.id.item_load_bar);
         uploaderNameView = findViewById(R.id.item_giver_name);
-        uploaderRatingBar = findViewById(R.id.ratingBar);
         itemPickupTimeView = findViewById(R.id.pickup_time_text);
         itemLocationView = findViewById(R.id.location_text);
-        itemPhoneView = findViewById(R.id.phone_number);
         messageButton = findViewById(R.id.send_message_button);
-        reportButton = findViewById(R.id.report_button);
         deleteItem = findViewById(R.id.delete_post_button);
         requestButton = findViewById(R.id.request_button);
-        phoneCard = findViewById(R.id.phone_card);
         imageSpaceView = findViewById(R.id.image_space);
         itemInfoScrollView = findViewById(R.id.item_info_scroll_view);
         expandedImageView = findViewById(R.id.item_image_fullscreen);
@@ -189,15 +189,14 @@ public class ItemInfoActivity extends TakeCareActivity {
                                     request_button_layout.setVisibility(View.GONE);
                                     deleteItem.setVisibility(View.VISIBLE);
                                     recyclerView.setVisibility(View.VISIBLE);
+                                    recyclerViewText.setVisibility(View.VISIBLE);
                                 } else {
                                     RelativeLayout requestButton = findViewById(R.id.request_button_layout);
                                     requestButton.setVisibility(View.VISIBLE);
                                     messageButton.setVisibility(View.VISIBLE);
-                                    reportButton.setVisibility(View.VISIBLE);
                                 }
                                 fillPublisherInfo(document.getString("publisher"),
-                                        uploaderNameView, uploaderProfilePictureView,
-                                        uploaderRatingBar);
+                                        uploaderNameView, uploaderProfilePictureView);
                             }
                             if (document.getString("photo") != null) {
                                 Log.d(TAG, "Found item photo. Fetched picture url: "
@@ -261,10 +260,6 @@ public class ItemInfoActivity extends TakeCareActivity {
                                 locationCard = (CardView) findViewById(R.id.location_card);
                                 //locationCard.setVisibility(View.GONE);
                             }
-                            if (document.getString("phoneNumber") != null) {
-                                Log.d(TAG, "Found phone number.");
-                                itemPhoneView.setText(document.getString("phoneNumber"));
-                            }
                             Log.d(TAG, "user fetch: onComplete finished ");
                         } else {
                             Log.d(TAG, "No such document");
@@ -284,12 +279,12 @@ public class ItemInfoActivity extends TakeCareActivity {
                 requestItem(v);
             }
         });
-        reportButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.alert_circle), null, null, null);
         Log.d(TAG, "onCreate: finished");
     }
 
     private void setUpRecyclerView() {
         Log.d(TAG, "setUpRecyclerView: started");
+        recyclerViewText = findViewById(R.id.requested_by_list_text);
         recyclerView = findViewById(R.id.requested_by_list);
         recyclerView.setEmptyView(findViewById(R.id.empty_feed_view));
         recyclerView.setHasFixedSize(true);
@@ -365,13 +360,6 @@ public class ItemInfoActivity extends TakeCareActivity {
         DateFormat hourFormat = new SimpleDateFormat("hh:mm");
         holder.requestTime.setText(hourFormat.format(timeOfRequest));
 
-        Long ratingTotal = documentSnapshot.getLong("rating");
-        Long ratingCount = documentSnapshot.getLong("ratingCount");
-        if (ratingTotal != null && ratingCount != null && ratingCount > 0) {
-            holder.requesterRating.setRating((float) ratingTotal / ratingCount);
-        } else {
-            holder.requesterRating.setRating(0);
-        }
         holder.acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -410,6 +398,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                                         db.collection("items").document(itemId)
                                                 .update(updates);
                                         recyclerView.setVisibility(View.GONE);
+                                        recyclerViewText.setVisibility(View.GONE);
                                         (findViewById(R.id.item_info_root))
                                                 .setBackgroundColor(getResources().getColor(R.color.colorPrimaryLite));
                                     }
@@ -426,8 +415,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                 .show();
     }
 
-    void fillPublisherInfo(String publisher, final TextView uploaderNameView, final ImageView uploaderProfilePictureView,
-                           final RatingBar uploaderRatingBar) {
+    void fillPublisherInfo(String publisher, final TextView uploaderNameView, final ImageView uploaderProfilePictureView) {
         Log.d(TAG, "fillPublisherInfo: started");
         final DocumentReference docRef = db.collection("users").document(publisher);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -445,26 +433,38 @@ public class ItemInfoActivity extends TakeCareActivity {
                             Glide.with(getApplicationContext())
                                     .load(document.getString("profilePicture"))
                                     .apply(RequestOptions.circleCropTransform())
+                                    .listener(new RequestListener<Drawable>() {
+                                        @Override
+                                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                            uploaderProgress.setVisibility(View.GONE);
+                                            return false;
+                                        }
+
+                                        @Override
+                                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                            uploaderProgress.setVisibility(View.GONE);
+                                            return false;
+                                        }
+                                    })
                                     .into(uploaderProfilePictureView);
                         } else {
                             Log.d(TAG, "Profile picture not found.");
                             Glide.with(getApplicationContext())
                                     .load(R.drawable.ic_user_vector)
+                                    .listener(new RequestListener<Drawable>() {
+                                        @Override
+                                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                            uploaderProgress.setVisibility(View.GONE);
+                                            return false;
+                                        }
+
+                                        @Override
+                                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                            uploaderProgress.setVisibility(View.GONE);
+                                            return false;
+                                        }
+                                    })
                                     .into(uploaderProfilePictureView);
-                        }
-                        if (document.getLong("rating") != null
-                                && document.getLong("ratingCount") != null) {
-                            Log.d(TAG, "Found publisher rating.");
-                            Long publisherRatingSum = document.getLong("rating");
-                            Long publisherRatingCount = document.getLong("ratingCount");
-                            float publisherRating;
-                            if (publisherRatingSum == null || publisherRatingCount == null ||
-                                    publisherRatingCount == 0) {
-                                publisherRating = 0;
-                            } else {
-                                publisherRating = publisherRatingSum / publisherRatingCount;
-                            }
-                            uploaderRatingBar.setRating(publisherRating);
                         }
                         Log.d(TAG, "publisherInfo onComplete: done");
                     } else {
@@ -569,44 +569,6 @@ public class ItemInfoActivity extends TakeCareActivity {
                         Log.d(TAG, "requestedItem: failed to request item");
                     }
                 });
-
-        /*itemRef.update("hideFrom", FieldValue.arrayUnion(userId)); // upload to hideFrom
-        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @SuppressLint("Assert")
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    String userName = "user";
-                    String userPicture = "";
-                    long rating = 0;
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        if (document.getString("name") != null) {
-                            userName = document.getString("name");
-                        }
-                        if (document.getString("profilePicture") != null) {
-                            userPicture = document.getString("profilePicture");
-                        }
-                        try {
-                            rating = document.getLong("rating");
-                        } catch (NullPointerException e) {
-                            Log.d(TAG, "Error: rating doesn't exist");
-                        }
-                        Map<String, Object> userToAdd = new HashMap<>();
-                        userToAdd.put("name", userName);
-                        userToAdd.put("picture", userPicture);
-                        userToAdd.put("timestamp", FieldValue.serverTimestamp());
-                        userToAdd.put("rating", rating);
-                        itemRef.collection("requestedBy").document(userId).set(userToAdd);
-                        //userRef.collection("requestedItems").add(itemRef);
-                    } else {
-                        Log.d("TAG", "No such document");
-                    }
-                } else {
-                    Log.d("TAG", "get failed with ", task.getException());
-                }
-            }
-        });*/
     }
 
     public void onDeletePost(View view) {
@@ -812,6 +774,7 @@ public class ItemInfoActivity extends TakeCareActivity {
         if (minimizer == null) {
             return false;
         }
+
         ((TouchImageView) expandedImageView).resetZoom();
         minimizer.onClick(expandedImageView);
         return true;

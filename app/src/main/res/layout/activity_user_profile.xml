@@ -164,14 +164,14 @@
                 android:layout_below="@id/accept_description_btn"
                 android:layout_marginStart="15dp"
                 android:layout_marginLeft="15dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginRight="15dp"
                 android:background="@drawable/text_box"
                 android:ems="10"
                 android:hint="@string/user_description_text"
-                android:inputType="text"
-                android:maxLines="4"
+                android:inputType="textMultiLine"
+                android:maxLines="5"
                 android:padding="10dp" />
 
             <ImageButton
@@ -209,23 +209,10 @@
                 app:srcCompat="@drawable/ic_close" />
 
             <android.support.v7.widget.AppCompatButton
-                android:id="@+id/change_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/about"
-                android:layout_marginTop="20dp"
-                android:gravity="start"
-                android:padding="25dp"
-                android:text="@string/change_password"
-                android:textAllCaps="false"
-                app:backgroundTint="@android:color/transparent"
-                app:backgroundTintMode="add" />
-
-            <android.support.v7.widget.AppCompatButton
                 android:id="@+id/my_favorites"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/change_password"
+                android:layout_below="@id/about"
                 android:layout_marginTop="10dp"
                 android:gravity="start"
                 android:padding="25dp"
@@ -240,7 +227,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/my_favorites"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="16dp"
                 android:gravity="start"
                 android:padding="25dp"
                 android:text="@string/my_items"

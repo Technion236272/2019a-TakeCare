@@ -14,7 +14,6 @@ public class RequestedByCardHolder extends RecyclerView.ViewHolder{
     public CardView card;
     public ImageView requesterProfilePicture;
     public TextView requesterName;
-    public RatingBar requesterRating;
     public TextView requestDate;
     public TextView requestTime;
     public Button acceptButton;
@@ -24,7 +23,6 @@ public class RequestedByCardHolder extends RecyclerView.ViewHolder{
         card = v.findViewById(R.id.request_card);
         requesterProfilePicture = v.findViewById(R.id.requester_profile_pic);
         requesterName = v.findViewById(R.id.requester_name);
-        requesterRating = v.findViewById(R.id.requester_rating);
         requestDate = v.findViewById(R.id.request_date);
         requestTime = v.findViewById(R.id.request_time);
         acceptButton = v.findViewById(R.id.accept_request_button);

@@ -42,11 +42,13 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
@@ -103,7 +105,6 @@ public class UserProfileActivity extends TakeCareActivity {
     private final static int REQUEST_CAMERA = 1;
     private final static int SELECT_IMAGE = 2;
 
-    private AppCompatButton changePasswordButton;
     private AppCompatButton myFavoritesButton;
     private AppCompatButton myItemsButton;
     private AppCompatButton pendingRequestsButton;
@@ -266,13 +267,11 @@ public class UserProfileActivity extends TakeCareActivity {
             });
         }
 
-        changePasswordButton = findViewById(R.id.change_password);
         myFavoritesButton = findViewById(R.id.my_favorites);
         myItemsButton = findViewById(R.id.my_items);
         pendingRequestsButton = findViewById(R.id.pending_requests);
         logOutButton = findViewById(R.id.logout);
 
-        changePasswordButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_black_24dp), null);
         myFavoritesButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_black_24dp), null);
         myItemsButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_black_24dp), null);
         pendingRequestsButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_black_24dp), null);
@@ -386,6 +385,7 @@ public class UserProfileActivity extends TakeCareActivity {
         if (user == null) {
             return;
         }
+        startLoading("Updating name...", null);
         db.collection("users").document(user.getUid())
                 .update("name", newName)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -398,7 +398,7 @@ public class UserProfileActivity extends TakeCareActivity {
                                     .setAction("UNDO", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            setUserName(restore, null, false);
+                                            setUserName(restore, restore, false);
                                         }
                                     });
                             override.show();
@@ -407,12 +407,27 @@ public class UserProfileActivity extends TakeCareActivity {
                             undo.show();
                         }
                         userNameView.setText(newName);
+                        stopLoading();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d(TAG, "onFailure: error updating name");
+                        makeHighlightedSnackbar(root, "Error updating your name. Please check your internet connection");
+                        currentName = restore;
+                        userNameView.setText(restore);
+                        stopLoading();
+                    }
+                })
+                .addOnCanceledListener(new OnCanceledListener() {
+                    @Override
+                    public void onCanceled() {
+                        Log.d(TAG, "onCanceled: error updating name (no internet connection?)");
+                        makeHighlightedSnackbar(root, "Error updating your name. Please check your internet connection");
+                        currentName = restore;
+                        userNameView.setText(restore);
+                        stopLoading();
                     }
                 });
     }
@@ -421,6 +436,7 @@ public class UserProfileActivity extends TakeCareActivity {
         if (user == null) {
             return;
         }
+        startLoading("Updating your page...", null);
         db.collection("users").document(user.getUid())
                 .update("description", newText)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -442,12 +458,27 @@ public class UserProfileActivity extends TakeCareActivity {
                             undo.show();
                         }
                         userDescriptionView.setText(newText);
+                        stopLoading();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d(TAG, "onFailure: error updating description");
+                        makeHighlightedSnackbar(root, "An error has occurred. Please check your internet connection");
+                        currentDescription = restore;
+                        userDescriptionView.setText(restore);
+                        stopLoading();
+                    }
+                })
+                .addOnCanceledListener(new OnCanceledListener() {
+                    @Override
+                    public void onCanceled() {
+                        Log.d(TAG, "onCanceled: error updating description (no internet connection?)");
+                        makeHighlightedSnackbar(root, "An error has occurred. Please check your internet connection");
+                        currentDescription = restore;
+                        userDescriptionView.setText(restore);
+                        stopLoading();
                     }
                 });
     }

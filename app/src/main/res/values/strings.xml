@@ -139,6 +139,10 @@
     <string name="report">Report</string>
     <string name="flexible">Flexible</string>
     <string name="no_description">No description provided.</string>
+    <string name="requests_list_text">Requested By:</string>
+    <string name="item_description_title_ext">Description</string>
+    <string name="item_default_pickup_text">Flexible</string>
+    <string name="item_default_location_text">Unspecified</string>
 
 
     <!--User Profile elements-->
@@ -197,8 +201,8 @@
     <string name="payload_item_request_message">item_request_message</string>
     <string name="payload_data_message_title">title</string>
     <string name="payload_data_message_body">body</string>
+
+
+    <!--MISC-->
     <string name="error_timeout_message">\"Loading process takes too long!\\nCheck your internet connection and try again.\"</string>
-
-
-    <!---->
 </resources>

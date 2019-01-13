@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/item_root"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@android:color/black"
+    android:id="@+id/item_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     tools:context=".activities.ItemInfoActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -36,8 +36,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="#960b040b"
             android:visibility="gone"
-            app:title=""
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -50,7 +50,7 @@
             android:id="@+id/item_image_fullscreen"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
 
     </RelativeLayout>
@@ -75,19 +75,19 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:orientation="horizontal">
 
             <View
                 android:id="@+id/image_space"
                 android:layout_width="match_parent"
                 android:layout_height="320dp"
+                android:clickable="true"
+                android:focusable="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:clickable="true"
-                android:focusable="true"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/item_info_root"
@@ -113,8 +113,8 @@
                     android:textSize="25sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
 
                 <View
@@ -159,7 +159,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:layout_marginLeft="8dp"
-                            android:text="Description"
+                            android:text="@string/item_description_title_ext"
                             android:textColor="@color/secondary_text"
                             android:textSize="18sp" />
 
@@ -194,9 +194,9 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="15dp"
                     android:layout_marginRight="15dp"
-                    app:cardBackgroundColor="@color/colorCards"
+                    app:cardBackgroundColor="@android:color/transparent"
                     app:cardCornerRadius="10dp"
-                    app:cardElevation="3dp"
+                    app:cardElevation="0dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/divider">
@@ -208,8 +208,8 @@
 
                         <ImageView
                             android:id="@+id/item_profile_pic"
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
                             android:layout_centerInParent="true"
                             android:layout_marginStart="8dp"
                             android:layout_marginLeft="8dp"
@@ -217,9 +217,18 @@
                             android:layout_marginRight="8dp"
                             android:scaleType="centerCrop"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.501"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:srcCompat="@drawable/ic_user_vector" />
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <ProgressBar
+                            android:id="@+id/item_load_bar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp"
+                            app:layout_constraintBottom_toTopOf="@+id/item_giver_name"
+                            app:layout_constraintEnd_toEndOf="@+id/item_profile_pic"
+                            app:layout_constraintStart_toStartOf="@+id/item_profile_pic"
+                            app:layout_constraintTop_toTopOf="@+id/item_profile_pic" />
 
                         <TextView
                             android:id="@+id/item_giver_name"
@@ -227,7 +236,6 @@
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="8dp"
-                            android:text="User"
                             android:textAlignment="center"
                             android:textColor="@color/primary_text"
                             android:textSize="16sp"
@@ -297,9 +305,9 @@
                             android:layout_marginRight="15dp"
                             android:layout_toEndOf="@id/pickup_time_clock"
                             android:layout_toRightOf="@id/pickup_time_clock"
+                            android:text="@string/item_default_pickup_text"
                             android:textColor="@color/primary_text"
                             android:textSize="16sp"
-                            android:text="Flexible"
                             app:layout_constraintStart_toEndOf="@+id/pickup_time_clock" />
 
                     </RelativeLayout>
@@ -362,75 +370,43 @@
                             android:layout_marginStart="10dp"
                             android:layout_marginLeft="10dp"
                             android:layout_weight="3"
-                            android:text="Unknown"
+                            android:text="@string/item_default_location_text"
                             android:textColor="@color/primary_text"
                             android:textSize="16sp" />
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
 
-                <android.support.v7.widget.CardView
-                    android:id="@+id/phone_card"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/requested_by_list_text"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    app:cardBackgroundColor="@color/colorCards"
-                    app:cardCornerRadius="10dp"
-                    app:cardElevation="3dp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:text="@string/requests_list_text"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="18sp"
+                    android:textStyle="italic"
+                    android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/location_card">
-
-                    <RelativeLayout
-                        android:id="@+id/phone_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="8dp">
-
-                        <ImageView
-                            android:id="@+id/phone_image"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:srcCompat="@drawable/phone" />
-
-                        <TextView
-                            android:id="@+id/phone_number"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:layout_toEndOf="@id/phone_image"
-                            android:layout_toRightOf="@id/phone_image"
-                            android:text="Private"
-                            android:textColor="@color/primary_text"
-                            android:textSize="16sp" />
-
-                    </RelativeLayout>
-
-                </android.support.v7.widget.CardView>
+                    app:layout_constraintTop_toBottomOf="@id/bottom_placeholder" />
 
                 <com.syv.takecare.takecare.customViews.FeedRecyclerView
                     android:id="@+id/requested_by_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxHeight="240dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginBottom="20dp"
+                    android:maxHeight="240dp"
                     android:scrollbars="vertical"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/phone_card">
+                    app:layout_constraintTop_toBottomOf="@id/requested_by_list_text">
 
                 </com.syv.takecare.takecare.customViews.FeedRecyclerView>
 
@@ -453,29 +429,7 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/requested_by_list" />
-
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/report_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@android:color/transparent"
-                    android:padding="10dp"
-                    android:text="@string/report"
-                    android:textAllCaps="false"
-                    android:textColor="@color/report"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/send_message_button" />
+                    app:layout_constraintTop_toBottomOf="@id/location_card" />
 
                 <ImageButton
                     android:id="@+id/delete_post_button"
@@ -493,6 +447,14 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.444"
                     app:srcCompat="@drawable/ic_trash_can" />
+
+                <Space
+                    android:id="@+id/bottom_placeholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/send_message_button" />
 
             </android.support.constraint.ConstraintLayout>
 
