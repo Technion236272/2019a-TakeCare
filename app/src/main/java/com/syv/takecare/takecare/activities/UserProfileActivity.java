@@ -1,16 +1,24 @@
 package com.syv.takecare.takecare.activities;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -24,21 +32,25 @@ import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
-import android.widget.Switch;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.ortiz.touchview.TouchImageView;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.fragments.FeedMapFragment;
 import com.syv.takecare.takecare.utilities.RotateBitmap;
@@ -64,6 +76,9 @@ public class UserProfileActivity extends TakeCareActivity {
 
     private final static String TAG = "TakeCare/UserProfile";
 
+    private RelativeLayout root;
+    private Toolbar toolbar;
+    private Toolbar enlargedPhotoToolbar;
     private ImageView profilePictureView;
     private ProgressBar picturePB;
     private EditText userNameView;
@@ -75,7 +90,7 @@ public class UserProfileActivity extends TakeCareActivity {
     private ImageButton declineNameBtn;
     private ImageButton acceptDescriptionBtn;
     private ImageButton declineDescriptionBtn;
-    private Switch itemNotificationsSwitch;
+    private FloatingActionButton changePictureBtn;
 
 
     private String currentName = "User";
@@ -94,17 +109,34 @@ public class UserProfileActivity extends TakeCareActivity {
     private AppCompatButton pendingRequestsButton;
     private AppCompatButton logOutButton;
 
+    private boolean isSafeFocus = true;
+
+    private String userPhotoURL = null;
+    private ScrollView scrollView;
+    private RelativeLayout fullscreenImageContainer;
+    private ImageView fullscreenImage;
+    private Animator mCurrentAnimator;
+    private int mShortAnimationDuration;
+    private boolean isImageFullscreen;
+
+    private View.OnClickListener minimizer = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
+        startLoading("Loading your profile...", null);
+
+        root = findViewById(R.id.user_profile_root);
+        toolbar = findViewById(R.id.user_profile_toolbar);
+        enlargedPhotoToolbar = findViewById(R.id.enlarged_user_pic_toolbar);
+        setToolbar(toolbar);
+
+        scrollView = findViewById(R.id.scroll_view);
+        fullscreenImageContainer = findViewById(R.id.fullscreen_image_container);
+        fullscreenImageContainer.bringChildToFront(fullscreenImage);
+        fullscreenImage = findViewById(R.id.item_image_fullscreen);
 
         profilePictureView = findViewById(R.id.profile_pic);
         picturePB = findViewById(R.id.profile_pic_progress_bar);
@@ -116,7 +148,14 @@ public class UserProfileActivity extends TakeCareActivity {
         declineNameBtn = findViewById(R.id.decline_name_btn);
         acceptDescriptionBtn = findViewById(R.id.accept_description_btn);
         declineDescriptionBtn = findViewById(R.id.decline_description_btn);
-        itemNotificationsSwitch = findViewById(R.id.item_notifications_switch);
+        changePictureBtn = findViewById(R.id.camera_fab);
+
+        changePictureBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onChangeProfilePic(v);
+            }
+        });
 
         originalEditTextDrawable = userNameView.getBackground();
         originalKeyListener = userNameView.getKeyListener();
@@ -128,10 +167,12 @@ public class UserProfileActivity extends TakeCareActivity {
             public void onFocusChange(View v, boolean hasFocus) {
                 Log.d(TAG, "onFocusChange: name");
                 if (hasFocus) {
+                    isSafeFocus = false;
                     declineNameBtn.setVisibility(View.VISIBLE);
                     acceptNameBtn.setVisibility(View.VISIBLE);
                     editNameBtn.setVisibility(View.GONE);
                 } else {
+                    isSafeFocus = true;
                     String newName = ((EditText) v).getText().toString();
                     if (currentName.equals(newName)) {
                         disableNameText();
@@ -152,9 +193,11 @@ public class UserProfileActivity extends TakeCareActivity {
             public void onFocusChange(View v, boolean hasFocus) {
                 Log.d(TAG, "onFocusChange: description");
                 if (hasFocus) {
+                    isSafeFocus = false;
                     declineDescriptionBtn.setVisibility(View.VISIBLE);
                     acceptDescriptionBtn.setVisibility(View.VISIBLE);
                 } else {
+                    isSafeFocus = true;
                     String newDescription = ((EditText) v).getText().toString();
                     if (currentDescription.equals(newDescription)) {
                         declineDescriptionBtn.setVisibility(View.GONE);
@@ -181,15 +224,17 @@ public class UserProfileActivity extends TakeCareActivity {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
+                        final DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             Log.d("TAG", "DocumentSnapshot data: " + document.getData());
                             currentName = document.getString("name");
+                            enlargedPhotoToolbar.setTitle(currentName);
                             usernameViewRef.setText(currentName);
                             if (document.getString("profilePicture") != null) {
                                 Log.d(TAG, "Found profile pic. Fetched picture url: " + Uri.parse(document.getString("profilePicture")));
+                                userPhotoURL = document.getString("profilePicture");
                                 Glide.with(getApplicationContext())
-                                        .load(document.getString("profilePicture"))
+                                        .load(userPhotoURL)
                                         .apply(RequestOptions.circleCropTransform())
                                         .into(profilePictureView);
                             }
@@ -198,6 +243,18 @@ public class UserProfileActivity extends TakeCareActivity {
                                 currentDescription = document.getString("description");
                                 userDescriptionRef.setText(currentDescription);
                             }
+
+                            profilePictureView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    zoomImageFromThumb(profilePictureView);
+                                }
+                            });
+                            // Retrieve and cache the system's default "short" animation time.
+                            mShortAnimationDuration = getResources().getInteger(
+                                    android.R.integer.config_shortAnimTime);
+
+                            stopLoading();
 
                         } else {
                             Log.d("TAG", "No such document");
@@ -208,14 +265,6 @@ public class UserProfileActivity extends TakeCareActivity {
                 }
             });
         }
-
-        itemNotificationsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                }
-            }
-        });
 
         changePasswordButton = findViewById(R.id.change_password);
         myFavoritesButton = findViewById(R.id.my_favorites);
@@ -249,22 +298,6 @@ public class UserProfileActivity extends TakeCareActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        View focusView = getCurrentFocus();
-        if (focusView == null) {
-            super.onBackPressed();
-        } else if (focusView.equals(userDescriptionView) &&
-                !userDescriptionView.getText().toString().equals(currentDescription)) {
-            userDescriptionView.clearFocus(); // Invokes the focus change listener
-        } else if (focusView.equals(userNameView) &&
-                !userNameView.getText().toString().equals(currentName)) {
-            userNameView.clearFocus(); // Invokes the focus change listener
-        } else {
-            super.onBackPressed();
-        }
-    }
-
     private void alertTextChanges(final View v, final String backup, final String msg,
                                   final ImageButton acceptBtn, final ImageButton declineBtn,
                                   final boolean isName) {
@@ -295,12 +328,41 @@ public class UserProfileActivity extends TakeCareActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
+        if (isImageFullscreen) {
+            Log.d(TAG, "onOptionsItemSelected: fake toolbar clicked");
+            if (!minimizeFullscreenImage()) {
+                super.onBackPressed();
+            }
+        } else {
+            Log.d(TAG, "onOptionsItemSelected: real toolbar clicked");
+            super.onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        View focusView = getCurrentFocus();
+        if (focusView == null) {
+            super.onBackPressed();
+        } else if (focusView.equals(userDescriptionView) &&
+                !userDescriptionView.getText().toString().equals(currentDescription)) {
+            userDescriptionView.clearFocus(); // Invokes the focus change listener
+        } else if (focusView.equals(userNameView) &&
+                !userNameView.getText().toString().equals(currentName)) {
+            userNameView.clearFocus(); // Invokes the focus change listener
+        } else {
+            if (isImageFullscreen) {
+                Log.d(TAG, "onBackPressed: closing fullscreen image");
+                if (!minimizeFullscreenImage()) {
+                    super.onBackPressed();
+                }
+            } else {
+                Log.d(TAG, "onBackPressed: finishing activity");
+                super.onBackPressed();
+            }
+        }
     }
 
     public void onChangeNameClick(View view) {
@@ -332,7 +394,7 @@ public class UserProfileActivity extends TakeCareActivity {
                         Log.d(TAG, "user name updated!");
                         if (undoable) {
                             Snackbar override = Snackbar
-                                    .make(findViewById(R.id.user_profile_root), "Name updated!", Snackbar.LENGTH_LONG)
+                                    .make(root, "Name updated!", Snackbar.LENGTH_LONG)
                                     .setAction("UNDO", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
@@ -341,7 +403,7 @@ public class UserProfileActivity extends TakeCareActivity {
                                     });
                             override.show();
                         } else {
-                            Snackbar undo = Snackbar.make(findViewById(R.id.user_profile_root), "Previous name restored", Snackbar.LENGTH_SHORT);
+                            Snackbar undo = Snackbar.make(root, "Previous name restored", Snackbar.LENGTH_SHORT);
                             undo.show();
                         }
                         userNameView.setText(newName);
@@ -367,7 +429,7 @@ public class UserProfileActivity extends TakeCareActivity {
                         Log.d(TAG, "user description updated!");
                         if (undoable) {
                             Snackbar override = Snackbar
-                                    .make(findViewById(R.id.user_profile_root), "Profile updated!", Snackbar.LENGTH_LONG)
+                                    .make(root, "Profile updated!", Snackbar.LENGTH_LONG)
                                     .setAction("UNDO", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
@@ -376,7 +438,7 @@ public class UserProfileActivity extends TakeCareActivity {
                                     });
                             override.show();
                         } else {
-                            Snackbar undo = Snackbar.make(findViewById(R.id.user_profile_root), "Previous profile restored", Snackbar.LENGTH_SHORT);
+                            Snackbar undo = Snackbar.make(root, "Previous profile restored", Snackbar.LENGTH_SHORT);
                             undo.show();
                         }
                         userDescriptionView.setText(newText);
@@ -444,7 +506,9 @@ public class UserProfileActivity extends TakeCareActivity {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         Map<String, Object> profilePicRef = new HashMap<>();
-                                        profilePicRef.put("profilePicture", uri.toString());
+                                        userPhotoURL = uri.toString();
+                                        isSafeFocus = true;
+                                        profilePicRef.put("profilePicture", userPhotoURL);
                                         db.collection("users").document(user.getUid())
                                                 .set(profilePicRef, SetOptions.merge())
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -548,6 +612,7 @@ public class UserProfileActivity extends TakeCareActivity {
     }
 
     private void uploadPhoto(Uri imagePath) {
+        isSafeFocus = false;
         ImageCompressTask resize = new ImageCompressTask();
         resize.execute(imagePath);
     }
@@ -572,6 +637,7 @@ public class UserProfileActivity extends TakeCareActivity {
             String previousName = currentName;
             currentName = newName;
             setUserName(currentName, previousName, true);
+            enlargedPhotoToolbar.setTitle(currentName);
         }
         userNameView.clearFocus();
     }
@@ -631,5 +697,207 @@ public class UserProfileActivity extends TakeCareActivity {
     public void onPendingRequestsPressed(View view) {
         Intent intent = new Intent(this, FeedMapFragment.RequestedItemsActivity.class);
         startActivity(intent);
+    }
+
+    private void zoomImageFromThumb(final View thumbView) {
+        Log.d(TAG, "zoomImageFromThumb: Starting");
+
+        if (userPhotoURL == null || !isSafeFocus) {
+            return;
+        }
+
+        // If there's an animation in progress, cancel it
+        // immediately and proceed with this one.
+        if (mCurrentAnimator != null) {
+            mCurrentAnimator.cancel();
+        }
+
+        fullscreenImage.setVisibility(View.VISIBLE);
+        fullscreenImageContainer.setVisibility(View.VISIBLE);
+        root.setBackgroundColor(getResources().getColor(android.R.color.black));
+        scrollView.setVisibility(View.GONE);
+
+        Glide.with(getApplicationContext())
+                .asBitmap()
+                .load(userPhotoURL)
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        fullscreenImage.setImageBitmap(resource);
+                    }
+                });
+
+        isImageFullscreen = true;
+        toggleToolbars();
+
+        Log.d(TAG, "zoomImageFromThumb: Inflated fullscreen image");
+
+        // Calculate the starting and ending bounds for the zoomed-in image.
+        // This step involves lots of math. Yay, math.
+        final Rect startBounds = new Rect();
+        final Rect finalBounds = new Rect();
+        final Point globalOffset = new Point();
+
+        // The start bounds are the global visible rectangle of the thumbnail,
+        // and the final bounds are the global visible rectangle of the container
+        // view. Also set the container view's offset as the origin for the
+        // bounds, since that's the origin for the positioning animation
+        // properties (X, Y).
+        thumbView.getGlobalVisibleRect(startBounds);
+        findViewById(R.id.fullscreen_image_container)
+                .getGlobalVisibleRect(finalBounds, globalOffset);
+        startBounds.offset(-globalOffset.x, -globalOffset.y);
+        finalBounds.offset(-globalOffset.x, -globalOffset.y);
+
+        // Adjust the start bounds to be the same aspect ratio as the final
+        // bounds using the "center crop" technique. This prevents undesirable
+        // stretching during the animation. Also calculate the start scaling
+        // factor (the end scaling factor is always 1.0).
+        float startScale;
+        if ((float) finalBounds.width() / finalBounds.height()
+                > (float) startBounds.width() / startBounds.height()) {
+            // Extend start bounds horizontally
+            startScale = (float) startBounds.height() / finalBounds.height();
+            float startWidth = startScale * finalBounds.width();
+            float deltaWidth = (startWidth - startBounds.width()) / 2;
+            startBounds.left -= deltaWidth;
+            startBounds.right += deltaWidth;
+        } else {
+            // Extend start bounds vertically
+            startScale = (float) startBounds.width() / finalBounds.width();
+            float startHeight = startScale * finalBounds.height();
+            float deltaHeight = (startHeight - startBounds.height()) / 2;
+            startBounds.top -= deltaHeight;
+            startBounds.bottom += deltaHeight;
+        }
+
+        // Hide the thumbnail and show the zoomed-in view. When the animation
+        // begins, it will position the zoomed-in view in the place of the
+        // thumbnail.
+        thumbView.setAlpha(0f);
+        fullscreenImage.setVisibility(View.VISIBLE);
+
+        // Set the pivot point for SCALE_X and SCALE_Y transformations
+        // to the top-left corner of the zoomed-in view (the default
+        // is the center of the view).
+        fullscreenImage.setPivotX(0f);
+        fullscreenImage.setPivotY(0f);
+
+        // Construct and run the parallel animation of the four translation and
+        // scale properties (X, Y, SCALE_X, and SCALE_Y).
+        AnimatorSet set = new AnimatorSet();
+        set
+                .play(ObjectAnimator.ofFloat(fullscreenImage, View.X,
+                        startBounds.left, finalBounds.left))
+                .with(ObjectAnimator.ofFloat(fullscreenImage, View.Y,
+                        startBounds.top, finalBounds.top))
+                .with(ObjectAnimator.ofFloat(fullscreenImage, View.SCALE_X,
+                        startScale, 1f))
+                .with(ObjectAnimator.ofFloat(fullscreenImage,
+                        View.SCALE_Y, startScale, 1f));
+        set.setDuration(mShortAnimationDuration);
+        set.setInterpolator(new DecelerateInterpolator());
+        set.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mCurrentAnimator = null;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                mCurrentAnimator = null;
+            }
+        });
+        set.start();
+        mCurrentAnimator = set;
+
+        // Upon clicking the zoomed-in image, it should zoom back down
+        // to the original bounds and show the thumbnail instead of
+        // the expanded image.
+        final float startScaleFinal = startScale;
+        minimizer = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mCurrentAnimator != null) {
+                    mCurrentAnimator.cancel();
+                }
+
+                // Animate the four positioning/sizing properties in parallel,
+                // back to their original values.
+                AnimatorSet set = new AnimatorSet();
+                set.play(ObjectAnimator
+                        .ofFloat(fullscreenImage, View.X, startBounds.left))
+                        .with(ObjectAnimator
+                                .ofFloat(fullscreenImage,
+                                        View.Y, startBounds.top))
+                        .with(ObjectAnimator
+                                .ofFloat(fullscreenImage,
+                                        View.SCALE_X, startScaleFinal))
+                        .with(ObjectAnimator
+                                .ofFloat(fullscreenImage,
+                                        View.SCALE_Y, startScaleFinal));
+                set.setDuration(mShortAnimationDuration);
+                set.setInterpolator(new DecelerateInterpolator());
+                set.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        thumbView.setAlpha(1f);
+                        fullscreenImage.setVisibility(View.GONE);
+                        fullscreenImageContainer.setVisibility(View.GONE);
+                        scrollView.setVisibility(View.VISIBLE);
+                        root.setBackgroundColor(getResources().getColor(android.R.color.white));
+                        mCurrentAnimator = null;
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        thumbView.setAlpha(1f);
+                        fullscreenImage.setVisibility(View.GONE);
+                        fullscreenImageContainer.setVisibility(View.GONE);
+                        scrollView.setVisibility(View.VISIBLE);
+                        root.setBackgroundColor(getResources().getColor(android.R.color.white));
+                        mCurrentAnimator = null;
+                    }
+                });
+                set.start();
+                mCurrentAnimator = set;
+                isImageFullscreen = false;
+                toggleToolbars();
+            }
+        };
+    }
+
+    private boolean minimizeFullscreenImage() {
+        if (minimizer == null) {
+            return false;
+        }
+        ((TouchImageView) fullscreenImage).resetZoom();
+        minimizer.onClick(fullscreenImage);
+        return true;
+    }
+
+    private void toggleToolbars() {
+        if (!isImageFullscreen) {
+            Log.d(TAG, "toggleToolbars: setting the real toolbar");
+            enlargedPhotoToolbar.setVisibility(View.GONE);
+            toolbar.setVisibility(View.VISIBLE);
+            setToolbar(toolbar);
+            changeStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        } else {
+            Log.d(TAG, "toggleToolbars: setting the fake toolbar");
+            toolbar.setVisibility(View.GONE);
+            enlargedPhotoToolbar.setVisibility(View.VISIBLE);
+            setToolbar(enlargedPhotoToolbar);
+            changeStatusBarColor(getResources().getColor(android.R.color.black));
+        }
+    }
+
+
+    private void setToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
     }
 }

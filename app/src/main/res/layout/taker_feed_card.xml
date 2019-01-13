@@ -35,8 +35,10 @@
                     android:layout_alignEnd="@+id/item_favorite"
                     android:layout_alignRight="@+id/item_favorite"
                     android:layout_alignParentTop="true"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
                     android:gravity="center_vertical"
                     android:maxLines="2"
                     android:textColor="@color/primary_text"
@@ -105,7 +107,8 @@
                     android:maxLines="1"
                     android:text=""
                     android:textSize="14sp"
-
+                    android:textAlignment="gravity"
+                    android:gravity="left"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/item_publisher_frame"
                     app:layout_constraintTop_toBottomOf="@+id/item_photo" />

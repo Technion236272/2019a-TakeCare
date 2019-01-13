@@ -70,7 +70,6 @@ public class ItemInfoActivity extends TakeCareActivity {
     private final static String TAG = "TakeCare/ItemInfo";
     private static final String EXTRA_ITEM_ID = "Item Id";
 
-
     private Toolbar toolbar;
     private Toolbar enlargedPhotoToolbar;
     private ImageView itemImageView;
@@ -395,7 +394,6 @@ public class ItemInfoActivity extends TakeCareActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d(TAG, "accepted request: starting");
-                        //TODO: add this document when requesting an item!
                         db.collection("users")
                                 .document(uid)
                                 .collection("requestedItems")
@@ -404,19 +402,16 @@ public class ItemInfoActivity extends TakeCareActivity {
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Log.d(TAG, "accepted request: committed changes");
+                                        Log.d(TAG, "accepted request: committing changes");
+                                        Map<String, Object> updates = new HashMap<>();
+                                        updates.put("status", 2);
+                                        updates.put("displayStatus", false);
+                                        updates.put("takenTimestamp", serverTimestamp());
                                         db.collection("items").document(itemId)
-                                                .update("status", 2,
-                                                        "takenTimestamp", serverTimestamp());
+                                                .update(updates);
                                         recyclerView.setVisibility(View.GONE);
                                         (findViewById(R.id.item_info_root))
                                                 .setBackgroundColor(getResources().getColor(R.color.colorPrimaryLite));
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-
                                     }
                                 });
                     }
