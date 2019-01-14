@@ -29,6 +29,7 @@ import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
 import android.text.method.KeyListener;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,6 +43,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -76,6 +78,8 @@ import java.util.Map;
 public class UserProfileActivity extends TakeCareActivity {
 
     private final static String TAG = "TakeCare/UserProfile";
+
+    private String profileOwner = null;
 
     private RelativeLayout root;
     private Toolbar toolbar;
@@ -130,28 +134,9 @@ public class UserProfileActivity extends TakeCareActivity {
         // This page has a maximum of 8.5 seconds dedicated to loading
         startLoading("Loading your profile...", 8500);
 
-        root = findViewById(R.id.user_profile_root);
-        toolbar = findViewById(R.id.user_profile_toolbar);
-        enlargedPhotoToolbar = findViewById(R.id.enlarged_user_pic_toolbar);
+        initWidgets();
         setToolbar(toolbar);
-
-        scrollView = findViewById(R.id.scroll_view);
-        fullscreenImageContainer = findViewById(R.id.fullscreen_image_container);
-        fullscreenImageContainer.bringChildToFront(fullscreenImage);
-        fullscreenImage = findViewById(R.id.item_image_fullscreen);
-
-        profilePictureView = findViewById(R.id.profile_pic);
-        picturePB = findViewById(R.id.profile_pic_progress_bar);
-        userNameView = findViewById(R.id.user_name);
-        userDescriptionView = findViewById(R.id.about);
-        userLikesView = findViewById(R.id.likes_counter);
-        editNameBtn = findViewById(R.id.edit_name_button);
-
-        acceptNameBtn = findViewById(R.id.accept_name_btn);
-        declineNameBtn = findViewById(R.id.decline_name_btn);
-        acceptDescriptionBtn = findViewById(R.id.accept_description_btn);
-        declineDescriptionBtn = findViewById(R.id.decline_description_btn);
-        changePictureBtn = findViewById(R.id.camera_fab);
+        userDescriptionView.setMovementMethod(new ScrollingMovementMethod());
 
         changePictureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -303,6 +288,30 @@ public class UserProfileActivity extends TakeCareActivity {
         });
     }
 
+    private void initWidgets() {
+        root = findViewById(R.id.user_profile_root);
+        toolbar = findViewById(R.id.user_profile_toolbar);
+        enlargedPhotoToolbar = findViewById(R.id.enlarged_user_pic_toolbar);
+
+        scrollView = findViewById(R.id.scroll_view);
+        fullscreenImageContainer = findViewById(R.id.fullscreen_image_container);
+        fullscreenImageContainer.bringChildToFront(fullscreenImage);
+        fullscreenImage = findViewById(R.id.item_image_fullscreen);
+
+        profilePictureView = findViewById(R.id.profile_pic);
+        picturePB = findViewById(R.id.profile_pic_progress_bar);
+        userNameView = findViewById(R.id.user_name);
+        userDescriptionView = findViewById(R.id.about);
+        userLikesView = findViewById(R.id.likes_counter);
+        editNameBtn = findViewById(R.id.edit_name_button);
+
+        acceptNameBtn = findViewById(R.id.accept_name_btn);
+        declineNameBtn = findViewById(R.id.decline_name_btn);
+        acceptDescriptionBtn = findViewById(R.id.accept_description_btn);
+        declineDescriptionBtn = findViewById(R.id.decline_description_btn);
+        changePictureBtn = findViewById(R.id.camera_fab);
+    }
+
     private void alertTextChanges(final View v, final String backup, final String msg,
                                   final ImageButton acceptBtn, final ImageButton declineBtn,
                                   final boolean isName) {
@@ -390,6 +399,10 @@ public class UserProfileActivity extends TakeCareActivity {
         if (user == null) {
             return;
         }
+        if (!isNameValid(newName)) {
+            userNameView.setText(restore);
+            return;
+        }
         startLoading("Updating name...", null);
         db.collection("users").document(user.getUid())
                 .update("name", newName)
@@ -435,6 +448,17 @@ public class UserProfileActivity extends TakeCareActivity {
                         stopLoading();
                     }
                 });
+    }
+
+    private boolean isNameValid(String newName) {
+        if (newName == null || newName.replace(" ", "").isEmpty()) {
+            Toast.makeText(this, "Please don\'t leave your name empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        //TODO: explore the option of adding stricter validation logic here
+
+        return true;
     }
 
     private void setUserDescription(final String newText, final String restore, final boolean undoable) {

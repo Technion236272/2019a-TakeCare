@@ -10,6 +10,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.AppCompatButton;
@@ -41,6 +42,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.syv.takecare.takecare.POJOs.*;
+import com.syv.takecare.takecare.UserProfileFragment;
 import com.syv.takecare.takecare.activities.ItemInfoActivity;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.activities.TakerMenuActivity;
@@ -276,7 +278,9 @@ public class FeedListFragment extends Fragment {
             @SuppressLint("ClickableViewAccessibility")
             @Override
             protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, final int position, @NonNull final FeedCardInformation model) {
-                // Attempt to remove item from feed if reported by the user
+
+                holder.setIsRecyclable(false);
+
                 final String itemId = getSnapshots().getSnapshot(holder.getAdapterPosition()).getId();
                 holder.itemTitle.setText(model.getTitle());
                 RequestOptions requestOptions = new RequestOptions();
@@ -417,6 +421,18 @@ public class FeedListFragment extends Fragment {
                         }
                     }
                 }).start();
+
+                if (!user.getUid().equals(model.getPublisher())) {
+                    holder.profilePhoto.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            FragmentManager fm = getFragmentManager();
+                            UserProfileFragment dialogFragment =
+                                    UserProfileFragment.newInstance(model.getPublisher());
+                            dialogFragment.show(fm, null);
+                        }
+                    });
+                }
             }
 
             @NonNull

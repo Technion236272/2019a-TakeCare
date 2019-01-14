@@ -122,7 +122,6 @@
                     android:maxLines="1"
                     android:minEms="3"
                     android:padding="4dp"
-                    android:text="0"
                     android:textColor="@color/secondary_text"
                     android:textSize="14sp"
                     android:visibility="visible"
@@ -223,8 +222,9 @@
                 android:ems="10"
                 android:hint="@string/user_description_text"
                 android:inputType="textMultiLine"
-                android:maxLines="5"
-                android:padding="10dp" />
+                android:maxLines="6"
+                android:padding="10dp"
+                android:scrollbars="vertical" />
 
             <ImageButton
                 android:id="@+id/accept_description_btn"

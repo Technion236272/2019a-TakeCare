@@ -15,15 +15,14 @@
 
     <ImageView
         android:id="@+id/nav_user_picture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:focusable="true"
         android:clickable="true"
         android:onClick="openUserSettings"
         android:adjustViewBounds="true"
-        android:scaleType="fitXY"
         app:srcCompat="@drawable/ic_user_white_big" />
 
 
