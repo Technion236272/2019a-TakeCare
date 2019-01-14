@@ -86,6 +86,7 @@ public class UserProfileActivity extends TakeCareActivity {
     private Drawable originalEditTextDrawable;
     private KeyListener originalKeyListener;
     private EditText userDescriptionView;
+    private TextView userLikesView;
     private ImageButton editNameBtn;
     private ImageButton acceptNameBtn;
     private ImageButton declineNameBtn;
@@ -126,7 +127,8 @@ public class UserProfileActivity extends TakeCareActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        startLoading("Loading your profile...", null);
+        // This page has a maximum of 8.5 seconds dedicated to loading
+        startLoading("Loading your profile...", 8500);
 
         root = findViewById(R.id.user_profile_root);
         toolbar = findViewById(R.id.user_profile_toolbar);
@@ -142,6 +144,7 @@ public class UserProfileActivity extends TakeCareActivity {
         picturePB = findViewById(R.id.profile_pic_progress_bar);
         userNameView = findViewById(R.id.user_name);
         userDescriptionView = findViewById(R.id.about);
+        userLikesView = findViewById(R.id.likes_counter);
         editNameBtn = findViewById(R.id.edit_name_button);
 
         acceptNameBtn = findViewById(R.id.accept_name_btn);
@@ -239,9 +242,13 @@ public class UserProfileActivity extends TakeCareActivity {
                                         .into(profilePictureView);
                             }
                             if (document.getString("description") != null) {
-                                Log.d(TAG, "Found description. Writing: ");
+                                Log.d(TAG, "Found user's description");
                                 currentDescription = document.getString("description");
                                 userDescriptionRef.setText(currentDescription);
+                            }
+                            if (document.getLong("likes") != null) {
+                                Log.d(TAG, "Found user's likes");
+                                userLikesView.setText(String.valueOf(document.getLong("likes")));
                             }
 
                             profilePictureView.setOnClickListener(new View.OnClickListener() {
@@ -307,7 +314,6 @@ public class UserProfileActivity extends TakeCareActivity {
                         ((EditText) v).setText(backup);
                         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-//                        hideKeyboard(UserProfileActivity.this);
                         acceptBtn.setVisibility(View.GONE);
                         declineBtn.setVisibility(View.GONE);
                         if (isName)
