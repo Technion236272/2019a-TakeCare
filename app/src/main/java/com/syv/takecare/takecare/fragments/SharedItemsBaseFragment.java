@@ -305,15 +305,15 @@ public class SharedItemsBaseFragment extends Fragment {
 
                 activateViewHolderIcons(holder, model);
 
-                holder.card.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getContext(), ItemInfoActivity.class);
-                        intent.putExtra(EXTRA_ITEM_ID, itemId);
-                        intent.putExtra(Intent.EXTRA_UID, user.getUid());
-                        startActivity(intent);
-                    }
-                });
+//                holder.card.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Intent intent = new Intent(getContext(), ItemInfoActivity.class);
+//                        intent.putExtra(EXTRA_ITEM_ID, itemId);
+//                        intent.putExtra(Intent.EXTRA_UID, user.getUid());
+//                        startActivity(intent);
+//                    }
+//                });
             }
 
             @NonNull

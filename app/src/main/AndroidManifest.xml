@@ -125,7 +125,7 @@
         </activity>
         <activity
             android:name=".activities.TakeCareActivity"
-            android:theme="@style/Theme.AppCompat.Light"></activity>
+            android:theme="@style/Theme.AppCompat.Light" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -139,7 +139,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".activities.ChatRoomActivity"></activity>
+        <activity android:name=".activities.ChatRoomActivity" />
+        <activity android:name=".activities.ChatLobbyActivity"></activity>
     </application>
 
 </manifest>

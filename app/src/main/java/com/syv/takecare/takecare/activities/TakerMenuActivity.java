@@ -471,12 +471,10 @@ public class TakerMenuActivity extends TakeCareActivity
             mapViewEnabled = false;
             return false;
         } else if (id == R.id.nav_chat) {
-            //TODO: change this when chat is implemented
-            makeHighlightedSnackbar(rootLayout, "Chat will be added in the future");
+            intent = new Intent(this, ChatLobbyActivity.class);
+            startActivity(intent);
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
-            DrawerLayout drawer = findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
             return false;
         } else if (id == R.id.nav_user_settings) {
             intent = new Intent(this, UserProfileActivity.class);

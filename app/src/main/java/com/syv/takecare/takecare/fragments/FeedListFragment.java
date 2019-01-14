@@ -107,6 +107,10 @@ public class FeedListFragment extends Fragment {
                 Log.d(TAG, "onCreateView: restoring list state");
                 recyclerView.getLayoutManager().onRestoreInstanceState(listState);
             }
+            if (savedInstanceState.containsKey(RECYCLER_STATE_POSITION_KEY)) {
+                this.absolutePosition = savedInstanceState.getInt(RECYCLER_STATE_POSITION_KEY);
+                Log.d(TAG, "onCreateView: absolute position is: " + this.absolutePosition);
+            }
         }
         jumpButton = view.findViewById(R.id.jump_button);
         jumpButton.setOnClickListener(new View.OnClickListener() {
@@ -127,14 +131,6 @@ public class FeedListFragment extends Fragment {
             layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         }
 
-        Log.d(TAG, "onCreateView: Starting taking care of savedInstanceState");
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(RECYCLER_STATE_POSITION_KEY)) {
-                this.absolutePosition = savedInstanceState.getInt(RECYCLER_STATE_POSITION_KEY);
-                Log.d(TAG, "onCreateView: absolute position is: " + this.absolutePosition);
-            }
-        }
-        Log.d(TAG, "onCreateView: Ending. Absolute position is: " + absolutePosition);
         return view;
     }
 
@@ -149,7 +145,6 @@ public class FeedListFragment extends Fragment {
 
     private void setUpRecyclerView() {
         Log.d(TAG, "setUpRecyclerView: setting layout manager for the current orientation");
-
         try {
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));

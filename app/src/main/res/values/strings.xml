@@ -208,6 +208,9 @@
     <string name="error_timeout_message">\"Loading process takes too long!\\nCheck your internet connection and try again.\"</string>
 
 
+    <!-- Chat Lobby Strings -->
+    <string name="empty_chat_lobby">You have no messages</string>
+
     <!--Chat -->
     <string name="accept_button_text">Accept Request</string>
 
