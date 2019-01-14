@@ -206,4 +206,11 @@
 
     <!--MISC-->
     <string name="error_timeout_message">\"Loading process takes too long!\\nCheck your internet connection and try again.\"</string>
+
+
+    <!--Chat -->
+    <string name="accept_button_text">Accept Request</string>
+
+
+    <!---->
 </resources>
