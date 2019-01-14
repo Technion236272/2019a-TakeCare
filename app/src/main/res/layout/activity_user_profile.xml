@@ -31,14 +31,14 @@
         android:background="@android:color/transparent"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/enlarged_user_pic_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#960b040b"
-        android:visibility="gone"
-        app:title=""
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/enlarged_user_pic_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#960b040b"
+            android:visibility="gone"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -47,11 +47,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <com.ortiz.touchview.TouchImageView
-        android:id="@+id/item_image_fullscreen"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"/>
+        <com.ortiz.touchview.TouchImageView
+            android:id="@+id/item_image_fullscreen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
     </RelativeLayout>
 
@@ -59,6 +59,7 @@
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
         android:fillViewport="true">
 
         <RelativeLayout
@@ -71,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="108dp"
+                android:layout_marginTop="96dp"
                 android:layout_marginBottom="10dp"
                 app:srcCompat="@drawable/ic_user_vector" />
 
@@ -87,11 +88,56 @@
                 android:layout_marginTop="248dp"
                 app:srcCompat="@drawable/ic_camera_purple" />
 
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/rating_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/profile_pic">
+
+                <ImageView
+                    android:id="@+id/rating_icon"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_heart_filled" />
+
+                <TextView
+                    android:id="@+id/likes_counter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/likes_counter_frame"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:minEms="3"
+                    android:padding="4dp"
+                    android:text="0"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="14sp"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/rating_icon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
+
+
             <ImageButton
                 android:id="@+id/accept_name_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/profile_pic"
+                android:layout_below="@id/rating_layout"
                 android:layout_marginTop="8dp"
                 android:layout_toStartOf="@id/placeholder_invisible_block"
                 android:layout_toLeftOf="@id/placeholder_invisible_block"
@@ -111,7 +157,7 @@
                 android:id="@+id/decline_name_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/profile_pic"
+                android:layout_below="@id/rating_layout"
                 android:layout_marginTop="8dp"
                 android:layout_toEndOf="@id/placeholder_invisible_block"
                 android:layout_toRightOf="@id/placeholder_invisible_block"
@@ -132,22 +178,11 @@
                 android:textColor="@color/primary_text"
                 android:textSize="25sp" />
 
-            <RatingBar
-                android:id="@+id/ratingBar"
-                style="@style/Base.Widget.AppCompat.RatingBar.Indicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/user_name"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="30dp"
-                android:isIndicator="true" />
-
             <ImageButton
                 android:id="@+id/edit_name_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/profile_pic"
+                android:layout_below="@id/rating_layout"
                 android:layout_marginStart="15dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="15dp"
@@ -155,7 +190,8 @@
                 android:layout_toRightOf="@id/user_name"
                 android:background="@android:color/transparent"
                 android:onClick="onChangeNameClick"
-                app:srcCompat="@drawable/ic_edit_black_24dp" />
+                app:srcCompat="@drawable/ic_edit_black_24dp"
+                app:tint="@color/colorPrimary" />
 
             <EditText
                 android:id="@+id/about"
@@ -178,7 +214,7 @@
                 android:id="@+id/accept_description_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/ratingBar"
+                android:layout_below="@id/user_name"
                 android:layout_marginTop="8dp"
                 android:layout_toStartOf="@id/placeholder_invisible_block2"
                 android:layout_toLeftOf="@id/placeholder_invisible_block2"
@@ -199,7 +235,7 @@
                 android:id="@+id/decline_description_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/ratingBar"
+                android:layout_below="@id/user_name"
                 android:layout_marginTop="8dp"
                 android:layout_toEndOf="@id/placeholder_invisible_block2"
                 android:layout_toRightOf="@id/placeholder_invisible_block2"

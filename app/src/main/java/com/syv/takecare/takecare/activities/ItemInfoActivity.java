@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.MediaRouteButton;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,11 +14,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -55,7 +54,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.Transaction;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.ortiz.touchview.TouchImageView;
 import com.syv.takecare.takecare.customViews.FeedRecyclerView;
 import com.syv.takecare.takecare.R;
@@ -66,6 +69,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.google.firebase.firestore.FieldValue.serverTimestamp;
@@ -74,7 +78,9 @@ public class ItemInfoActivity extends TakeCareActivity {
 
     private final static String TAG = "TakeCare/ItemInfo";
     private static final String EXTRA_ITEM_ID = "Item Id";
+    private static final int USER_LIKES_MAX_DISPLAY = 999;
 
+    private RelativeLayout root;
     private Toolbar toolbar;
     private Toolbar enlargedPhotoToolbar;
     private ImageView itemImageView;
@@ -90,12 +96,13 @@ public class ItemInfoActivity extends TakeCareActivity {
     private View imageSpaceView;
     private ScrollView itemInfoScrollView;
     private ImageView expandedImageView;
+    private LikeButton likeButton;
+    private TextView likesCounterView;
 
     private Animator mCurrentAnimator;
     private int mShortAnimationDuration;
     private boolean isImageFullscreen;
 
-    private CardView locationCard;
     private RelativeLayout request_button_layout;
 
     private FeedRecyclerView recyclerView;
@@ -150,6 +157,9 @@ public class ItemInfoActivity extends TakeCareActivity {
         imageSpaceView = findViewById(R.id.image_space);
         itemInfoScrollView = findViewById(R.id.item_info_scroll_view);
         expandedImageView = findViewById(R.id.item_image_fullscreen);
+        likeButton = findViewById(R.id.like_button);
+        likesCounterView = findViewById(R.id.likes_counter);
+        root = findViewById(R.id.item_root);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bundle extras = getIntent().getExtras();
@@ -165,111 +175,138 @@ public class ItemInfoActivity extends TakeCareActivity {
         isPublisher = publisherID.equals(uid);
         if (isPublisher) {
             setUpRecyclerView();
+            request_button_layout = findViewById(R.id.request_button_layout);
+            request_button_layout.setVisibility(View.GONE);
+            deleteItem.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.VISIBLE);
+            if (recyclerView.getAdapter() != null && recyclerView.getAdapter().getItemCount() > 0) {
+                recyclerViewText.setVisibility(View.VISIBLE);
+            }
+        } else {
+            RelativeLayout requestButton = findViewById(R.id.request_button_layout);
+            requestButton.setVisibility(View.VISIBLE);
+            messageButton.setVisibility(View.VISIBLE);
         }
 
-        if (user != null) {
-            DocumentReference docRef = db.collection("items").document(itemId);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    Log.d(TAG, "user fetch: onComplete started");
-                    if (task.isSuccessful()) {
-                        final DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                            String title = document.getString("title");
-                            itemTitleView.setText(title);
-                            enlargedPhotoToolbar.setTitle(title);
+        fillPublisherInfo(publisherID,
+                uploaderNameView, uploaderProfilePictureView);
 
-                            if (document.getString("publisher") != null) {
-                                Log.d(TAG, "Found publisher. Fetched id: "
-                                        + document.getString("publisher"));
-                                if (document.getString("publisher").equals(uid)) {
-                                    request_button_layout = findViewById(R.id.request_button_layout);
-                                    request_button_layout.setVisibility(View.GONE);
-                                    deleteItem.setVisibility(View.VISIBLE);
-                                    recyclerView.setVisibility(View.VISIBLE);
-                                    recyclerViewText.setVisibility(View.VISIBLE);
-                                } else {
-                                    RelativeLayout requestButton = findViewById(R.id.request_button_layout);
-                                    requestButton.setVisibility(View.VISIBLE);
-                                    messageButton.setVisibility(View.VISIBLE);
+        likeButton.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+                doLike(true);
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                doLike(false);
+            }
+        });
+
+        DocumentReference docRef = db.collection("items").document(itemId);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Log.d(TAG, "user fetch: onComplete started");
+                if (task.isSuccessful()) {
+                    final DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        String title = document.getString("title");
+                        itemTitleView.setText(title);
+                        enlargedPhotoToolbar.setTitle(title);
+
+                        if (document.getString("photo") != null) {
+                            Log.d(TAG, "Found item photo. Fetched picture url: "
+                                    + Uri.parse(document.getString("photo")));
+
+                            Glide.with(getApplicationContext())
+                                    .load(document.getString("photo"))
+                                    .into(itemImageView);
+
+                            supportStartPostponedEnterTransition();
+
+                            imageSpaceView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.d(TAG, "Image zoom onClick: Initiated");
+                                    zoomImageFromThumb(itemImageView, document);
                                 }
-                                fillPublisherInfo(document.getString("publisher"),
-                                        uploaderNameView, uploaderProfilePictureView);
-                            }
-                            if (document.getString("photo") != null) {
-                                Log.d(TAG, "Found item photo. Fetched picture url: "
-                                        + Uri.parse(document.getString("photo")));
+                            });
+                            // Retrieve and cache the system's default "short" animation time.
+                            mShortAnimationDuration = getResources().getInteger(
+                                    android.R.integer.config_shortAnimTime);
 
-                                RequestOptions requestOptions = new RequestOptions();
-                                Glide.with(getApplicationContext())
-                                        .load(document.getString("photo"))
-                                        .into(itemImageView);
-
-                                supportStartPostponedEnterTransition();
-
-                                imageSpaceView.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Log.d(TAG, "Image zoom onClick: Initiated");
-                                        zoomImageFromThumb(itemImageView, document);
-                                    }
-                                });
-                                // Retrieve and cache the system's default "short" animation time.
-                                mShortAnimationDuration = getResources().getInteger(
-                                        android.R.integer.config_shortAnimTime);
-
-                            } else {
-                                switch (document.getString("category")) {
-                                    case "Food":
-                                        itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_pizza_96_big_purple));
-                                        break;
-                                    case "Study Material":
-                                        itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_book_purple));
-                                        break;
-                                    case "Households":
-                                        itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_lamp_purple));
-                                        break;
-                                    case "Lost & Found":
-                                        itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_lost_and_found_purple));
-                                        break;
-                                    case "Hitchhikes":
-                                        itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_car_purple));
-                                        break;
-                                    default:
-                                        itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_treasure_purple));
-                                        break;
-                                }
-                            }
-                            if (document.getString("description") != null) {
-                                Log.d(TAG, "Found description. Writing: ");
-                                itemDescriptionView.setText(document.getString("description"));
-                            }
-                            if (document.getString("pickupInformation") != null) {  // Change key to "pickupTime"
-                                Log.d(TAG, "Found pickup time.");
-                                itemPickupTimeView.setText(document.getString("pickupInformation"));
-                            } else {
-                                Log.d(TAG, "No Pickup time found.");
-                                itemPickupTimeView.setText(R.string.flexible);
-                            }
-                            if (document.getString("pickupLocation") != null) {
-                                Log.d(TAG, "Found pickup location.");
-                                itemLocationView.setText(document.getString("pickupLocation"));
-                            } else {
-                                locationCard = (CardView) findViewById(R.id.location_card);
-                                //locationCard.setVisibility(View.GONE);
-                            }
-                            Log.d(TAG, "user fetch: onComplete finished ");
                         } else {
-                            Log.d(TAG, "No such document");
+                            switch (document.getString("category")) {
+                                case "Food":
+                                    itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_pizza_96_big_purple));
+                                    break;
+                                case "Study Material":
+                                    itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_book_purple));
+                                    break;
+                                case "Households":
+                                    itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_lamp_purple));
+                                    break;
+                                case "Lost & Found":
+                                    itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_lost_and_found_purple));
+                                    break;
+                                case "Hitchhikes":
+                                    itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_car_purple));
+                                    break;
+                                default:
+                                    itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_treasure_purple));
+                                    break;
+                            }
                         }
+                        if (document.getString("description") != null) {
+                            Log.d(TAG, "Found description. Writing: ");
+                            itemDescriptionView.setText(document.getString("description"));
+                        }
+                        if (document.getString("pickupInformation") != null) {  // Change key to "pickupTime"
+                            Log.d(TAG, "Found pickup time.");
+                            itemPickupTimeView.setText(document.getString("pickupInformation"));
+                        } else {
+                            Log.d(TAG, "No Pickup time found.");
+                            itemPickupTimeView.setText(R.string.flexible);
+                        }
+                        if (document.getString("pickupLocation") != null) {
+                            Log.d(TAG, "Found pickup location.");
+                            itemLocationView.setText(document.getString("pickupLocation"));
+                        }
+                        Log.d(TAG, "user fetch: onComplete finished ");
                     } else {
-                        Log.d(TAG, "get failed with ", task.getException());
+                        Log.d(TAG, "No such document");
                     }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
                 }
-            });
-        }
+            }
+        });
+
+        db.collection("users").document(user.getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.get("likedUsers") != null) {
+                            Log.d(TAG, "Searching user's liked persons");
+                            List<String> likedUsers = (List<String>) documentSnapshot.get("likedUsers");
+                            for (String likedUser : likedUsers) {
+                                if (publisherID.equals(likedUser)) {
+                                    Log.d(TAG, "User has already liked this person");
+                                    likeButton.setLiked(true);
+                                }
+                            }
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "onFailure: error loading user's document");
+                    }
+                });
 
         messageButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.message_text_outline), null, null, null);
         requestButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_heart_outline), null, null, null);
@@ -280,6 +317,56 @@ public class ItemInfoActivity extends TakeCareActivity {
             }
         });
         Log.d(TAG, "onCreate: finished");
+    }
+
+    private void doLike(final boolean isLiked) {
+        Log.d(TAG, "onLikeClicked: started");
+        likeButton.setEnabled(false);
+        final DocumentReference publisherRef = db.collection("users").document(publisherID);
+        final DocumentReference userRef = db.collection("users").document(user.getUid());
+
+        db.runTransaction(new Transaction.Function<Long>() {
+            @Override
+            public Long apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                DocumentSnapshot snapshot = transaction.get(publisherRef);
+                long newLikes = snapshot.getLong("likes") != null ?
+                        snapshot.getLong("likes") : 0;
+                if (isLiked) {
+                    newLikes += 1;
+                    userRef.update("likedUsers", FieldValue.arrayUnion(publisherID));
+                } else {
+                    newLikes -= 1;
+                    userRef.update("likedUsers", FieldValue.arrayRemove(publisherID));
+                }
+                if (newLikes < 0) {
+                    throw new FirebaseFirestoreException("Negative likes",
+                            FirebaseFirestoreException.Code.ABORTED);
+                }
+                transaction.update(publisherRef, "likes", newLikes);
+                return newLikes;
+            }
+        })
+                .addOnSuccessListener(new OnSuccessListener<Long>() {
+                    @Override
+                    public void onSuccess(Long likes) {
+                        Log.d(TAG, "onSuccess: likes transaction success");
+                        if (likes > USER_LIKES_MAX_DISPLAY) {
+                            String likesText = String.valueOf(USER_LIKES_MAX_DISPLAY).concat("+");
+                            likesCounterView.setText(likesText);
+                        } else {
+                            String likesText = String.valueOf(likes);
+                            likesCounterView.setText(likesText);
+                        }
+                        likeButton.setEnabled(true);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "onFailure: likes transaction failed with: " + e.getMessage());
+                        makeHighlightedSnackbar(root, "An error has occurred. Please check your internet connection");
+                    }
+                });
     }
 
     private void setUpRecyclerView() {
@@ -332,6 +419,11 @@ public class ItemInfoActivity extends TakeCareActivity {
 
             @Override
             public void onDataChanged() {
+                if (getItemCount() > 0 && recyclerViewText.getVisibility() == View.GONE) {
+                    recyclerViewText.setVisibility(View.VISIBLE);
+                } else if (getItemCount() == 0 && recyclerViewText.getVisibility() == View.VISIBLE) {
+                    recyclerViewText.setVisibility(View.GONE);
+                }
                 super.onDataChanged();
             }
         };
@@ -427,6 +519,15 @@ public class ItemInfoActivity extends TakeCareActivity {
                     if (document.exists()) {
                         Log.d(TAG, "Publisher Document Snapshot Data: " + document.getData());
                         uploaderNameView.setText(document.getString("name"));
+
+                        if (document.get("likes") != null) {
+                            Log.d(TAG, "Found likes counter");
+                            String likesText = String.valueOf(document.getLong("likes"));
+                            likesCounterView.setText(likesText);
+                        } else {
+                            likesCounterView.setText("0");
+                        }
+
                         if (document.getString("profilePicture") != null) {
                             Log.d(TAG, "Found profile pic. Fetched picture url: "
                                     + Uri.parse(document.getString("profilePicture")));
@@ -443,6 +544,17 @@ public class ItemInfoActivity extends TakeCareActivity {
                                         @Override
                                         public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                                             uploaderProgress.setVisibility(View.GONE);
+                                            likeButton.setVisibility(View.VISIBLE);
+                                            if (isPublisher) {
+                                                likeButton.setLiked(true);
+                                                likeButton.setEnabled(false);
+                                            } //else {
+//                                                ConstraintLayout.LayoutParams params =
+//                                                        (ConstraintLayout.LayoutParams) likesCounterView.getLayoutParams();
+//                                                params.setMargins(8, 8, 8, 208);
+//                                                likesCounterView.setLayoutParams(params);
+//                                            }
+                                            likesCounterView.setVisibility(View.VISIBLE);
                                             return false;
                                         }
                                     })

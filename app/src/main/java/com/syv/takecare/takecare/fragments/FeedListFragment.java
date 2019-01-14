@@ -381,7 +381,7 @@ public class FeedListFragment extends Fragment {
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity().getApplicationContext(), ItemInfoActivity.class);
                         intent.putExtra(EXTRA_ITEM_ID, itemId);
-                        intent.putExtra(Intent.EXTRA_UID, user.getUid());
+                        intent.putExtra(Intent.EXTRA_UID, model.getPublisher());
                         startActivity(intent);
                     }
                 });
