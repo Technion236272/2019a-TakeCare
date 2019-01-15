@@ -70,6 +70,7 @@
     <string name="filter_menu_pickup_in_person">In Person</string>
     <string name="filter_menu_pickup_giveaway">Giveaway</string>
     <string name="filter_menu_pickup_race">Race</string>
+    <string name="filter_menu_search_hint">Enter a keyword</string>
     <string name="jump_to_top_button">Jump to top</string>
     <string name="jump_to_top_button_landscape">Scroll to start</string>
 
@@ -129,7 +130,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."</string>
     <string name="user_name">Name</string>
-    <string name="sign_up_form_text">Continue</string>
+    <string name="sign_up_form_text">Sign Up</string>
     <string name="add_profile_pic">Add a Profile Picture:</string>
 
 

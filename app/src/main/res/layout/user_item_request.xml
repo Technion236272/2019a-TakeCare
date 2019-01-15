@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -19,6 +19,11 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:padding="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_user_vector" />
 
 
@@ -37,21 +42,50 @@
                 <TextView
                     android:id="@+id/requester_name"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="37dp"
                     android:layout_marginStart="4dp"
                     android:layout_marginLeft="4dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="4dp"
                     android:layout_marginRight="4dp"
-                    android:layout_marginBottom="4dp"
                     android:gravity="center"
-                    android:maxLines="3"
+                    android:maxLines="2"
                     android:textColor="@color/primary_text"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/likes_counter"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/rating_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginBottom="4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:srcCompat="@drawable/ic_heart_filled" />
+
+                <TextView
+                    android:id="@+id/likes_counter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="22dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@drawable/likes_counter_frame"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:minEms="2"
+                    android:padding="2dp"
+                    android:text="0"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="14sp"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/rating_icon" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -67,30 +101,31 @@
                 android:textSize="10sp"
                 app:layout_constraintBottom_toTopOf="@+id/request_date"
                 app:layout_constraintEnd_toStartOf="@+id/accept_request_button"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="SmallSp" />
 
             <TextView
                 android:id="@+id/request_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="22/12/18"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toTopOf="@+id/request_time"
                 app:layout_constraintEnd_toEndOf="@+id/request_timestamp_title"
                 app:layout_constraintStart_toStartOf="@+id/request_timestamp_title"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintVertical_bias="1.0"
+                tools:ignore="SmallSp" />
 
             <TextView
                 android:id="@+id/request_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="14:20"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/request_timestamp_title"
-                app:layout_constraintStart_toStartOf="@+id/request_timestamp_title" />
+                app:layout_constraintStart_toStartOf="@+id/request_timestamp_title"
+                tools:ignore="SmallSp" />
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/accept_request_button"
@@ -98,7 +133,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="Accept"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"

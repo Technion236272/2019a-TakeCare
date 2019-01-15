@@ -10,6 +10,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.AppCompatButton;
@@ -41,6 +42,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.syv.takecare.takecare.POJOs.*;
+import com.syv.takecare.takecare.UserProfileFragment;
 import com.syv.takecare.takecare.activities.ItemInfoActivity;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.activities.TakerMenuActivity;
@@ -189,38 +191,26 @@ public class FeedListFragment extends Fragment {
 
         String queryCategoriesFilter = ((TakerMenuActivity) getActivity()).getQueryCategoriesFilter();
         String queryPickupMethodFilter = ((TakerMenuActivity) getActivity()).getQueryPickupMethodFilter();
+        String queryKeywordsFilter = ((TakerMenuActivity) getActivity()).getQueryKeywordsFilter();
         if (currentAdapter != null)
             currentAdapter.stopListening();
 
-        // Default: no filters
         Query query = db.collection("items")
-                .whereEqualTo("displayStatus", true)
-                .orderBy("timestamp", Query.Direction.DESCENDING);
+                .whereEqualTo("displayStatus", true);
 
-        if (queryCategoriesFilter != null && queryPickupMethodFilter != null) {
-            // Filter by categories and pickup method
-            Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter + " pickup: " + queryPickupMethodFilter);
-            query = db.collection("items")
-                    .whereEqualTo("category", queryCategoriesFilter)
-                    .whereEqualTo("pickupMethod", queryPickupMethodFilter)
-                    .whereEqualTo("displayStatus", true)
-                    .orderBy("timestamp", Query.Direction.DESCENDING);
-        } else if (queryCategoriesFilter != null) {
-            // Filter by categories
+        if (queryCategoriesFilter != null) {
             Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter);
-            query = db.collection("items")
-                    .whereEqualTo("category", queryCategoriesFilter)
-                    .whereEqualTo("displayStatus", true)
-                    .orderBy("timestamp", Query.Direction.DESCENDING);
-        } else if (queryPickupMethodFilter != null) {
-            // Filter by pickup method
-            Log.d(TAG, "setUpAdapter: query has: pickup: " + queryPickupMethodFilter);
-            query = db.collection("items")
-                    .whereEqualTo("pickupMethod", queryPickupMethodFilter)
-                    .whereEqualTo("displayStatus", true)
-                    .orderBy("timestamp", Query.Direction.DESCENDING);
+            query = query.whereEqualTo("category", queryCategoriesFilter);
         }
-
+        if (queryPickupMethodFilter != null) {
+            Log.d(TAG, "setUpAdapter: query has: pickup: " + queryPickupMethodFilter);
+            query = query.whereEqualTo("pickupMethod", queryPickupMethodFilter);
+        }
+        if (queryKeywordsFilter != null && !queryKeywordsFilter.isEmpty()) {
+            query = query.whereArrayContains("tags", queryKeywordsFilter);
+        }
+        query = query.whereEqualTo("displayStatus", true)
+                .orderBy("timestamp", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
                 .setQuery(query, FeedCardInformation.class)
@@ -271,7 +261,9 @@ public class FeedListFragment extends Fragment {
             @SuppressLint("ClickableViewAccessibility")
             @Override
             protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, final int position, @NonNull final FeedCardInformation model) {
-                // Attempt to remove item from feed if reported by the user
+
+                holder.setIsRecyclable(false);
+
                 final String itemId = getSnapshots().getSnapshot(holder.getAdapterPosition()).getId();
                 holder.itemTitle.setText(model.getTitle());
                 RequestOptions requestOptions = new RequestOptions();
@@ -412,6 +404,18 @@ public class FeedListFragment extends Fragment {
                         }
                     }
                 }).start();
+
+                if (!user.getUid().equals(model.getPublisher())) {
+                    holder.profilePhoto.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            FragmentManager fm = getFragmentManager();
+                            UserProfileFragment dialogFragment =
+                                    UserProfileFragment.newInstance(model.getPublisher());
+                            dialogFragment.show(fm, null);
+                        }
+                    });
+                }
             }
 
             @NonNull

@@ -1,14 +1,14 @@
 package com.syv.takecare.takecare.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -16,6 +16,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.AppCompatImageButton;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -23,6 +24,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -35,7 +40,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.syv.takecare.takecare.fragments.FeedListFragment;
@@ -44,6 +54,8 @@ import com.syv.takecare.takecare.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import static android.view.View.VISIBLE;
 
@@ -60,6 +72,8 @@ public class TakerMenuActivity extends TakeCareActivity
     private TextView userName;
     private MenuItem currentDrawerChecked;
     private Toolbar toolbar;
+    private AutoCompleteTextView searchBar;
+    private ImageButton searchButton;
 
     private ConstraintLayout filterPopupMenu;
     private AppCompatImageButton chosenPickupMethod;
@@ -67,8 +81,17 @@ public class TakerMenuActivity extends TakeCareActivity
 
     private String queryCategoriesFilter = null;
     private String queryPickupMethodFilter = null;
+    private String queryKeywordFilter = null;
     private boolean mapViewEnabled;
     private boolean mLocationPermissionGranted;
+
+    final Runnable suggestionsTask = new Runnable() {
+        @Override
+        public void run() {
+            Log.d(TAG, "setting up auto-complete adapter for search view");
+            setAutoCompleteAdapter();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +156,7 @@ public class TakerMenuActivity extends TakeCareActivity
         pickupMethodFilterOptions.add(findViewById(R.id.pickup_giveaway_button));
         pickupMethodFilterOptions.add(findViewById(R.id.pickup_race_button));
 
-        View.OnClickListener pickupMethodfilterListener = new View.OnClickListener() {
+        final View.OnClickListener pickupMethodfilterListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onChoosePickupMethod(view);
@@ -157,6 +180,44 @@ public class TakerMenuActivity extends TakeCareActivity
             boolean welcomeToast = intent.getBooleanExtra(Intent.EXTRA_TEXT, false);
             makeWelcomeToast(welcomeToast);
         }
+
+        // Set the search bar and search button in the filter menu
+        searchBar = findViewById(R.id.search_bar);
+        addAutoCompleteOptions();
+        searchButton = findViewById(R.id.search_button);
+        try {
+            searchButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    queryKeywordFilter = searchBar.getText().toString();
+                    if (!queryKeywordFilter.isEmpty()) {
+                        searchBar.clearFocus();
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+                        filterPopupMenu.setVisibility(View.GONE);
+                    }
+                    changeFragment();
+                }
+            });
+        } catch (NullPointerException e) {
+            Log.d(TAG, "Search button is null");
+        }
+
+        try {
+            searchBar.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_ENTER)
+                        searchButton.callOnClick();
+                    if (keyCode == KeyEvent.KEYCODE_BACK)
+                        TakerMenuActivity.this.onBackPressed();
+                    return true;
+                }
+            });
+        } catch (NullPointerException e) {
+            Log.d(TAG, "Search bar is null");
+        }
+
     }
 
     @Override
@@ -290,6 +351,9 @@ public class TakerMenuActivity extends TakeCareActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (filterPopupMenu.getVisibility() == VISIBLE) {
+            Log.d(TAG, "onBackPressed: Search bar is focused");
+            filterPopupMenu.setVisibility(View.GONE);
         } else {
             super.onBackPressed();
         }
@@ -310,7 +374,6 @@ public class TakerMenuActivity extends TakeCareActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //TODO: fragment changes
         switch (item.getItemId()) {
             case R.id.action_filter:
                 toggleFilterMenu();
@@ -374,7 +437,8 @@ public class TakerMenuActivity extends TakeCareActivity
                 break;
         }
         changeFragment();
-        filterPopupMenu.setVisibility(View.GONE);
+        if (!searchBar.isFocused())
+            filterPopupMenu.setVisibility(View.GONE);
     }
 
 
@@ -515,6 +579,10 @@ public class TakerMenuActivity extends TakeCareActivity
     public String getQueryCategoriesFilter() {
         return queryCategoriesFilter;
     }
+
+    public String getQueryKeywordsFilter() {
+        return queryKeywordFilter;
+    }
     private void getLocationPermission() {
         /*
          * Request location permission, so that we can get the location of the
@@ -557,5 +625,43 @@ public class TakerMenuActivity extends TakeCareActivity
                 }
             }
         });
+    }
+
+    private List<String> allExistingTags = new ArrayList<>();
+
+    private void addAutoCompleteOptions() {
+        final Handler suggestionsHandler = new Handler();
+
+        Query query = db.collection("tags")
+                .orderBy("tag");
+
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.d(TAG, "Listen failed with: " + e);
+                    return;
+                }
+
+                if (queryDocumentSnapshots == null) {
+                    Log.d(TAG, "Did not find any tags in database");
+                    return;
+                }
+
+                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                    if (doc.get("tag") != null) {
+                        allExistingTags.add(doc.getString("tag"));
+                    }
+                }
+                suggestionsHandler.post(suggestionsTask);
+            }
+        });
+    }
+
+    private void setAutoCompleteAdapter() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>
+                (getApplicationContext(), R.layout.auto_complete_dropdown_item, allExistingTags);
+        searchBar.setAdapter(adapter);
+        Log.d(TAG, "set the auto-complete adapter");
     }
 }

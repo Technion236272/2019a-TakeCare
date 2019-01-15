@@ -199,7 +199,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/divider" >
 
                         <ImageView
-                            android:id="@+id/item_profile_pic"
+                            android:id="@+id/publisher_profile_pic"
                             android:layout_width="128dp"
                             android:layout_height="128dp"
                             android:layout_centerInParent="true"
@@ -220,9 +220,9 @@
                             android:layout_marginTop="8dp"
                             android:layout_marginBottom="8dp"
                             app:layout_constraintBottom_toTopOf="@+id/item_giver_name"
-                            app:layout_constraintEnd_toEndOf="@+id/item_profile_pic"
-                            app:layout_constraintStart_toStartOf="@+id/item_profile_pic"
-                            app:layout_constraintTop_toTopOf="@+id/item_profile_pic" />
+                            app:layout_constraintEnd_toEndOf="@+id/publisher_profile_pic"
+                            app:layout_constraintStart_toStartOf="@+id/publisher_profile_pic"
+                            app:layout_constraintTop_toTopOf="@+id/publisher_profile_pic" />
 
                         <TextView
                             android:id="@+id/item_giver_name"
@@ -239,7 +239,7 @@
                             android:maxLines="2"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/item_profile_pic" />
+                            app:layout_constraintTop_toBottomOf="@+id/publisher_profile_pic" />
 
                     </android.support.constraint.ConstraintLayout>
 

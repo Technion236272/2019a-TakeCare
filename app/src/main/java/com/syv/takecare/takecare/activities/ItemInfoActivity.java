@@ -14,7 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.content.res.AppCompatResources;
@@ -63,6 +63,7 @@ import com.google.firebase.firestore.Transaction;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.ortiz.touchview.TouchImageView;
+import com.syv.takecare.takecare.UserProfileFragment;
 import com.syv.takecare.takecare.customViews.FeedRecyclerView;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.POJOs.RequestedByCardHolder;
@@ -149,7 +150,7 @@ public class ItemInfoActivity extends TakeCareActivity {
         itemImageView = findViewById(R.id.item_image);
         itemTitleView = findViewById(R.id.item_title);
         itemDescriptionView = findViewById(R.id.item_description);
-        uploaderProfilePictureView = findViewById(R.id.item_profile_pic);
+        uploaderProfilePictureView = findViewById(R.id.publisher_profile_pic);
         uploaderProgress = findViewById(R.id.item_load_bar);
         uploaderNameView = findViewById(R.id.item_giver_name);
         itemPickupTimeView = findViewById(R.id.pickup_time_text);
@@ -332,12 +333,26 @@ public class ItemInfoActivity extends TakeCareActivity {
 
         messageButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.message_text_outline), null, null, null);
         requestButton.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_heart_outline), null, null, null);
+
         requestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 requestItem(v);
             }
         });
+
+        if (!isPublisher) {
+            Log.d(TAG, "setting on-click listener for profile picture");
+            uploaderProfilePictureView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    UserProfileFragment dialogFragment =
+                            UserProfileFragment.newInstance(publisherID);
+                    dialogFragment.show(fm, null);
+                }
+            });
+        }
         Log.d(TAG, "onCreate: finished");
     }
 
@@ -578,6 +593,24 @@ public class ItemInfoActivity extends TakeCareActivity {
                     .into(holder.requesterProfilePicture);
         }
 
+        Long likes = documentSnapshot.getLong("likes");
+        if (likes != null) {
+            holder.requesterLikesCounter.setText(String.valueOf(likes));
+        } else {
+            holder.requesterLikesCounter.setText("0");
+        }
+
+        Log.d(TAG, "setting on-click listener for requesters' profiles");
+        holder.requesterProfilePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getSupportFragmentManager();
+                UserProfileFragment dialogFragment =
+                        UserProfileFragment.newInstance(uid);
+                dialogFragment.show(fm, null);
+            }
+        });
+
         Date timeOfRequest = model.getTimestamp();
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         holder.requestDate.setText(dateFormat.format(timeOfRequest));
@@ -680,12 +713,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                                             if (isPublisher) {
                                                 likeButton.setLiked(true);
                                                 likeButton.setEnabled(false);
-                                            } //else {
-//                                                ConstraintLayout.LayoutParams params =
-//                                                        (ConstraintLayout.LayoutParams) likesCounterView.getLayoutParams();
-//                                                params.setMargins(8, 8, 8, 208);
-//                                                likesCounterView.setLayoutParams(params);
-//                                            }
+                                            }
                                             likesCounterView.setVisibility(View.VISIBLE);
                                             return false;
                                         }
@@ -704,6 +732,7 @@ public class ItemInfoActivity extends TakeCareActivity {
 
                                         @Override
                                         public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                            Log.d(TAG, "finished loading user profile");
                                             uploaderProgress.setVisibility(View.GONE);
                                             return false;
                                         }
