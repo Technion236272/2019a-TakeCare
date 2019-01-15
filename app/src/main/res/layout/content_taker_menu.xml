@@ -26,7 +26,7 @@
             android:focusableInTouchMode="true"
             android:visibility="gone">
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/search_bar"
                 android:layout_width="0dp"
                 android:layout_height="52dp"
@@ -41,6 +41,8 @@
                 android:imeActionLabel="Search"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
+                android:completionThreshold="1"
+                android:dropDownHeight="120dp"
                 app:layout_constraintBottom_toTopOf="@+id/hint_button_in_person"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

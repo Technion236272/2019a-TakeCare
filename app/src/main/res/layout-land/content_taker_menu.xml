@@ -20,8 +20,40 @@
         <android.support.constraint.ConstraintLayout
             android:id="@+id/filter_menu_popup"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:visibility="gone">
+            android:layout_height="88dp"
+            android:visibility="visible">
+
+            <AutoCompleteTextView
+                android:id="@+id/search_bar"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:completionThreshold="1"
+                android:dropDownHeight="120dp"
+                android:hint="@string/filter_menu_search_hint"
+                android:imeActionLabel="Search"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:singleLine="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/search_button"
+                app:layout_constraintStart_toEndOf="@+id/pickup_race_button" />
+
+            <ImageButton
+                android:id="@+id/search_button"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@android:color/transparent"
+                app:layout_constraintBottom_toBottomOf="@+id/search_bar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/search_bar"
+                app:srcCompat="@drawable/ic_search" />
 
             <TextView
                 android:id="@+id/filter_menu_pickup_method_text"

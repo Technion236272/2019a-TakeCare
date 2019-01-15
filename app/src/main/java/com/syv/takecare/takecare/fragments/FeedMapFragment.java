@@ -216,9 +216,10 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
             public void onInfoWindowClick(Marker marker) {
                 DocumentSnapshot doc = (DocumentSnapshot) marker.getTag();
                 String itemId = doc.getReference().getId();
+                String publisher = (String) doc.get("publisher");
                 Intent intent = new Intent(getActivity().getApplicationContext(), ItemInfoActivity.class);
                 intent.putExtra(EXTRA_ITEM_ID, itemId);
-                intent.putExtra(Intent.EXTRA_UID, user.getUid());
+                intent.putExtra(Intent.EXTRA_UID, publisher);
                 startActivity(intent);
             }
         });
