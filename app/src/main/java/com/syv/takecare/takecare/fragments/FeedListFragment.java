@@ -196,38 +196,26 @@ public class FeedListFragment extends Fragment {
 
         String queryCategoriesFilter = ((TakerMenuActivity) getActivity()).getQueryCategoriesFilter();
         String queryPickupMethodFilter = ((TakerMenuActivity) getActivity()).getQueryPickupMethodFilter();
+        String queryKeywordsFilter = ((TakerMenuActivity) getActivity()).getQueryKeywordsFilter();
         if (currentAdapter != null)
             currentAdapter.stopListening();
 
-        // Default: no filters
         Query query = db.collection("items")
-                .whereEqualTo("displayStatus", true)
-                .orderBy("timestamp", Query.Direction.DESCENDING);
+                .whereEqualTo("displayStatus", true);
 
-        if (queryCategoriesFilter != null && queryPickupMethodFilter != null) {
-            // Filter by categories and pickup method
-            Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter + " pickup: " + queryPickupMethodFilter);
-            query = db.collection("items")
-                    .whereEqualTo("category", queryCategoriesFilter)
-                    .whereEqualTo("pickupMethod", queryPickupMethodFilter)
-                    .whereEqualTo("displayStatus", true)
-                    .orderBy("timestamp", Query.Direction.DESCENDING);
-        } else if (queryCategoriesFilter != null) {
-            // Filter by categories
+        if (queryCategoriesFilter != null) {
             Log.d(TAG, "setUpAdapter: query has: category: " + queryCategoriesFilter);
-            query = db.collection("items")
-                    .whereEqualTo("category", queryCategoriesFilter)
-                    .whereEqualTo("displayStatus", true)
-                    .orderBy("timestamp", Query.Direction.DESCENDING);
-        } else if (queryPickupMethodFilter != null) {
-            // Filter by pickup method
-            Log.d(TAG, "setUpAdapter: query has: pickup: " + queryPickupMethodFilter);
-            query = db.collection("items")
-                    .whereEqualTo("pickupMethod", queryPickupMethodFilter)
-                    .whereEqualTo("displayStatus", true)
-                    .orderBy("timestamp", Query.Direction.DESCENDING);
+            query = query.whereEqualTo("category", queryCategoriesFilter);
         }
-
+        if (queryPickupMethodFilter != null) {
+            Log.d(TAG, "setUpAdapter: query has: pickup: " + queryPickupMethodFilter);
+            query = query.whereEqualTo("pickupMethod", queryPickupMethodFilter);
+        }
+        if (queryKeywordsFilter != null && !queryKeywordsFilter.isEmpty()) {
+            query = query.whereArrayContains("tags", queryKeywordsFilter);
+        }
+        query = query.whereEqualTo("displayStatus", true)
+                .orderBy("timestamp", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
                 .setQuery(query, FeedCardInformation.class)
