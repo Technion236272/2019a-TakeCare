@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.LoginScreenFragment">
-
     <ImageView
         android:id="@+id/login_background_image"
         android:layout_width="wrap_content"
@@ -20,15 +19,19 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
-        android:id="@+id/title_wrapper"
+        android:id="@+id/title_wrapper_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="84dp"
-        android:padding="45dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.13999999">
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/login_activity_title"
@@ -41,59 +44,69 @@
             app:fontFamily="@font/rambla_bold" />
     </FrameLayout>
 
-    <com.facebook.login.widget.LoginButton xmlns:fb="http://schemas.android.com/apk/res-auto"
+    <com.facebook.login.widget.LoginButton
         android:id="@+id/facebook_login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
+        app:elevation="3dp"
         app:layout_constraintBottom_toTopOf="@+id/google_login_button"
-        fb:elevation="40dp"
-        fb:layout_constraintEnd_toEndOf="parent"
-        fb:layout_constraintStart_toStartOf="parent"
-        fb:layout_constraintTop_toBottomOf="@id/title_wrapper" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_wrapper_layout"
+        app:layout_constraintVertical_bias="0.93"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/google_login_button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/facebook_login_button" />
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/sign_up_with_email_button"
+        app:layout_constraintEnd_toEndOf="@+id/facebook_login_button"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/facebook_login_button"
+        app:layout_constraintTop_toBottomOf="@+id/facebook_login_button" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/sign_up_with_email_button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="40dp"
-        android:layout_marginTop="12dp"
         android:background="@drawable/manual_sign_up_button"
         android:fontFamily="@font/asap_italic"
-        android:paddingStart="56dp"
-        android:paddingLeft="56dp"
-        android:paddingEnd="56dp"
-        android:paddingRight="56dp"
+        android:paddingStart="10dp"
+        android:paddingLeft="10dp"
+        android:paddingEnd="10dp"
+        android:paddingRight="10dp"
         android:text="@string/email_signin_text"
         android:textAllCaps="false"
         android:textColor="@color/icons"
-        android:textSize="12sp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMaxTextSize="14sp"
+        app:autoSizeMinTextSize="10sp"
         app:elevation="3dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.509"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/sign_in_layout"
+        app:layout_constraintEnd_toEndOf="@+id/google_login_button"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/google_login_button"
         app:layout_constraintTop_toBottomOf="@+id/google_login_button" />
 
     <LinearLayout
         android:id="@+id/sign_in_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.51"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sign_up_with_email_button"
-        app:layout_constraintVertical_bias="0.625">
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/sign_in_text"
