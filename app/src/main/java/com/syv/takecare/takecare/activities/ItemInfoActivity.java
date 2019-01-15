@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -53,9 +54,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
@@ -275,6 +278,25 @@ public class ItemInfoActivity extends TakeCareActivity {
                             itemLocationView.setText(document.getString("pickupLocation"));
                         }
                         Log.d(TAG, "user fetch: onComplete finished ");
+
+
+                        Query query = db.collection("chats")
+                                .whereEqualTo("giver", publisherID)
+                                .whereEqualTo("taker", user.getUid())
+                                .whereEqualTo("item", itemId);
+                        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                                if (queryDocumentSnapshots == null || queryDocumentSnapshots.isEmpty()) {
+                                    Log.d(TAG, "did not find existing chat document for this session");
+                                    setNewChatSessionListener(document);
+                                } else {
+                                    Log.d(TAG, "found existing chat document for this session");
+                                    setExistingChatSessionListener(queryDocumentSnapshots.getDocuments().get(0));
+                                }
+                            }
+                        });
+
                     } else {
                         Log.d(TAG, "No such document");
                     }
@@ -317,6 +339,116 @@ public class ItemInfoActivity extends TakeCareActivity {
             }
         });
         Log.d(TAG, "onCreate: finished");
+    }
+
+    private void setExistingChatSessionListener(final DocumentSnapshot chatDocument) {
+        assert chatDocument != null;
+
+        messageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.setClickable(false);
+                Log.d(TAG, "redirecting to existing chat session");
+                startLoading("Opening your chat session...", null);
+                Intent intent = new Intent(ItemInfoActivity.this, ChatRoomActivity.class);
+
+                intent.putExtra("CHAT_MODE", "taker");
+                intent.putExtra("CHAT_ID", chatDocument.getId());
+                intent.putExtra("OTHER_ID", publisherID);
+                intent.putExtra("IS_REFERENCED_FROM_ITEM_INFO", true);
+
+                startActivity(intent);
+                stopLoading();
+                finish();
+            }
+        });
+    }
+
+    private void setNewChatSessionListener(final DocumentSnapshot giverDocument) {
+        assert giverDocument != null;
+
+        db.collection("users").document(publisherID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(final DocumentSnapshot userDocument) {
+                        db.collection("users").document(user.getUid())
+                                .get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(final DocumentSnapshot selfDocument) {
+                                        messageButton.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(final View v) {
+                                                Log.d(TAG, "creating new chat session document");
+                                                startLoading("Creating new chat session...",  null);
+
+                                                v.setClickable(false);
+
+                                                final Map<String, Object> newChat = new HashMap<>();
+
+                                                try {
+                                                    newChat.put("giver", publisherID);
+                                                    newChat.put("giverName", userDocument.getString("name"));
+                                                    newChat.put("giverPhoto", userDocument.getString("profilePicture"));
+                                                    newChat.put("item", itemId);
+                                                    newChat.put("itemPhoto", giverDocument.getString("photo"));
+                                                    newChat.put("title", giverDocument.getString("title"));
+                                                    newChat.put("taker", user.getUid());
+                                                    newChat.put("takerName", selfDocument.getString("name"));
+                                                    newChat.put("takerPhoto", selfDocument.getString("profilePicture"));
+                                                    newChat.put("timestamp", FieldValue.serverTimestamp());
+
+                                                    final DocumentReference chatRef = db.collection("chats").document();
+                                                    newChat.put("chat", chatRef.getId());
+                                                    chatRef.set(newChat)
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    Intent intent = new Intent(ItemInfoActivity.this, ChatRoomActivity.class);
+
+                                                                    intent.putExtra("CHAT_MODE", "taker");
+                                                                    intent.putExtra("CHAT_ID", chatRef.getId());
+                                                                    intent.putExtra("OTHER_ID", publisherID);
+                                                                    intent.putExtra("IS_REFERENCED_FROM_ITEM_INFO", true);
+
+                                                                    stopLoading();
+                                                                    startActivity(intent);
+                                                                    finish();
+                                                                }
+                                                            })
+                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception e) {
+                                                                    v.setClickable(true);
+                                                                    stopLoading();
+                                                                    makeHighlightedSnackbar(root, "Error opening chat. Please check your internet connection");
+                                                                }
+                                                            });
+
+                                                } catch (NullPointerException e) {
+                                                    Log.d(TAG, "error setting message button: one of the fields is missing. " + e.getMessage());
+                                                }
+                                            }
+                                        });
+
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+
     }
 
     private void doLike(final boolean isLiked) {

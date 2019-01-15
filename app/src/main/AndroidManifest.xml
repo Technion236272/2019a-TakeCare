@@ -139,8 +139,16 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".activities.ChatRoomActivity" />
         <activity android:name=".activities.ChatLobbyActivity"></activity>
+
+        <activity
+            android:name=".activities.ChatRoomActivity"
+            android:parentActivityName=".activities.ChatLobbyActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.syv.takecare.takecare.activities.ChatLobbyActivity" />
+        </activity>
+
     </application>
 
 </manifest>

@@ -1,5 +1,7 @@
 package com.syv.takecare.takecare.activities;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -14,8 +16,10 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -35,6 +39,7 @@ import com.syv.takecare.takecare.R;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -42,10 +47,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ChatRoomActivity extends TakeCareActivity {
-    private static final String TAG = "TakeCare";
+    private static final String TAG = "TakeCare/ChatRoom";
 
     private ConstraintLayout root;
     private FloatingActionButton sendButton;
+    private Toolbar toolbar;
     private EditText userInput;
     private RecyclerView recyclerView;
     private FirestoreRecyclerAdapter<ChatMessageInformation, MessagesHolder> adapter;
@@ -53,19 +59,26 @@ public class ChatRoomActivity extends TakeCareActivity {
     private String chatId;
     private String otherId;
     private final ReentrantLock lock = new ReentrantLock();
+    private boolean redirectedFromItemInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
+
         root = findViewById(R.id.chat_root);
         sendButton = findViewById(R.id.send_button);
+        toolbar = findViewById(R.id.chat_toolbar);
+        setToolbar(toolbar);
         userInput = findViewById(R.id.user_input_text);
         recyclerView = findViewById(R.id.chat_recycler_view);
         Intent creationIntent = getIntent();
         chatMode = creationIntent.getStringExtra("CHAT_MODE");
         chatId = creationIntent.getStringExtra("CHAT_ID");
         otherId = creationIntent.getStringExtra("OTHER_ID");
+        redirectedFromItemInfo = creationIntent.hasExtra("IS_REFERENCED_FROM_ITEM_INFO");
+
+        Log.d(TAG, "chat activity referenced from ItemInfoActivity: " + redirectedFromItemInfo);
 
         Query query = db.collection("chats").document(chatId).collection("messages")
                 .orderBy("timestamp", Query.Direction.DESCENDING);
@@ -147,6 +160,27 @@ public class ChatRoomActivity extends TakeCareActivity {
         adapter.stopListening();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (redirectedFromItemInfo) {
+            Intent intent = new Intent(this, ChatLobbyActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private class UploadMessage extends AsyncTask<String, Void, Boolean> {
 
         @Override
@@ -178,4 +212,11 @@ public class ChatRoomActivity extends TakeCareActivity {
 
     }
 
+    private void setToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+    }
 }
