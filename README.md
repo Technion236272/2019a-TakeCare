@@ -21,7 +21,6 @@ Join the sharing revolution: help brighten someone's day, and also help the worl
 * [Firebase](https://firebase.google.com) - Backend server for storage and user authentications, as well as API provider
 * [FirebaseUI](https://github.com/firebase/FirebaseUI-Android) - Used to sync lists with Firebase to create RT feeds
 * [Glide](https://bumptech.github.io/glide/) - Used for loading image URLs from the server
-* [Azoft/CarouselLayoutManager](https://github.com/Azoft/CarouselLayoutManager) - Used for lists' display
 * [Facebook Login](https://developers.facebook.com/docs/facebook-login/android) - Integration with Facebook accounts
 * [Gradle](https://gradle.org/) - Dependency Management
 
