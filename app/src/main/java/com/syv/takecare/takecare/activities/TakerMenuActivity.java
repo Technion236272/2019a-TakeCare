@@ -482,15 +482,6 @@ public class TakerMenuActivity extends TakeCareActivity
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);
             return false;
-        } else if (id == R.id.nav_favorites) {
-            //TODO: remove this when favorites is implemented
-            makeHighlightedSnackbar(rootLayout, "Filtering by favorites will be added in the future");
-            item.setChecked(false);
-            currentDrawerChecked.setChecked(true);
-            DrawerLayout drawer = findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
-            mapViewEnabled = false;
-            return false;
         } else if (id == R.id.nav_about) {
             intent = new Intent(this, AboutActivity.class);
             startActivity(intent);

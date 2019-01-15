@@ -41,6 +41,7 @@ public class MessagingBaseFragment extends Fragment {
     protected static final String RECYCLER_STATE_KEY = "KEY_RECYCLER_STATE";
     public static final String CHAT_ID = "CHAT_ID";
     public static final String CHAT_MODE = "CHAT_MODE";
+    public static final String ITEM_ID = "ITEM_ID";
     public static final String OTHER_ID = "OTHER_ID";
 
     protected RecyclerView recyclerView;
@@ -176,6 +177,7 @@ public class MessagingBaseFragment extends Fragment {
                         intent.putExtra(CHAT_ID, model.getChat());
                         intent.putExtra(CHAT_MODE, chatMode);
                         intent.putExtra(OTHER_ID, otherID);
+                        intent.putExtra(ITEM_ID, model.getItem());
                         startActivity(intent);
                     }
                 });

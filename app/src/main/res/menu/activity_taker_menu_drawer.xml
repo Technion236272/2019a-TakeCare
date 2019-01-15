@@ -42,37 +42,40 @@
                     android:checkable="true"
                     android:icon="@drawable/ic_treasure"
                     android:title="@string/nav_other" />
-                <item
-                    android:id="@+id/nav_favorites"
-                    android:checkable="true"
-                    android:icon="@drawable/ic_star"
-                    android:title="@string/nav_favorites" />
             </group>
         </menu>
     </item>
 
     <group
-        android:id="@+id/settings_group">
-        <item
-            android:id="@+id/nav_requested_items"
-            android:checkable="true"
-            android:icon="@drawable/ic_handshake"
-            android:title="@string/nav_requested_items" />
-        <item
-            android:id="@+id/nav_my_items"
-            android:checkable="true"
-            android:icon="@drawable/ic_give"
-            android:title="@string/nav_my_items" />
-        <item
-            android:id="@+id/nav_manage_favorites"
-            android:checkable="true"
-            android:icon="@drawable/ic_add_favorite"
-            android:title="@string/nav_manage_favorites" />
+        android:id="@+id/chat_group">
         <item
             android:id="@+id/nav_chat"
             android:checkable="true"
             android:icon="@drawable/ic_chat"
             android:title="@string/nav_chat" />
+    </group>
+
+    <group
+        android:id="@+id/item_management_group">
+
+    </group>
+    <item
+        android:id="@+id/nav_my_items"
+        android:checkable="true"
+        android:icon="@drawable/ic_give"
+        android:title="@string/nav_my_items" />
+    <item
+        android:id="@+id/nav_requested_items"
+        android:checkable="true"
+        android:icon="@drawable/ic_handshake"
+        android:title="@string/nav_requested_items" />
+    <group
+        android:id="@+id/settings_group">
+        <item
+            android:id="@+id/nav_manage_favorites"
+            android:checkable="true"
+            android:icon="@drawable/ic_add_favorite"
+            android:title="@string/nav_manage_favorites" />
         <item
             android:id="@+id/nav_user_settings"
             android:checkable="true"

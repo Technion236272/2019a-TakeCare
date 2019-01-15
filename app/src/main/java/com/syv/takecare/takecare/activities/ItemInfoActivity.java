@@ -69,6 +69,7 @@ import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.POJOs.RequestedByCardHolder;
 import com.syv.takecare.takecare.POJOs.RequesterCardInformation;
 
+import java.text.BreakIterator;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -87,6 +88,7 @@ public class ItemInfoActivity extends TakeCareActivity {
     private RelativeLayout root;
     private Toolbar toolbar;
     private Toolbar enlargedPhotoToolbar;
+    private TextView enlargedPhotoToolbarTitle;
     private ImageView itemImageView;
     private TextView itemTitleView;
     private TextView itemDescriptionView;
@@ -145,6 +147,7 @@ public class ItemInfoActivity extends TakeCareActivity {
         supportPostponeEnterTransition();
         toolbar = findViewById(R.id.item_info_toolbar);
         enlargedPhotoToolbar = findViewById(R.id.enlarged_item_info_toolbar);
+        enlargedPhotoToolbarTitle = findViewById(R.id.enlarged_item_info_toolbar_title);
         setToolbar(toolbar);
 
         itemImageView = findViewById(R.id.item_image);
@@ -218,7 +221,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         String title = document.getString("title");
                         itemTitleView.setText(title);
-                        enlargedPhotoToolbar.setTitle(title);
+                        enlargedPhotoToolbarTitle.setText(title);
 
                         if (document.getString("photo") != null) {
                             Log.d(TAG, "Found item photo. Fetched picture url: "
@@ -370,6 +373,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                 intent.putExtra("CHAT_MODE", "taker");
                 intent.putExtra("CHAT_ID", chatDocument.getId());
                 intent.putExtra("OTHER_ID", publisherID);
+                intent.putExtra("ITEM_ID", itemId);
                 intent.putExtra("IS_REFERENCED_FROM_ITEM_INFO", true);
 
                 startActivity(intent);
@@ -425,6 +429,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                                                                     intent.putExtra("CHAT_MODE", "taker");
                                                                     intent.putExtra("CHAT_ID", chatRef.getId());
                                                                     intent.putExtra("OTHER_ID", publisherID);
+                                                                    intent.putExtra("ITEM_ID", itemId);
                                                                     intent.putExtra("IS_REFERENCED_FROM_ITEM_INFO", true);
 
                                                                     stopLoading();

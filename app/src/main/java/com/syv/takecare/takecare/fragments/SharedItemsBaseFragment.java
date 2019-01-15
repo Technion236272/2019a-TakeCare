@@ -1,7 +1,6 @@
 package com.syv.takecare.takecare.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -36,7 +35,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.syv.takecare.takecare.POJOs.*;
 import com.syv.takecare.takecare.customViews.FeedRecyclerView;
-import com.syv.takecare.takecare.activities.ItemInfoActivity;
 import com.syv.takecare.takecare.R;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -321,7 +319,7 @@ public class SharedItemsBaseFragment extends Fragment {
             public ItemsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
                 View view;
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card_carousel, viewGroup, false);
+                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card_horizontal, viewGroup, false);
 
                 } else {
                     view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card, viewGroup, false);

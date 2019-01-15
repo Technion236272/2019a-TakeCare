@@ -210,6 +210,8 @@
 
     <!-- Chat Lobby Strings -->
     <string name="empty_chat_lobby">You have no messages</string>
+    <string name="chat_lobby_title">Chat</string>
+
 
     <!--Chat -->
     <string name="accept_button_text">Accept Request</string>

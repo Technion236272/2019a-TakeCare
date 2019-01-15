@@ -473,7 +473,7 @@ public class RequestedItemsBaseFragment extends Fragment {
             public ItemsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
                 View view;
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card_carousel, viewGroup, false);
+                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card_horizontal, viewGroup, false);
 
                 } else {
                     view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.taker_feed_card, viewGroup, false);

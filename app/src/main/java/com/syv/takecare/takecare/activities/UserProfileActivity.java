@@ -105,7 +105,7 @@ public class UserProfileActivity extends TakeCareActivity {
     private File selectedImageFile;
     private Uri selectedImage;
 
-    private static int APP_PERMISSION_REQUEST_CAMERA;
+    private static int APP_PERMISSION_REQUEST_CAMERA = 100;
     private final static int REQUEST_CAMERA = 1;
     private final static int SELECT_IMAGE = 2;
 

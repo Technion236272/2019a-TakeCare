@@ -15,8 +15,8 @@
 
     <ImageView
         android:id="@+id/nav_user_picture"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
+        android:layout_width="76dp"
+        android:layout_height="76dp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:focusable="true"
