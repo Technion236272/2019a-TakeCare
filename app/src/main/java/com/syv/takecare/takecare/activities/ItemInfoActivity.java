@@ -63,7 +63,7 @@ import com.google.firebase.firestore.Transaction;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.ortiz.touchview.TouchImageView;
-import com.syv.takecare.takecare.UserProfileFragment;
+import com.syv.takecare.takecare.fragments.UserProfileFragment;
 import com.syv.takecare.takecare.customViews.FeedRecyclerView;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.POJOs.RequestedByCardHolder;

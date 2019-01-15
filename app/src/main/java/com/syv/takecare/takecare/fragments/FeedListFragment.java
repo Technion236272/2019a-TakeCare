@@ -42,7 +42,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.syv.takecare.takecare.POJOs.*;
-import com.syv.takecare.takecare.UserProfileFragment;
 import com.syv.takecare.takecare.activities.ItemInfoActivity;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.activities.TakerMenuActivity;

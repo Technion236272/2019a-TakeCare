@@ -10,14 +10,8 @@
         android:id="@+id/login_background_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        android:scaleType="centerCrop"
         android:alpha="0.95"
+        android:scaleType="centerCrop"
         android:src="@drawable/background_image_mq"
         android:tint="#6F000000"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -26,15 +20,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
+        android:id="@+id/title_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="84dp"
         android:padding="45dp"
-        app:layout_constraintBottom_toTopOf="@id/facebook_login_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.110000014">
+        app:layout_constraintTop_toTopOf="parent">
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/login_activity_title"
@@ -46,49 +40,49 @@
             app:autoSizeTextType="uniform"
             app:fontFamily="@font/rambla_bold" />
     </FrameLayout>
-    <com.facebook.login.widget.LoginButton
+
+    <com.facebook.login.widget.LoginButton xmlns:fb="http://schemas.android.com/apk/res-auto"
         android:id="@+id/facebook_login_button"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         app:layout_constraintBottom_toTopOf="@+id/google_login_button"
-        app:layout_constraintEnd_toEndOf="@+id/sign_up_with_email_button"
-        app:layout_constraintStart_toStartOf="@+id/sign_up_with_email_button" />
+        fb:elevation="40dp"
+        fb:layout_constraintEnd_toEndOf="parent"
+        fb:layout_constraintStart_toStartOf="parent"
+        fb:layout_constraintTop_toBottomOf="@id/title_wrapper" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/google_login_button"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="48dp"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/sign_up_with_email_button"
-        app:layout_constraintEnd_toEndOf="@+id/sign_up_with_email_button"
-        app:layout_constraintStart_toStartOf="@+id/sign_up_with_email_button" />
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/facebook_login_button" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/sign_up_with_email_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/invisible_button"
+        android:layout_height="40dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/manual_sign_up_button"
         android:fontFamily="@font/asap_italic"
-        android:paddingStart="50dp"
-        android:paddingLeft="50dp"
-        android:paddingTop="12dp"
-        android:paddingEnd="50dp"
-        android:paddingRight="50dp"
-        android:paddingBottom="12dp"
+        android:paddingStart="56dp"
+        android:paddingLeft="56dp"
+        android:paddingEnd="56dp"
+        android:paddingRight="56dp"
         android:text="@string/email_signin_text"
-        android:textColor="@color/primary_text"
+        android:textAllCaps="false"
+        android:textColor="@color/icons"
         android:textSize="12sp"
-        app:backgroundTint="@color/secondary_text"
-        app:layout_constraintBottom_toTopOf="@+id/sign_in_layout"
+        app:elevation="3dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.509"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/google_login_button" />
 
     <LinearLayout
         android:id="@+id/sign_in_layout"
@@ -96,35 +90,31 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.51"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp">
+        app:layout_constraintTop_toBottomOf="@+id/sign_up_with_email_button"
+        app:layout_constraintVertical_bias="0.625">
 
         <TextView
             android:id="@+id/sign_in_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="13dp"
-            android:layout_marginLeft="13dp"
             android:text="Already have an account?"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.47"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/sign_in_button_login_screen"
             android:layout_width="60dp"
             android:layout_height="25dp"
-            android:layout_marginEnd="0dp"
-            android:layout_marginRight="0dp"
             android:background="@android:color/transparent"
             android:onClick="onSignInClick"
             android:text="@string/common_signin_button_text"
-            android:textColor="#0000EE"
             android:textAllCaps="false"
+            android:textColor="#0000EE"
             android:textSize="15sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

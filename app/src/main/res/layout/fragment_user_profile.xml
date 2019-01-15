@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="6dp"
                 android:background="@drawable/likes_counter_frame"
                 android:gravity="center"
                 android:maxLines="1"
@@ -57,7 +57,6 @@
                 android:padding="4dp"
                 android:textColor="@color/secondary_text"
                 android:textSize="14sp"
-                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/frag_rating_icon"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -95,20 +94,17 @@
 
         <TextView
             android:id="@+id/frag_about"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/frag_name_layout"
-            android:layout_marginStart="15dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="15dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/text_box"
-            android:ems="10"
-            android:maxLines="8"
+            android:layout_centerHorizontal="true"
+            android:maxLines="6"
+            android:padding="8dp"
             android:scrollbars="vertical"
-            android:padding="4dp"
             android:visibility="gone" />
 
     </RelativeLayout>

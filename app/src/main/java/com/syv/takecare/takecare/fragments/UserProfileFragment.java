@@ -1,4 +1,4 @@
-package com.syv.takecare.takecare;
+package com.syv.takecare.takecare.fragments;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.syv.takecare.takecare.R;
 
 public class UserProfileFragment extends DialogFragment {
 
