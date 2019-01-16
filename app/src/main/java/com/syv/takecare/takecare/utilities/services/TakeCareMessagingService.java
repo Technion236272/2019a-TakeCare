@@ -25,12 +25,14 @@ import com.syv.takecare.takecare.activities.TakeCareActivity;
 
 import java.util.Map;
 
+import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
+
 
 public class TakeCareMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "TakeCare/Messaging";
     private static final String EXTRA_ITEM_ID = "Item Id";
-    private static final int BROADCAST_NOTIFICATION_ID = 2;
+    private static final int BROADCAST_NOTIFICATION_ID = 1;
 
 
     @Override
@@ -93,6 +95,7 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
                 .setLights(getResources().getColor(R.color.colorPrimary), 3000, 3000)
                 .setColor(getResources().getColor(R.color.colorPrimary))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVisibility(VISIBILITY_PUBLIC)
                 .setAutoCancel(true);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

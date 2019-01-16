@@ -25,14 +25,15 @@ exports.onRequestedItemUpdated = db.document('users/{userId}/requestedItems/{ite
 			.then(doc => {
 
 				console.log(doc.data().name + " had his item request accepted!");
-				const msg = "Good news " + doc.data().name + "!\nYour requested item was accepted!";
+				const msg = "Good news " + doc.data().name + "!\nYour requested item was accepted!\nClick here to check it out";
 				let tokens = doc.data().tokens
 				const payload = {
 
 					data: {
 						display_status: "admin_broadcast",
 						title: "TakeCare",
-						body: msg
+						body: msg,
+						item_id: context.params.itemId
 					}
 
 				};
@@ -89,71 +90,29 @@ exports.onItemRemoved = db.document('items/{itemId}').onDelete((snap, context) =
 });
 
 
-//TODO: UNTESTED & UNDEPLOYED! Need to flush DB & add userId field to users' document before deploying
-// Listens to item creations.
-// Sends a notification to all the users who have chosen a keyword that the published item was posted with
-exports.onItemCreated = db.document('items/{itemId}').onCreate((snap, context) => {
-	console.log('Item creation event');
-	const itemKeywords = snap.data().tags;
-	console.log('Item has the following tags: ', itemKeywords);
+// Listens to new messages.
+// Increases a counter that represents the amount of messages in this chat room.
+// Updates the timestamp of the last received message in this chat room.
+exports.onMessageSent = db.document('chats/{chatId}/messages/{messageId}').onCreate((snap, context) => {
+	const chatDocRef = admin.firestore()
+		.collection('chats')
+		.doc(context.params.chatId);
 
-	if (itemKeywords == 'undefined' ||
-		itemKeywords == null) {
-		// User has no favorite keywords - finish
+	return admin.firestore().runTransaction(function(transaction) {
+		return transaction.get(chatDocRef).then(function(chatDoc) {
+			if (!chatDoc.exists) {
+				throw new "Chat room does not exist";
+			}
+			transaction.update(chatDocRef, { messagesCount : chatDoc.data().messagesCount + 1});
+			transaction.update(chatDocRef, { timestamp : snap.data().timestamp});
+			return null;
+		});
+	}).then(function() {
+		console.log("Updated messages counter");
 		return null;
-	}
+	}).catch(function(error) {
+		console.log("Error updating messages counter: ", error);
+		return null;
+	});
 
-	return admin.firestore()
-		.collection('users')
-		.get()
-		.then(function(querySnapshot) {
-			return querySnapshot.forEach(function(doc) {
-				const userKeywords = doc.data().tags;
-				if (userKeywords == 'undefined' ||
-					userKeywords == null) {
-						// User has no favorite keywords - finish
-						return null;
-				}
-
-				// Perform intersection
-				userKeywords.filter(tag => -1 !== itemKeywords.indexOf(tag));
-				if (userKeywords != 'undefined' &&
-					userKeywords != null &&
-					userKeywords.length != null &&
-					userKeywords.length > 0) {
-					// Match found
-					console.log('Found a user interested in this item: ', doc.data().name);
-
-					if (doc.data().userId == snap.data().publisher) {
-						// User is the item's publisher
-						console.log('...but the interested user is the publisher! I won\'t send a notification for them');
-						return null;
-					}
-
-					const payload = {
-
-						data: {
-							display_status: "admin_broadcast",
-							title: "TakeCare",
-							body: "One of your favorites has been posted! Click here to check out the feed"
-						}
-
-					};
-
-					console.log("Sending notification");
-					return admin.messaging().sendToDevice(tokens, payload)
-					.then(function(response) {
-						console.log("Successfully sent wish-listed item notification to " + doc.data().name +"\nResponse: ", response);
-						return response;
-					})
-					.catch(function(error) {
-						console.log("Error sending wish-listed item notification " + doc.data().name + "\nError message: ", error)
-					});
-
-				} else {
-					// No match - finish
-					return null;
-				}
-			})
-		})
 });

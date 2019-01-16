@@ -9,7 +9,9 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -62,6 +64,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ChatRoomActivity extends TakeCareActivity {
     private static final String TAG = "TakeCare/ChatRoom";
+    // This is the minimum time that has to pass between new messages sounds
+    private static final int MESSAGE_SOUND_INTERVAL = 2000;
 
     private RelativeLayout root;
     private ConstraintLayout chatLayout;
@@ -80,6 +84,7 @@ public class ChatRoomActivity extends TakeCareActivity {
     private String chatId;
     private String otherId;
     private boolean redirectedFromItemInfo;
+    private int initialMessagesAmount = Integer.MAX_VALUE;
 
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -92,6 +97,15 @@ public class ChatRoomActivity extends TakeCareActivity {
     private boolean isImageFullscreen;
     private View.OnClickListener minimizer = null;
 
+    private Handler soundHandler = new Handler();
+
+    // This task clears the sound block from the handler, allowing more new messages to play a sound
+    private final Runnable soundTask = new Runnable() {
+        @Override
+        public void run() {
+            soundHandler.removeMessages(0);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +137,8 @@ public class ChatRoomActivity extends TakeCareActivity {
 
         loadToolbarElements();
 
+        getMessagesAmount();
+
         Log.d(TAG, "chat activity referenced from ItemInfoActivity: " + redirectedFromItemInfo);
 
         Query query = db.collection("chats").document(chatId).collection("messages")
@@ -141,7 +157,7 @@ public class ChatRoomActivity extends TakeCareActivity {
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull MessagesHolder holder, int position, @NonNull ChatMessageInformation model) {
+            protected void onBindViewHolder(@NonNull MessagesHolder holder, int position, @NonNull final ChatMessageInformation model) {
                 Log.d("YUVAL", "onBindViewHolder: YUVAL");
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
                 Timestamp time = model.getTimestamp();
@@ -158,6 +174,12 @@ public class ChatRoomActivity extends TakeCareActivity {
                     holder.otherText.setText(model.getMessage());
                     holder.otherText.setVisibility(View.VISIBLE);
                     holder.otherTime.setVisibility(View.VISIBLE);
+                }
+
+                if (!soundHandler.hasMessages(0)) {
+                    soundHandler.removeCallbacksAndMessages(null);
+                    soundHandler.postDelayed(soundTask, MESSAGE_SOUND_INTERVAL);
+                    tryToPlaySound(model.getSender().equals(user.getUid()), getItemCount());
                 }
             }
         };
@@ -185,7 +207,51 @@ public class ChatRoomActivity extends TakeCareActivity {
                 recyclerView.scrollToPosition(0);
             }
         });
+    }
 
+    private boolean tryToPlaySound(boolean isSender, int count) {
+        if (count > initialMessagesAmount) {
+            Log.d(TAG, "new message detected");
+            // Update the amount of already-acknowledged messages
+            initialMessagesAmount = count;
+            // Let the handler know about the successful sound invocation, so it can lock it for a set time
+            soundHandler.sendEmptyMessage(0);
+
+            if (isSender) {
+                Log.d(TAG, "new message sent. playing sound");
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.message_sent_audio);
+                mp.start();
+                return true;
+            } else {
+                Log.d(TAG, "new message received. playing sound");
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.message_received_audio);
+                mp.start();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void getMessagesAmount() {
+        db.collection("chats").document(chatId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Log.d(TAG, "fetching messages amount");
+                        Long count = documentSnapshot.getLong("messagesCount");
+                        if (count != null) {
+                            initialMessagesAmount = count.intValue();
+                            Log.d(TAG, "there are " + initialMessagesAmount + " messages in the chat room");
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "failed to fetch message: " + e.getMessage());
+                    }
+                });
     }
 
     private void loadToolbarElements() {

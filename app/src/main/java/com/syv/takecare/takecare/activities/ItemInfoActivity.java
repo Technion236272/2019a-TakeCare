@@ -417,6 +417,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                                                     newChat.put("takerName", selfDocument.getString("name"));
                                                     newChat.put("takerPhoto", selfDocument.getString("profilePicture"));
                                                     newChat.put("timestamp", FieldValue.serverTimestamp());
+                                                    newChat.put("messagesCount", 0);
 
                                                     final DocumentReference chatRef = db.collection("chats").document();
                                                     newChat.put("chat", chatRef.getId());
