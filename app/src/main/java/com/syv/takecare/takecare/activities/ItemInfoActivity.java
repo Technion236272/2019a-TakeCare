@@ -785,7 +785,7 @@ public class ItemInfoActivity extends TakeCareActivity {
     }
 
     public void requestItem(View view) {
-        final String userId = auth.getCurrentUser().getUid();
+        final String userId = user.getUid();
         final DocumentReference userRef = db.collection("users").document(userId);
         final DocumentReference itemRef = db.collection("items").document(itemId);
         Map<String, Object> doc = new HashMap<>();

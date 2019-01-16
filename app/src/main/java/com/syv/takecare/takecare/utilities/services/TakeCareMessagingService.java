@@ -33,6 +33,8 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
     private static final String TAG = "TakeCare/Messaging";
     private static final String EXTRA_ITEM_ID = "Item Id";
     private static final int BROADCAST_NOTIFICATION_ID = 1;
+    private static final String GROUP_KEY_ITEMS = "TakeCare/Items";
+    private static final String GROUP_KEY_CHAT = "TakeCare/Chat";
 
 
     @Override
@@ -87,15 +89,17 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle(title)
                 .setContentText(message)
+                .setDefaults(NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_VIBRATE)
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(message))
                 .setContentIntent(notificationPendingIntent)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setVibrate(new long[]{500, 500})
+//                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+//                .setVibrate(new long[]{500, 500})
                 .setLights(getResources().getColor(R.color.colorPrimary), 3000, 3000)
                 .setColor(getResources().getColor(R.color.colorPrimary))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(VISIBILITY_PUBLIC)
+                .setGroup(GROUP_KEY_ITEMS)
                 .setAutoCancel(true);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

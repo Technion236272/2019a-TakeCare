@@ -118,6 +118,40 @@ exports.onMessageSent = db.document('chats/{chatId}/messages/{messageId}').onCre
 });
 
 
+
+//Listens to new messages.
+// Sends a notification to the receiving end of a chat message
+exports.onMessageSentNotify = db.document('chats/{chatId}/messages/{messageId}').onCreate((snap, context) => {
+	return admin.firestore()
+	.collection('users')
+	.doc(snap.data().receiver)
+	.get()
+	.then(doc => {
+		console.log('Sending a chat notification to: ', doc.data().name);
+		let tokens = doc.data().tokens
+		const payload = {
+
+			notification: {
+				title: "TakeCare",
+				body: "You have received a new message",
+			}
+
+		};
+
+		console.log("Sending notification");
+		return admin.messaging().sendToDevice(tokens, payload)
+			.then(function(response) {
+				console.log("Successfully sent chat notification\nResponse: ", response);
+				return response;
+			})
+			.catch(function(error) {
+				console.log("Error sending chat notification\nError message: ", error)
+			});
+	});
+});
+
+
+
 //TODO: UNTESTED & UNDEPLOYED! Need to flush DB & add uid field to users' document before deploying
 // Listens to item creations.
 // Sends a notification to all the users who have chosen a keyword that the published item was posted with
