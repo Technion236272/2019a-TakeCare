@@ -764,6 +764,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
     private void uploadItemDataNoPicture(final Map<String, Object> itemInfo) {
         Log.d(TAG, "uploadItemAndPictureData: starting data upload ");
         final DocumentReference documentRef = db.collection("items").document();
+        itemInfo.put("itemId", documentRef.getId());
         documentRef
                 .set(itemInfo)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -804,6 +805,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                                         Log.d(TAG, "uploadItemAndPictureData: storage uri for image fetched successfully ");
                                         itemInfo.put("photo", uri.toString());
                                         final DocumentReference documentRef = db.collection("items").document();
+                                        itemInfo.put("itemId", documentRef.getId());
                                         documentRef
                                                 .set(itemInfo)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -870,7 +872,8 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
         itemInfo.put("pickupMethod", pickupMethod);
         Log.d(TAG, "filled pickup method");
 
-        if (title.getText().toString().isEmpty()) {
+        if (title.getText().toString().isEmpty() || title.getText().toString().equals("text")) {
+            // Sometimes I hate the Google bots
             return formResult.ERROR_TITLE;
         }
         itemInfo.put("title", title.getText().toString());

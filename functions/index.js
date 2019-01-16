@@ -116,3 +116,110 @@ exports.onMessageSent = db.document('chats/{chatId}/messages/{messageId}').onCre
 	});
 
 });
+
+
+//TODO: UNTESTED & UNDEPLOYED! Need to flush DB & add uid field to users' document before deploying
+// Listens to item creations.
+// Sends a notification to all the users who have chosen a keyword that the published item was posted with
+exports.onItemCreatedNotifications = db.document('items/{itemId}').onCreate((snap, context) => {
+	console.log('Item creation event');
+	const itemKeywords = snap.data().tags;
+	console.log('Item has the following tags: ', itemKeywords);
+
+	if (itemKeywords === 'undefined' ||
+		itemKeywords === null) {
+		// User has no favorite keywords - finish
+		return null;
+	}
+
+	let tokens = [];
+
+    const payload = {
+        //TODO: change this to "data" and add relevant fields
+        notification: {
+            title: "TakeCare",
+            body: "One of your favorites has been posted! Click here to check out the feed"
+        }
+    };
+
+
+    return admin.firestore()
+    .collection('users')
+    .get()
+    .then(function(querySnapshot) {
+        return querySnapshot.foreach(function(doc) {
+            console.log('Checking user: ', doc.data().name);
+            const userKeywords = doc.data().tags;
+            if (userKeywords === 'undefined' ||
+                userKeywords === null) {
+                    return null;
+            }
+
+            var hasMatch = false;
+            for (var i = 0; i < itemKeywords.length; i++) {
+                if (userKeywords.includes(itemKeywords[i])) {
+                    hasMatch = true;
+                }
+            }
+
+            if (hasMatch) {
+                // Match found
+                console.log('Found a user interested in this item: ', doc.data().name);
+
+                if (doc.data().uid === snap.data().publisher) {
+                    // User is the item's publisher
+                    console.log('...but the interested user is the publisher! I won\'t send a notification for them\nFOR TESTING PURPOSES I WILL!');
+//    						return null;
+                }
+
+                tokens = tokens.concat(doc.data().tokens);
+                return null;
+            }
+        })
+    })
+    .then(function() {
+        console.log("Sending notification");
+        return admin.messaging().sendToDevice(tokens, payload)
+        .then(function(response) {
+            console.log("Successfully sent wish-listed item notification to " + doc.data().name +"\nResponse: ", response);
+            return response;
+        })
+        .catch(function(error) {
+            console.log("Error sending wish-listed item notification " + doc.data().name + "\nError message: ", error)
+        });
+    })
+});
+
+
+// Listens to item creations.
+// Creates a tag document for each tag associated with the uploaded item
+exports.onItemCreatedAddTags = db.document('items/{itemID}').onCreate((snap, context) => {
+	console.log('Item creation event');
+	const itemKeywords = snap.data().tags;
+	if (itemKeywords === null ||
+		itemKeywords === 'undefined') {
+			return null;
+	}
+
+	var batch = admin.firestore().batch();
+
+	for (var i = 0; i < itemKeywords.length; i++) {
+	    console.log('Creating document for: ', itemKeywords[i]);
+
+		var tagObject = {
+			tag : itemKeywords[i],
+		};
+
+		var tagDocRef = admin.firestore().doc('tags/' + itemKeywords[i]);
+		batch.set(tagDocRef, { tag : itemKeywords[i] });
+	}
+
+	batch.commit().then(function () {
+	    console.log('Finished adding the item keywords');
+	    return 0;
+	})
+	.catch(function(error) {
+	    console.log('Error adding the item keywords: ', error);
+	    return null;
+	});
+})

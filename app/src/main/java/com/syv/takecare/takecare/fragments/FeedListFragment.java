@@ -45,6 +45,7 @@ import com.syv.takecare.takecare.POJOs.*;
 import com.syv.takecare.takecare.activities.ItemInfoActivity;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.activities.TakerMenuActivity;
+import com.syv.takecare.takecare.activities.UserProfileActivity;
 
 import java.util.HashSet;
 import java.util.List;
@@ -405,6 +406,7 @@ public class FeedListFragment extends Fragment {
                 }).start();
 
                 if (!user.getUid().equals(model.getPublisher())) {
+                    // Publisher is not the user, so user might want to see information about the publisher
                     holder.profilePhoto.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -412,6 +414,17 @@ public class FeedListFragment extends Fragment {
                             UserProfileFragment dialogFragment =
                                     UserProfileFragment.newInstance(model.getPublisher());
                             dialogFragment.show(fm, null);
+                        }
+                    });
+                } else {
+                    // Publisher is the user: clicking on profile picture will open the profile page
+                    holder.profilePhoto.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (getActivity() != null) {
+                                Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+                                startActivity(intent);
+                            }
                         }
                     });
                 }

@@ -108,13 +108,13 @@ public class LoginScreenFragment extends Fragment {
             }
         });
 
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        boolean isFacebookLoggedIn = accessToken != null && !accessToken.isExpired();
-
-        if (isFacebookLoggedIn) {
-            //TODO: handle when user is already signed in with facebook account
-
-        }
+//        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+//        boolean isFacebookLoggedIn = accessToken != null && !accessToken.isExpired();
+//
+//        if (isFacebookLoggedIn) {
+//            TODO: handle when user is already signed in with facebook account
+//
+//        }
 
         callbackManager = CallbackManager.Factory.create();
         LoginButton loginButton = view.findViewById(R.id.facebook_login_button);
@@ -131,7 +131,6 @@ public class LoginScreenFragment extends Fragment {
             public void onCancel() {
                 Log.d(TAG, "facebook:onCancel");
             }
-
             @Override
             public void onError(FacebookException e) {
                 Log.d(TAG, "facebook:onError", e);
@@ -294,8 +293,8 @@ public class LoginScreenFragment extends Fragment {
         if (profilePicture != null) {
             userInfo.put("profilePicture", fixImageQuality(profilePicture, user.getProviderId()));
         }
-        userInfo.put("rating", 0);
-        userInfo.put("ratingCount", 0);
+        userInfo.put("likes", 0);
+        userInfo.put("uid", uid);
 
         db.collection("users").document(uid)
                 .get()

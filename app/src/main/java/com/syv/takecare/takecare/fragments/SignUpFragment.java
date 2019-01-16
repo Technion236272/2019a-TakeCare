@@ -390,9 +390,9 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
         userInfo.put("name", name);
         userInfo.put("email", email);
         userInfo.put("password", password);
-        userInfo.put("rating", 0);
-        userInfo.put("ratingCount", 0);
+        userInfo.put("likes", 0);
         String uid = user.getUid();
+        userInfo.put("uid", uid);
         db.collection("users").document(uid)
                 .set(userInfo)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
