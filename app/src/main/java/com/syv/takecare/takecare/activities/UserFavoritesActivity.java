@@ -417,16 +417,6 @@ public class UserFavoritesActivity extends TakeCareActivity {
         Log.d(TAG, "set the auto-complete adapter");
     }
 
-
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        View view = activity.getCurrentFocus();
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

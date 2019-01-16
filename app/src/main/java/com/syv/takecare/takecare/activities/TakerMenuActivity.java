@@ -211,7 +211,7 @@ public class TakerMenuActivity extends TakeCareActivity
                         searchButton.callOnClick();
                     if (keyCode == KeyEvent.KEYCODE_BACK)
                         TakerMenuActivity.this.onBackPressed();
-                    return true;
+                    return false;
                 }
             });
         } catch (NullPointerException e) {
@@ -402,6 +402,10 @@ public class TakerMenuActivity extends TakeCareActivity
         if (filterPopupMenu.getVisibility() == View.GONE) {
             filterPopupMenu.setVisibility(VISIBLE);
         } else {
+            // Close the keyboard if it is open
+            hideKeyboard(this);
+            // Flush the search bar if the user has written to it
+            searchBar.setText("");
             filterPopupMenu.setVisibility(View.GONE);
         }
     }

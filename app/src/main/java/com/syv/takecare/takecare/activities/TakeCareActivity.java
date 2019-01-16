@@ -1,6 +1,7 @@
 package com.syv.takecare.takecare.activities;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -190,7 +192,7 @@ public class TakeCareActivity extends AppCompatActivity {
     }
 
     /**
-     * Changes the status bar's color
+     * Changes the status bar's color (only works on API 21+)
      * @param color: the selected color for the status bar
      */
     protected void changeStatusBarColor(int color) {
@@ -199,5 +201,19 @@ public class TakeCareActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(color);
         }
+    }
+
+    /**
+     * Hides the virtual keyboard in the activity, if it is open
+     * @param activity: activity in which the keyboard should be hidden
+     */
+    protected static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) {
+            // There is no view to pass the focus to, so we create a new view
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
