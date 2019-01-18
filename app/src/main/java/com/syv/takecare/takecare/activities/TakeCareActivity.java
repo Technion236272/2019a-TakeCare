@@ -46,6 +46,8 @@ public class TakeCareActivity extends AppCompatActivity {
     // This field indicates whether the activity is running or not
     protected static boolean isActivityRunning = false;
 
+    public static String chatPartnerId = null;
+
     // IMPORTANT - for safety reasons, these variables must never be public
     protected FirebaseFirestore db;
     protected StorageReference storage;

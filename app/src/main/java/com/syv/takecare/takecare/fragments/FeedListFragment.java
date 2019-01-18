@@ -264,7 +264,7 @@ public class FeedListFragment extends Fragment {
 
                 holder.setIsRecyclable(false);
 
-                final String itemId = getSnapshots().getSnapshot(holder.getAdapterPosition()).getId();
+                final String itemId = model.getItemId();
                 holder.itemTitle.setText(model.getTitle());
                 RequestOptions requestOptions = new RequestOptions();
                 requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
@@ -334,30 +334,19 @@ public class FeedListFragment extends Fragment {
                         break;
                 }
 
-                holder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
-                db.collection("users").document(model.getPublisher())
-                        .get()
-                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                holder.itemPublisher.setText(documentSnapshot.getString("name"));
-                                if (documentSnapshot.getString("profilePicture") != null) {
-                                    if (getActivity() == null) {
-                                        return;
-                                    }
-                                    Glide.with(getActivity().getApplicationContext())
-                                            .load(documentSnapshot.getString("profilePicture"))
-                                            .apply(RequestOptions.circleCropTransform())
-                                            .into(holder.profilePhoto);
-                                }
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
+                holder.itemPublisher.setText(model.getUserName());
+                if (model.getUserProfilePicture() != null) {
+                    if (getActivity() == null) {
+                        return;
+                    }
+                    Glide.with(getActivity().getApplicationContext())
+                            .load(model.getUserProfilePicture())
+                            .apply(RequestOptions.circleCropTransform())
+                            .into(holder.profilePhoto);
+                } else {
+                    holder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
+                }
 
-                            }
-                        });
                 holder.itemCategory.setImageResource(categoryId);
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
 

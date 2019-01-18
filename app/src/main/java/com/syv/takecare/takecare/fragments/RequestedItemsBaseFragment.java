@@ -241,32 +241,19 @@ public class RequestedItemsBaseFragment extends Fragment {
                 break;
         }
 
-        holder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
-        db.collection("users").document(documentSnapshot.getString("publisher"))
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Log.d(TAG, "Found the user: " + documentSnapshot);
-                        holder.itemPublisher.setText(documentSnapshot.getString("name"));
-                        if (documentSnapshot.getString("profilePicture") != null) {
-                            try {
-                                Glide.with(getActivity().getApplicationContext())
-                                        .load(documentSnapshot.getString("profilePicture"))
-                                        .apply(RequestOptions.circleCropTransform())
-                                        .into(holder.profilePhoto);
-                            } catch (NullPointerException e) {
-                                Log.d(TAG, "could not load picture");
-                            }
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+        holder.itemPublisher.setText(documentSnapshot.getString("userName"));
+        if (documentSnapshot.getString("userProfilePicture") != null) {
+            if (getActivity() == null) {
+                return;
+            }
+            Glide.with(getActivity().getApplicationContext())
+                    .load(documentSnapshot.getString("userProfilePicture"))
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(holder.profilePhoto);
+        } else {
+            holder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
+        }
 
-                    }
-                });
         holder.itemCategory.setImageResource(categoryId);
         holder.itemPickupMethod.setImageResource(pickupMethodId);
         activateViewHolderIcons(holder, categoryId, pickupMethodId);
@@ -453,8 +440,9 @@ public class RequestedItemsBaseFragment extends Fragment {
                                     public void onClick(View v) {
                                         Intent intent = new Intent(getContext(), ItemInfoActivity.class);
                                         intent.putExtra(Intent.EXTRA_UID, user.getUid());
-                                        String path = model.getItemRef().getPath();
-                                        intent.putExtra(EXTRA_ITEM_ID, path.replace("items/", ""));
+                                        intent.putExtra(EXTRA_ITEM_ID, documentSnapshot.getString("id"));
+//                                        String path = model.getItemRef().getPath();
+//                                        intent.putExtra(EXTRA_ITEM_ID, path.replace("items/", ""));
                                         startActivity(intent);
                                     }
                                 });

@@ -1,6 +1,7 @@
 package com.syv.takecare.takecare.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.syv.takecare.takecare.POJOs.*;
+import com.syv.takecare.takecare.activities.ItemInfoActivity;
 import com.syv.takecare.takecare.customViews.FeedRecyclerView;
 import com.syv.takecare.takecare.R;
 
@@ -196,7 +198,7 @@ public class SharedItemsBaseFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, int position, @NonNull FeedCardInformation model) {
                 Log.d(TAG, "model " + model.getPhoto());
-                final String itemId = getSnapshots().getSnapshot(holder.getAdapterPosition()).getId();
+                final String itemId = model.getItemId();
 
                 switch (status) {
                     case 0:
@@ -270,31 +272,18 @@ public class SharedItemsBaseFragment extends Fragment {
                         break;
                 }
 
-                holder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
-                db.collection("users").document(model.getPublisher())
-                        .get()
-                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                holder.itemPublisher.setText(documentSnapshot.getString("name"));
-                                if (documentSnapshot.getString("profilePicture") != null) {
-                                    try {
-                                        Glide.with(getActivity().getApplicationContext())
-                                                .load(documentSnapshot.getString("profilePicture"))
-                                                .apply(RequestOptions.circleCropTransform())
-                                                .into(holder.profilePhoto);
-                                    } catch (NullPointerException e) {
-                                        Log.d(TAG, "could not load picture");
-                                    }
-                                }
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-
-                            }
-                        });
+                holder.itemPublisher.setText(model.getUserName());
+                if (model.getUserProfilePicture() != null) {
+                    if (getActivity() == null) {
+                        return;
+                    }
+                    Glide.with(getActivity().getApplicationContext())
+                            .load(model.getUserProfilePicture())
+                            .apply(RequestOptions.circleCropTransform())
+                            .into(holder.profilePhoto);
+                } else {
+                    holder.profilePhoto.setImageResource(R.drawable.ic_user_purple);
+                }
 
                 holder.itemCategory.setImageResource(categoryId);
                 holder.itemPickupMethod.setImageResource(pickupMethodId);
@@ -303,15 +292,15 @@ public class SharedItemsBaseFragment extends Fragment {
 
                 activateViewHolderIcons(holder, model);
 
-//                holder.card.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        Intent intent = new Intent(getContext(), ItemInfoActivity.class);
-//                        intent.putExtra(EXTRA_ITEM_ID, itemId);
-//                        intent.putExtra(Intent.EXTRA_UID, user.getUid());
-//                        startActivity(intent);
-//                    }
-//                });
+                holder.card.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getContext(), ItemInfoActivity.class);
+                        intent.putExtra(EXTRA_ITEM_ID, itemId);
+                        intent.putExtra(Intent.EXTRA_UID, user.getUid());
+                        startActivity(intent);
+                    }
+                });
             }
 
             @NonNull

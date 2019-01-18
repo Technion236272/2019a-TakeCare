@@ -3,18 +3,21 @@ package com.syv.takecare.takecare.POJOs;
 import java.util.List;
 
 public class FeedCardInformation {
+    private String itemId;
     private String title;
     private String photo;
     private String publisher;
     private String category;
     private String pickupMethod;
+    private String userName;
+    private String userProfilePicture;
     private List<String> tags;
     private int status;
 
     /**
      * Empty constructor for the FirestoreRecyclerAdapter
      */
-    public FeedCardInformation(){
+    public FeedCardInformation() {
 
     }
 
@@ -74,5 +77,33 @@ public class FeedCardInformation {
 
     public void setPickupMethod(String pickupMethod) {
         this.pickupMethod = pickupMethod;
+    }
+
+    public String getUserProfilePicture() {
+        return userProfilePicture;
+    }
+
+    public void setUserProfilePicture(String userProfilePicture) {
+        this.userProfilePicture = userProfilePicture;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 }

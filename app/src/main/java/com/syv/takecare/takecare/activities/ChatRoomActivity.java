@@ -209,6 +209,8 @@ public class ChatRoomActivity extends TakeCareActivity {
         });
     }
 
+
+
     private boolean tryToPlaySound(boolean isSender, int count) {
         if (count > initialMessagesAmount) {
             Log.d(TAG, "new message detected");
@@ -343,12 +345,14 @@ public class ChatRoomActivity extends TakeCareActivity {
     protected void onStart() {
         super.onStart();
         adapter.startListening();
+        chatPartnerId = otherId;
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         adapter.stopListening();
+        chatPartnerId = null;
     }
 
     @Override

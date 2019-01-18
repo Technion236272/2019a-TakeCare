@@ -61,6 +61,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
@@ -106,7 +107,7 @@ import javax.annotation.Nullable;
 
 import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 
-public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCallback{
+public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCallback {
 
     private final static String TAG = "TakeCare/GiverForm";
     private static final int POPUP_ACTIVE_DURATION = 6000;
@@ -177,12 +178,15 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location mLastKnownLocation;
     private final LatLng mDefaultLocation = new LatLng(32.777751, 35.021508);
-    enum locationButtonStateEnum{
+
+    enum locationButtonStateEnum {
         ENTER_LOCATION,
         EDIT_LOCATION,
         SAVE_LOCATION
     }
+
     private locationButtonStateEnum locationButtonState;
+
     enum formResult {
         ERROR_UNKNOWN,
         ERROR_TITLE,
@@ -328,7 +332,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                 if (!mLocationPermissionGranted) {
                     getLocationPermission();
                 }
-                switch (locationButtonState){
+                switch (locationButtonState) {
                     case ENTER_LOCATION:
                         mapWrapper.setVisibility(View.VISIBLE);
                         locationButtonState = locationButtonStateEnum.SAVE_LOCATION;
@@ -380,7 +384,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                if(marker != null){
+                if (marker != null) {
                     marker.remove();
                 }
                 MarkerOptions selection = new MarkerOptions();
@@ -389,6 +393,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
             }
         });
     }
+
     private void updateLocationUI() {
         if (mMap == null) {
             return;
@@ -400,6 +405,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
             Log.e("Exception: %s", e.getMessage());
         }
     }
+
     private void getDeviceLocation() {
         /*
          * Get the best and most recent location of the device, which may be null in rare
@@ -432,6 +438,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
             Log.e("Exception: %s", e.getMessage());
         }
     }
+
     private void getLocationPermission() {
         /*
          * Request location permission, so that we can get the location of the
@@ -448,6 +455,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                     1);
         }
     }
+
     private void initWidgets() {
         scrollView = findViewById(R.id.form_scroll);
         pickup = findViewById(R.id.pickup_method_spinner);
@@ -727,8 +735,8 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
         dialog.setMessage("Publishing item...");
         dialog.show();
         Map<String, Object> itemInfo = new HashMap<>();
-        if(marker != null){
-            itemInfo.put("location",new GeoPoint(marker.getPosition().latitude,marker.getPosition().longitude));
+        if (marker != null) {
+            itemInfo.put("location", new GeoPoint(marker.getPosition().latitude, marker.getPosition().longitude));
         }
         final FirebaseUser user = auth.getCurrentUser();
         FieldValue timestamp = serverTimestamp();
@@ -765,18 +773,40 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
         Log.d(TAG, "uploadItemAndPictureData: starting data upload ");
         final DocumentReference documentRef = db.collection("items").document();
         itemInfo.put("itemId", documentRef.getId());
-        documentRef
-                .set(itemInfo)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection("users").document(user.getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "uploadItemAndPictureData: item added successfully ");
-                        dialog.dismiss();
-                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
-                                Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(GiverFormActivity.this, TakerMenuActivity.class);
-                        startActivity(intent);
-                        finish();
+                    public void onSuccess(DocumentSnapshot userDoc) {
+                        String profilePicture = userDoc.getString("profilePicture");
+                        String name = userDoc.getString("name");
+                        if (profilePicture != null) {
+                            itemInfo.put("userProfilePicture", profilePicture);
+                        }
+
+                        if (name != null) {
+                            itemInfo.put("userName", name);
+                        }
+                        documentRef
+                                .set(itemInfo)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "uploadItemAndPictureData: item added successfully ");
+                                        dialog.dismiss();
+                                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
+                                                Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(GiverFormActivity.this, TakerMenuActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        dialog.dismiss();
+                                    }
+                                });
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -806,18 +836,42 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                                         itemInfo.put("photo", uri.toString());
                                         final DocumentReference documentRef = db.collection("items").document();
                                         itemInfo.put("itemId", documentRef.getId());
-                                        documentRef
-                                                .set(itemInfo)
-                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+
+                                        db.collection("users").document(user.getUid())
+                                                .get()
+                                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                     @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                        Log.d(TAG, "uploadItemAndPictureData: item added successfully ");
-                                                        dialog.dismiss();
-                                                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
-                                                                Toast.LENGTH_SHORT).show();
-                                                        Intent intent = new Intent(GiverFormActivity.this, TakerMenuActivity.class);
-                                                        startActivity(intent);
-                                                        finish();
+                                                    public void onSuccess(DocumentSnapshot userDoc) {
+                                                        String profilePicture = userDoc.getString("profilePicture");
+                                                        String name = userDoc.getString("name");
+                                                        if (profilePicture != null) {
+                                                            itemInfo.put("userProfilePicture", profilePicture);
+                                                        }
+
+                                                        if (name != null) {
+                                                            itemInfo.put("userName", name);
+                                                        }
+
+                                                        documentRef
+                                                                .set(itemInfo)
+                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+                                                                        Log.d(TAG, "uploadItemAndPictureData: item added successfully ");
+                                                                        dialog.dismiss();
+                                                                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
+                                                                                Toast.LENGTH_SHORT).show();
+                                                                        Intent intent = new Intent(GiverFormActivity.this, TakerMenuActivity.class);
+                                                                        startActivity(intent);
+                                                                        finish();
+                                                                    }
+                                                                })
+                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        dialog.dismiss();
+                                                                    }
+                                                                });
                                                     }
                                                 })
                                                 .addOnFailureListener(new OnFailureListener() {
