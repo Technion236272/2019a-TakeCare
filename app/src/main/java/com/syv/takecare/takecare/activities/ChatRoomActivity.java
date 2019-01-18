@@ -158,7 +158,7 @@ public class ChatRoomActivity extends TakeCareActivity {
 
             @Override
             protected void onBindViewHolder(@NonNull MessagesHolder holder, int position, @NonNull final ChatMessageInformation model) {
-                Log.d("YUVAL", "onBindViewHolder: YUVAL");
+                Log.d(TAG, "onBindViewHolder: started");
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
                 Timestamp time = model.getTimestamp();
                 if (time == null) {
@@ -186,11 +186,11 @@ public class ChatRoomActivity extends TakeCareActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("YUVAL", "YUVAL chat: " + chatId);
-                Log.d("YUVAL", "YUVAL other ID " + otherId);
-                Log.d("YUVAL", "onClick: mode " + chatMode);
+                Log.d(TAG, "chat: " + chatId);
+                Log.d(TAG, "other\'s ID " + otherId);
+                Log.d(TAG, "onClick: mode " + chatMode);
                 String messageToSend = userInput.getText().toString();
-                if (messageToSend.isEmpty()) {
+                if (messageToSend.replace(" ", "").isEmpty()) {
                     return;
                 }
                 new UploadMessage().execute(messageToSend);

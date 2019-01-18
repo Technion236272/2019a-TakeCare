@@ -202,6 +202,13 @@
     <string name="payload_item_request_message">item_request_message</string>
     <string name="payload_data_message_title">title</string>
     <string name="payload_data_message_body">body</string>
+    <string name="payload_data_notification_type">notification_type</string>
+    <string name="payload_data_sender_id">sender_id</string>
+    <string name="payload_data_item_id">item_id</string>
+    <string name="payload_data_sender_photo">sender_photo_url</string>
+    <string name="payload_data_notification_time">notification_time</string>
+    <string name="payload_data_sender_msg">sender_msg</string>
+    <string name="payload_data_sender_name">sender_name</string>
 
 
     <!--MISC-->
@@ -215,10 +222,6 @@
 
     <!--Chat -->
     <string name="accept_button_text">Accept Request</string>
-    <string name="payload_data_notification_type">notification_type</string>
-    <string name="payload_data_sender_id">sender_id</string>
-    <string name="payload_data_item_id">item_id</string>
-    <string name="payload_data_sender_photo">sender_photo_url</string>
 
 
     <!---->

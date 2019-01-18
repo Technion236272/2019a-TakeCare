@@ -5,12 +5,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
@@ -26,10 +28,13 @@ import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.activities.TakeCareActivity;
 import com.syv.takecare.takecare.activities.TakerMenuActivity;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
+import static com.squareup.okhttp.internal.http.HttpDate.parse;
 
 
 public class TakeCareMessagingService extends FirebaseMessagingService {
@@ -110,7 +115,7 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
         if (senderPhotoURL != null) {
             FutureTarget<Bitmap> futureTarget = Glide.with(this)
                     .asBitmap()
-                    .load(senderPhotoURL) //TODO: change this to picture
+                    .load(senderPhotoURL)
                     .submit();
 
             try {
@@ -125,22 +130,32 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
             Glide.with(this).clear(futureTarget);
         }
 
+//        long notificationMilliseconds = parse(time).getTime();
+
+        Resources resources = getResources(),
+                systemResources = Resources.getSystem();
+
         // Add the notification's properties
         builder.setSmallIcon(R.drawable.ic_app_notifications)
                 .setColor(getResources().getColor(R.color.colorPrimary))
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle(title)
                 .setContentText(message)
-                .setDefaults(NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_VIBRATE)
+//                .setDefaults(NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_VIBRATE)
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(message))
                 .setContentIntent(notificationPendingIntent)
-//                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-//                .setVibrate(new long[]{500, 500})
-                .setLights(getResources().getColor(R.color.colorPrimary), 3000, 3000)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setVibrate(new long[]{500, 500})
+                .setLights(ContextCompat.getColor(this, systemResources
+                                .getIdentifier("config_defaultNotificationColor", "color", "android")),
+                        resources.getInteger(systemResources
+                                .getIdentifier("config_defaultNotificationLedOn", "integer", "android")),
+                        resources.getInteger(systemResources
+                                .getIdentifier("config_defaultNotificationLedOff", "integer", "android")))
+//                .setLights(getResources().getColor(R.color.colorPrimary), 3000, 3000)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(VISIBILITY_PUBLIC)
-                .setGroup(GROUP_KEY_ITEMS)
                 .setAutoCancel(true);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -176,8 +191,10 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
 
         // Notification ID prevents spamming the device's notification tray -
         // notifications of the same ID will override one another
+        // It's impossible to create a unique integer key from a string value.
+        // I used the hash code value to generate a decent key in terms of uniqueness
         if (notificationManager != null) {
-            notificationManager.notify(1, builder.build());
+            notificationManager.notify(senderId.hashCode(), builder.build());
         }
     }
 

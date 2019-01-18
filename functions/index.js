@@ -129,7 +129,6 @@ exports.onMessageSent = db.document('chats/{chatId}/messages/{messageId}').onCre
 });
 
 
-
 //Listens to new messages.
 // Sends a notification to the receiving end of a chat message
 exports.onMessageSentNotify = db.document('chats/{chatId}/messages/{messageId}').onCreate((snap, context) => {
@@ -145,7 +144,6 @@ exports.onMessageSentNotify = db.document('chats/{chatId}/messages/{messageId}')
 		.then(senderDoc => {
 			console.log('Creating a chat notification for: ', receiverDoc.data().name);
 			let tokens = receiverDoc.data().tokens
-			const msg = senderDoc.data().name + " has sent you a new message";
 			var photo = null;
 			if (typeof senderDoc.data().profilePicture !== 'undefined') {
 				photo = senderDoc.data().profilePicture;
@@ -155,8 +153,8 @@ exports.onMessageSentNotify = db.document('chats/{chatId}/messages/{messageId}')
 				data: {
 					display_status: "admin_broadcast",
 					notification_type: "CHAT",
-					title: "TakeCare",
-					body: msg,
+					title: "New message from " + senderDoc.data().name,
+					body: snap.data().message,
 					sender_id: senderDoc.data().uid,
 					sender_photo_url: photo
 				}
@@ -175,7 +173,6 @@ exports.onMessageSentNotify = db.document('chats/{chatId}/messages/{messageId}')
 		});
 	});
 });
-
 
 
 //TODO: UNTESTED & UNDEPLOYED! Need to flush DB & add uid field to users' document before deploying

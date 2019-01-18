@@ -74,7 +74,7 @@ public class TakeCareActivity extends AppCompatActivity {
                     .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // Dismiss the alert - do nothing
+                            onBackPressed();
                         }
                     });
             final AlertDialog dialog = builder.create();
