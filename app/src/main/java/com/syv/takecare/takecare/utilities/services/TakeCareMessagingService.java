@@ -126,7 +126,7 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
         }
 
         // Add the notification's properties
-        builder.setSmallIcon(R.drawable.ic_heart_muffin_white)
+        builder.setSmallIcon(R.drawable.ic_app_notifications)
                 .setColor(getResources().getColor(R.color.colorPrimary))
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle(title)
@@ -216,7 +216,8 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
         }
 
         // Add the notification's properties
-        builder.setSmallIcon(R.drawable.ic_heart_muffin)
+        builder.setSmallIcon(R.drawable.ic_app_notifications)
+                .setColor(getResources().getColor(R.color.colorPrimary))
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle(title)
                 .setContentText(message)
@@ -227,7 +228,6 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
 //                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
 //                .setVibrate(new long[]{500, 500})
                 .setLights(getResources().getColor(R.color.colorPrimary), 3000, 3000)
-                .setColor(getResources().getColor(R.color.colorPrimary))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(VISIBILITY_PUBLIC)
                 .setGroup(GROUP_KEY_ITEMS)
