@@ -19,35 +19,46 @@ exports.onRequestedItemUpdated = db.document('users/{userId}/requestedItems/{ite
 		// User's requested item was accepted!
 		console.log("Event: user accepted request");
 		return admin.firestore()
-			.collection('users')
-			.doc(context.params.userId)
-			.get()
-			.then(doc => {
+		.collection('users')
+		.doc(context.params.userId)
+		.get()
+		.then(doc => {
 
+			return admin.firestore()
+			.collection('items')
+			.doc(context.params.itemId)
+			.get()
+			.then(itemDoc => {
 				console.log(doc.data().name + " had his item request accepted!");
-				const msg = "Good news " + doc.data().name + "!\nYour requested item was accepted!\nClick here to check it out";
+				const msg = "Good news " + doc.data().name + "!\nYour request for " + itemDoc.data().title + " was accepted!\nClick here to check it out";
 				let tokens = doc.data().tokens
+				var photo = null;
+				if (typeof itemDoc.data().photo !== 'undefined') {
+					photo = itemDoc.data().photo;
+				}
 				const payload = {
 
 					data: {
 						display_status: "admin_broadcast",
+						notification_type: "ACCEPTED_ITEM",
 						title: "TakeCare",
 						body: msg,
-						item_id: context.params.itemId
+						item_id: photo
 					}
 
 				};
 				console.log("Sending notification");
 				return admin.messaging().sendToDevice(tokens, payload)
-					.then(function(response) {
-						console.log("Successfully sent accepted request message to " + doc.data().name +"\nResponse: ", response);
-						return response;
-					})
-					.catch(function(error) {
-						console.log("Error sending accepted item message to " + doc.data().name + "\nError message: ", error)
-					});
-
+				.then(function(response) {
+					console.log("Successfully sent accepted request message to " + doc.data().name +"\nResponse: ", response);
+					return response;
+				})
+				.catch(function(error) {
+					console.log("Error sending accepted item message to " + doc.data().name + "\nError message: ", error)
+				});
 			});
+
+		});
 	}
 	// Event was not an accepted item for the user
 	return null;
@@ -126,20 +137,34 @@ exports.onMessageSentNotify = db.document('chats/{chatId}/messages/{messageId}')
 	.collection('users')
 	.doc(snap.data().receiver)
 	.get()
-	.then(doc => {
-		console.log('Sending a chat notification to: ', doc.data().name);
-		let tokens = doc.data().tokens
-		const payload = {
-
-			notification: {
-				title: "TakeCare",
-				body: "You have received a new message",
+	.then(receiverDoc => {
+		return admin.firestore()
+		.collection('users')
+		.doc(snap.data().sender)
+		.get()
+		.then(senderDoc => {
+			console.log('Creating a chat notification for: ', receiverDoc.data().name);
+			let tokens = receiverDoc.data().tokens
+			const msg = senderDoc.data().name + " has sent you a new message";
+			var photo = null;
+			if (typeof senderDoc.data().profilePicture !== 'undefined') {
+				photo = senderDoc.data().profilePicture;
 			}
+			const payload = {
 
-		};
+				data: {
+					display_status: "admin_broadcast",
+					notification_type: "CHAT",
+					title: "TakeCare",
+					body: msg,
+					sender_id: senderDoc.data().uid,
+					sender_photo_url: photo
+				}
 
-		console.log("Sending notification");
-		return admin.messaging().sendToDevice(tokens, payload)
+			};
+
+			console.log("Sending notification");
+			return admin.messaging().sendToDevice(tokens, payload)
 			.then(function(response) {
 				console.log("Successfully sent chat notification\nResponse: ", response);
 				return response;
@@ -147,6 +172,7 @@ exports.onMessageSentNotify = db.document('chats/{chatId}/messages/{messageId}')
 			.catch(function(error) {
 				console.log("Error sending chat notification\nError message: ", error)
 			});
+		});
 	});
 });
 

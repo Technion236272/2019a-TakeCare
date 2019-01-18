@@ -215,6 +215,10 @@
 
     <!--Chat -->
     <string name="accept_button_text">Accept Request</string>
+    <string name="payload_data_notification_type">notification_type</string>
+    <string name="payload_data_sender_id">sender_id</string>
+    <string name="payload_data_item_id">item_id</string>
+    <string name="payload_data_sender_photo">sender_photo_url</string>
 
 
     <!---->

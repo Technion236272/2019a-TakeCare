@@ -37,13 +37,12 @@
 
             <ImageView
                 android:id="@+id/profile_pic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="216dp"
+                android:layout_height="216dp"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="96dp"
-                android:layout_marginBottom="10dp"
-                app:srcCompat="@drawable/ic_user_vector" />
+                android:layout_marginBottom="10dp" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/camera_fab"
