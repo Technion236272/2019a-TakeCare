@@ -210,8 +210,8 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "sendAcceptedItemNotification: building an admin broadcast notification");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),
                 getString(R.string.takecare_notification_channel_name));
-        //TODO: change the intent
-        Intent notificationIntent = new Intent(getApplicationContext(), LoginActivity.class);
+
+        Intent notificationIntent = new Intent(getApplicationContext(), TakerMenuActivity.class);
 
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         notificationIntent.putExtra(TakeCareActivity.EXTRA_CHANGE_ACTIVITY,
@@ -223,10 +223,10 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
         PendingIntent notificationPendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        if (itemId != null) {
+        if (itemId != null && !itemId.equals("NA")) {
             FutureTarget<Bitmap> futureTarget = Glide.with(this)
                     .asBitmap()
-                    .load(itemId) //TODO: change this to picture
+                    .load(itemId)
                     .submit();
 
             try {

@@ -32,7 +32,7 @@ exports.onRequestedItemUpdated = db.document('users/{userId}/requestedItems/{ite
 				console.log(doc.data().name + " had his item request accepted!");
 				const msg = "Good news " + doc.data().name + "!\nYour request for " + itemDoc.data().title + " was accepted!\nClick here to check it out";
 				let tokens = doc.data().tokens
-				var photo = null;
+				var photo = "NA";
 				if (typeof itemDoc.data().photo !== 'undefined') {
 					photo = itemDoc.data().photo;
 				}
