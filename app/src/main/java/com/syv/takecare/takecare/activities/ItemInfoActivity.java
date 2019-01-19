@@ -374,7 +374,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                 intent.putExtra("CHAT_ID", chatDocument.getId());
                 intent.putExtra("OTHER_ID", publisherID);
                 intent.putExtra("ITEM_ID", itemId);
-                intent.putExtra("IS_REFERENCED_FROM_ITEM_INFO", true);
+                intent.putExtra("IS_NOT_REFERENCED_FROM_LOBBY", true);
 
                 startActivity(intent);
                 stopLoading();
@@ -431,7 +431,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                                                                     intent.putExtra("CHAT_ID", chatRef.getId());
                                                                     intent.putExtra("OTHER_ID", publisherID);
                                                                     intent.putExtra("ITEM_ID", itemId);
-                                                                    intent.putExtra("IS_REFERENCED_FROM_ITEM_INFO", true);
+                                                                    intent.putExtra("IS_NOT_REFERENCED_FROM_LOBBY", true);
 
                                                                     stopLoading();
                                                                     startActivity(intent);

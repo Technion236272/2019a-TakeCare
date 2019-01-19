@@ -133,7 +133,7 @@ public class ChatRoomActivity extends TakeCareActivity {
         chatId = creationIntent.getStringExtra("CHAT_ID");
         otherId = creationIntent.getStringExtra("OTHER_ID");
         itemId = creationIntent.getStringExtra("ITEM_ID");
-        redirectedFromItemInfo = creationIntent.hasExtra("IS_REFERENCED_FROM_ITEM_INFO");
+        redirectedFromItemInfo = creationIntent.hasExtra("IS_NOT_REFERENCED_FROM_LOBBY");
 
         loadToolbarElements();
 
@@ -190,7 +190,11 @@ public class ChatRoomActivity extends TakeCareActivity {
                 Log.d(TAG, "other\'s ID " + otherId);
                 Log.d(TAG, "onClick: mode " + chatMode);
                 String messageToSend = userInput.getText().toString();
-                if (messageToSend.replace(" ", "").isEmpty()) {
+                if (messageToSend.replace(" ", "")
+                        .replace("\n", "")
+                        .replace("\t", "")
+                        .isEmpty()) {
+                    Log.d(TAG, "empty message - do not send it");
                     return;
                 }
                 new UploadMessage().execute(messageToSend);

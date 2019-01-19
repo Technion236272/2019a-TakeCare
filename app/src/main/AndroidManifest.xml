@@ -104,7 +104,7 @@
             android:name=".activities.SharedItemsActivity"
             android:label="@string/shared_items_menu_title" />
         <activity
-            android:name=".fragments.FeedMapFragment$RequestedItemsActivity"
+            android:name=".activities.RequestedItemsActivity"
             android:label="@string/requested_items_menu_title" />
         <activity
             android:name=".activities.AboutActivity"

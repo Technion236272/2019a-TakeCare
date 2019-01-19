@@ -131,6 +131,7 @@ exports.onMessageSent = db.document('chats/{chatId}/messages/{messageId}').onCre
 
 //Listens to new messages.
 // Sends a notification to the receiving end of a chat message
+// Note to self: next time use transactions - wtf is this code??
 exports.onMessageSentNotify = db.document('chats/{chatId}/messages/{messageId}').onCreate((snap, context) => {
 	return admin.firestore()
 	.collection('users')
@@ -142,33 +143,41 @@ exports.onMessageSentNotify = db.document('chats/{chatId}/messages/{messageId}')
 		.doc(snap.data().sender)
 		.get()
 		.then(senderDoc => {
-			console.log('Creating a chat notification for: ', receiverDoc.data().name);
-			let tokens = receiverDoc.data().tokens
-			var photo = null;
-			if (typeof senderDoc.data().profilePicture !== 'undefined') {
-				photo = senderDoc.data().profilePicture;
-			}
-			const payload = {
-
-				data: {
-					display_status: "admin_broadcast",
-					notification_type: "CHAT",
-					title: "New message from " + senderDoc.data().name,
-					body: snap.data().message,
-					sender_id: senderDoc.data().uid,
-					sender_photo_url: photo
+			return admin.firestore()
+			.collection('chats')
+			.doc(context.params.chatId)
+			.get()
+			.then(chatDoc => {
+				console.log('Creating a chat notification for: ', receiverDoc.data().name);
+				let tokens = receiverDoc.data().tokens
+				var photo = null;
+				if (typeof senderDoc.data().profilePicture !== 'undefined') {
+					photo = senderDoc.data().profilePicture;
 				}
+				const payload = {
 
-			};
+					data: {
+						display_status: "admin_broadcast",
+						notification_type: "CHAT",
+						title: "New message from " + senderDoc.data().name,
+						body: snap.data().message,
+						sender_id: senderDoc.data().uid,
+						sender_photo_url: photo,
+						chat_id: chatDoc.data().chat,
+						item_id: chatDoc.data().item
+					}
 
-			console.log("Sending notification");
-			return admin.messaging().sendToDevice(tokens, payload)
-			.then(function(response) {
-				console.log("Successfully sent chat notification\nResponse: ", response);
-				return response;
-			})
-			.catch(function(error) {
-				console.log("Error sending chat notification\nError message: ", error)
+				};
+
+				console.log("Sending notification");
+				return admin.messaging().sendToDevice(tokens, payload)
+				.then(function(response) {
+					console.log("Successfully sent chat notification\nResponse: ", response);
+					return response;
+				})
+				.catch(function(error) {
+					console.log("Error sending chat notification\nError message: ", error)
+				});
 			});
 		});
 	});

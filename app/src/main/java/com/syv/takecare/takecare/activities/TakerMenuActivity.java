@@ -454,7 +454,7 @@ public class TakerMenuActivity extends TakeCareActivity
         Log.d(TAG, "onNavigationItemSelected: selected item id: " + id);
         Intent intent;
         if (id == R.id.nav_requested_items) {
-            intent = new Intent(this, FeedMapFragment.RequestedItemsActivity.class);
+            intent = new Intent(this, RequestedItemsActivity.class);
             startActivity(intent);
             item.setChecked(false);
             currentDrawerChecked.setChecked(true);

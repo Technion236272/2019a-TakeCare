@@ -774,7 +774,7 @@ public class UserProfileActivity extends TakeCareActivity {
     }
 
     public void onPendingRequestsPressed(View view) {
-        Intent intent = new Intent(this, FeedMapFragment.RequestedItemsActivity.class);
+        Intent intent = new Intent(this, RequestedItemsActivity.class);
         startActivity(intent);
     }
 
