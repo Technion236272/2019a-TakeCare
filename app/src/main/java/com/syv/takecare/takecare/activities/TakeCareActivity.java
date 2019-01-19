@@ -29,6 +29,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.syv.takecare.takecare.POJOs.ActivityCode;
 import com.syv.takecare.takecare.R;
 
 /**
@@ -40,6 +41,8 @@ import com.syv.takecare.takecare.R;
 public class TakeCareActivity extends AppCompatActivity {
 
     private static final String TAKECARE_TAG = "TakeCare";
+
+    public static final String EXTRA_CHANGE_ACTIVITY = "EXTRA_CHANGE_ACTIVITY";
 
     private static final int LOAD_TIMEOUT = 5000;
 
@@ -58,7 +61,7 @@ public class TakeCareActivity extends AppCompatActivity {
     private Handler progressHandler;
 
     // A task that's executed when a time-out occurs with a loading process
-    final Runnable loadTimeoutTask  = new Runnable() {
+    final Runnable loadTimeoutTask = new Runnable() {
         @Override
         public void run() {
             Log.d(TAKECARE_TAG, "Loading timed out!");
@@ -70,7 +73,8 @@ public class TakeCareActivity extends AppCompatActivity {
             builder = new AlertDialog.Builder(TakeCareActivity.this);
             builder.setTitle("An error has occurred")
                     .setIcon(R.drawable.ic_alert_warning)
-                    .setMessage("Loading process takes too long!\nCheck your internet connection and try again.")
+                    .setMessage("Loading process takes too long!\n" +
+                            "Check your internet connection and try again.")
                     .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -82,7 +86,8 @@ public class TakeCareActivity extends AppCompatActivity {
 
             // Display "OK" button in the middle
             final Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
-            LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) neutralButton.getLayoutParams();
+            LinearLayout.LayoutParams buttonLayoutParams =
+                    (LinearLayout.LayoutParams) neutralButton.getLayoutParams();
             buttonLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             neutralButton.setLayoutParams(buttonLayoutParams);
         }
@@ -93,26 +98,15 @@ public class TakeCareActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initialize();
-        if (user == null) {
-            // User should not be here: re-direct them to the login screen
-            Log.d(TAKECARE_TAG, "TakeCare onCreate: user is null. Redirecting to login activity");
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
-        }
+        tryRedirectToLogin();
+        tryRedirectActivity(getIntent());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (user == null) {
-            // User should not be here: re-direct them to the login screen
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
-        }
+        tryRedirectToLogin();
+        tryRedirectActivity(getIntent());
         isActivityRunning = true;
         setVisible(true);
     }
@@ -136,7 +130,22 @@ public class TakeCareActivity extends AppCompatActivity {
     }
 
     /**
+     * Redirects a user back to LoginActivity so that they may sign in,
+     * if the user's login session has run out
+     */
+    private void tryRedirectToLogin() {
+        if (user == null) {
+            Log.d(TAKECARE_TAG, "TakeCare: user is null. Redirecting to login activity");
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    /**
      * A method for checking whether the app is running or not
+     *
      * @return true iff some TakeCare activity instance is running
      */
     public static boolean isAppRunningInForeground() {
@@ -161,10 +170,12 @@ public class TakeCareActivity extends AppCompatActivity {
 
     /**
      * Blocks user interaction and displays a progress dialog.
-     * After a timeout, progress dialog is dismissed and an alert dialog pops up to inform the user about an error.
+     * After a timeout, progress dialog is dismissed and an alert dialog pops up to inform the user
+     * about an error.
      * This method should be invoked when some asynchronous task is running in the background
-     * @param msg: message to display to the user while loading
-     * @param timeout: amount of time to pass (in milliseconds) before the progress dialog is dismissed
+     *
+     * @param msg:     message to display to the user while loading
+     * @param timeout: amount of time (in milliseconds) before the progress dialog is dismissed
      */
     protected void startLoading(final String msg, @Nullable Integer timeout) {
         progress = new ProgressDialog(this);
@@ -195,6 +206,7 @@ public class TakeCareActivity extends AppCompatActivity {
 
     /**
      * Changes the status bar's color (only works on API 21+)
+     *
      * @param color: the selected color for the status bar
      */
     protected void changeStatusBarColor(int color) {
@@ -207,15 +219,104 @@ public class TakeCareActivity extends AppCompatActivity {
 
     /**
      * Hides the virtual keyboard in the activity, if it is open
+     *
      * @param activity: activity in which the keyboard should be hidden
      */
     protected static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) activity
+                .getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = activity.getCurrentFocus();
         if (view == null) {
             // There is no view to pass the focus to, so we create a new view
             view = new View(activity);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    /**
+     * Checks if the intent sent to the activity requires starting another activity.
+     * If it does - opens the required activity with the intent's bundle intact
+     *
+     * @param intent: the intent passed on to this activity
+     */
+    protected void tryRedirectActivity(Intent intent) {
+        if (intent == null || !intent.hasExtra(EXTRA_CHANGE_ACTIVITY)) {
+            return;
+        }
+        ActivityCode code = (ActivityCode) intent.getSerializableExtra(EXTRA_CHANGE_ACTIVITY);
+        intent.removeExtra(EXTRA_CHANGE_ACTIVITY);
+        Bundle intentBundle = intent.getExtras();
+        Class<? extends Activity> redirectedActivity = parseActivityCode(code);
+        Intent newIntent = new Intent(this, redirectedActivity);
+        if (intentBundle != null) {
+            newIntent.putExtras(intentBundle);
+        }
+        startActivity(newIntent);
+    }
+
+    /**
+     * Parses an activity code.
+     * @param code: the activity code to be parsed.
+     * @return the class of the activity referenced by the activity code
+     */
+    public static Class<? extends Activity> parseActivityCode(ActivityCode code) {
+        switch (code) {
+            case ActivityAbout:
+                return AboutActivity.class;
+            case ActivityChatLobby:
+                return ChatLobbyActivity.class;
+            case ActivityChatRoom:
+                return ChatRoomActivity.class;
+            case ActivityGiverForm:
+                return GiverFormActivity.class;
+            case ActivityItemInfo:
+                return ItemInfoActivity.class;
+            case ActivityLogin:
+                return LoginActivity.class;
+            case ActivityRequestedItems:
+                return RequestedItemsActivity.class;
+            case ActivitySharedItems:
+                return SharedItemsActivity.class;
+            case ActivityTakerMenu:
+                return TakerMenuActivity.class;
+            case ActivityUserFavorites:
+                return UserFavoritesActivity.class;
+            case ActivityUserProfile:
+                return UserProfileActivity.class;
+        }
+        return null;
+    }
+
+    /**
+     * Creates a serializable code in the form of ActivityCode to represent an activity
+     * @param activityName: the name of the activity to be encoded
+     * @return the applicable ActivityCode instance corresponding to the given activityName
+     */
+    public static ActivityCode encodeActivity(String activityName) {
+        switch(activityName) {
+            case "ActivityAbout":
+                return ActivityCode.ActivityAbout;
+            case "ActivityChatLobby":
+                return ActivityCode.ActivityChatLobby;
+            case "ActivityChatRoom":
+                return ActivityCode.ActivityChatRoom;
+            case "ActivityGiverForm":
+                return ActivityCode.ActivityGiverForm;
+            case "ActivityItemInfo":
+                return ActivityCode.ActivityItemInfo;
+            case "ActivityLogin":
+                return ActivityCode.ActivityLogin;
+            case "ActivityRequestedItems":
+                return ActivityCode.ActivityRequestedItems;
+            case "ActivitySharedItems":
+                return ActivityCode.ActivitySharedItems;
+            case "ActivityTakerMenu":
+                return ActivityCode.ActivityTakerMenu;
+            case "ActivityUserFavorites":
+                return ActivityCode.ActivityUserFavorites;
+            case "ActivityUserProfile":
+                return ActivityCode.ActivityUserProfile;
+        }
+        return ActivityCode.NA;
     }
 }

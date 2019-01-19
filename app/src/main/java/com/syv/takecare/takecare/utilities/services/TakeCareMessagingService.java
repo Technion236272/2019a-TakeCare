@@ -23,6 +23,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.syv.takecare.takecare.POJOs.ActivityCode;
 import com.syv.takecare.takecare.activities.LoginActivity;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.activities.TakeCareActivity;
@@ -74,6 +75,7 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
         String notificationType = messageData.get(getString(R.string.payload_data_notification_type));
         String title = messageData.get(getString(R.string.payload_data_message_title));
         String message = messageData.get(getString(R.string.payload_data_message_body));
+        String itemId = messageData.get(getString(R.string.payload_data_item_id));
         if (notificationType == null) {
             Log.d(TAG, "buildAdminBroadcastNotification: notification has no type");
             return;
@@ -81,17 +83,18 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
         switch (notificationType) {
             case "CHAT":
                 String senderId = messageData.get(getString(R.string.payload_data_sender_id));
+                String chatId = messageData.get(getString(R.string.payload_data_chat_id));
                 String senderPhotoURL = messageData.get(getString(R.string.payload_data_sender_photo));
-                sendChatNotification(title, message, senderId, senderPhotoURL);
+                sendChatNotification(title, message, senderId, senderPhotoURL, chatId, itemId);
                 break;
             case "ACCEPTED_ITEM":
-                String itemId = messageData.get(getString(R.string.payload_data_item_id));
                 sendAcceptedItemNotification(title, message, itemId);
                 break;
         }
     }
 
-    private void sendChatNotification(String title, String message, String senderId, String senderPhotoURL) {
+    private void sendChatNotification(String title, String message, String senderId,
+                                      String senderPhotoURL, String chatId, String itemId) {
         Log.d(TAG, "sendChatNotification: checking if user is currently in an active chat with the sender");
         if (TakerMenuActivity.chatPartnerId != null && TakerMenuActivity.chatPartnerId.equals(senderId)) {
             Log.d(TAG, "sendChatNotification: user is in chat with the sender - do not fire notification");
@@ -101,10 +104,14 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "sendChatNotification: user is not in an active chat with the sender. Building the notification");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),
                 getString(R.string.takecare_notification_channel_name));
-        //TODO: change the intent
-        Intent notificationIntent = new Intent(getApplicationContext(), LoginActivity.class);
 
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Intent notificationIntent = new Intent(getApplicationContext(), TakerMenuActivity.class);
+        notificationIntent.putExtra("CHAT_ID", chatId);
+        notificationIntent.putExtra("OTHER_ID", senderId);
+        notificationIntent.putExtra("ITEM_ID", itemId);
+        notificationIntent.putExtra("IS_NOT_REFERENCED_FROM_LOBBY", true);
+        notificationIntent.putExtra(TakeCareActivity.EXTRA_CHANGE_ACTIVITY,
+                ActivityCode.ActivityChatRoom);
 
         // This intent will start when the user clicks the notification.
         // A pending intent is required because it's "lazy" - a regular intent is instantaneous
@@ -207,6 +214,8 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
         Intent notificationIntent = new Intent(getApplicationContext(), LoginActivity.class);
 
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        notificationIntent.putExtra(TakeCareActivity.EXTRA_CHANGE_ACTIVITY,
+                ActivityCode.ActivityRequestedItems);
 
         // This intent will start when the user clicks the notification.
         // A pending intent is required because it's "lazy" - a regular intent is instantaneous
