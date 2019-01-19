@@ -223,6 +223,7 @@
     <!--Chat -->
     <string name="accept_button_text">Accept Request</string>
     <string name="payload_data_chat_id">chat_id</string>
+    <string name="payload_data_photo">photo</string>
 
 
     <!---->

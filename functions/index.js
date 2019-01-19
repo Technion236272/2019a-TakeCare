@@ -41,9 +41,9 @@ exports.onRequestedItemUpdated = db.document('users/{userId}/requestedItems/{ite
 					data: {
 						display_status: "admin_broadcast",
 						notification_type: "ACCEPTED_ITEM",
-						title: "TakeCare",
+						title: itemDoc.data().title,
 						body: msg,
-						item_id: photo
+						photo: photo
 					}
 
 				};
@@ -289,3 +289,57 @@ exports.onItemCreatedAddTags = db.document('items/{itemID}').onCreate((snap, con
 	    return null;
 	});
 })
+
+
+// Listens to request creations.
+// Sends a notification to the user who posted the item when a request is made
+exports.onRequestCreatedNotify = db.document('users/{userId}/requestedItems/{requestId}').onCreate((snap, context) => {
+    var ref = snap.data().itemRef;
+    console.log('Request made for: ', ref);
+	return admin.firestore()
+	.doc(ref.path)
+	.get()
+	.then(itemDoc => {
+		return admin.firestore()
+		.collection('users')
+		.doc(itemDoc.data().publisher)
+		.get()
+		.then(userDoc => {
+			return admin.firestore()
+			.collection('users')
+			.doc(context.params.userId)
+			.get()
+			.then(selfDoc => {
+				console.log('Sending request notification to: ', userDoc.data().name);
+				let tokens = userDoc.data().tokens
+				var photo = "NA";
+				if (typeof selfDoc.data().profilePicture !== 'undefined') {
+					photo = selfDoc.data().profilePicture;
+				}
+				const msg = selfDoc.data().name + "is interested in your listing of \"" + itemDoc.data().title + "\".\nClick here to view your listings";
+
+				const payload = {
+
+					data: {
+						display_status: "admin_broadcast",
+						notification_type: "REQUESTED",
+						title: itemDoc.data().title,
+						body: msg,
+						photo: photo
+					}
+
+				};
+				console.log("Sending notification");
+				return admin.messaging().sendToDevice(tokens, payload)
+				.then(function(response) {
+					console.log("Successfully sent request message to " + userDoc.data().name +"\nResponse: ", response);
+					return response;
+				})
+				.catch(function(error) {
+					console.log("Error sending request message to " + userDoc.data().name + "\nError message: ", error)
+				});
+			});
+		});
+	});
+});
+

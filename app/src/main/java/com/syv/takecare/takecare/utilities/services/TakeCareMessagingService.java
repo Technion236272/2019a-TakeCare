@@ -75,21 +75,118 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
         String notificationType = messageData.get(getString(R.string.payload_data_notification_type));
         String title = messageData.get(getString(R.string.payload_data_message_title));
         String message = messageData.get(getString(R.string.payload_data_message_body));
-        String itemId = messageData.get(getString(R.string.payload_data_item_id));
         if (notificationType == null) {
             Log.d(TAG, "buildAdminBroadcastNotification: notification has no type");
             return;
         }
+
+        String photo;
+
         switch (notificationType) {
+            case "REQUESTED":
+                photo = messageData.get(getString(R.string.payload_data_photo));
+                sendRequestNotification(title, message, photo);
+                break;
             case "CHAT":
                 String senderId = messageData.get(getString(R.string.payload_data_sender_id));
                 String chatId = messageData.get(getString(R.string.payload_data_chat_id));
                 String senderPhotoURL = messageData.get(getString(R.string.payload_data_sender_photo));
+                String itemId = messageData.get(getString(R.string.payload_data_item_id));
                 sendChatNotification(title, message, senderId, senderPhotoURL, chatId, itemId);
                 break;
             case "ACCEPTED_ITEM":
-                sendAcceptedItemNotification(title, message, itemId);
+                photo = messageData.get(getString(R.string.payload_data_photo));
+                sendAcceptedItemNotification(title, message, photo);
                 break;
+        }
+    }
+
+    private void sendRequestNotification(String title, String message, String photo) {
+        Log.d(TAG, "sendRequestNotification: building an admin broadcast notification");
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),
+                getString(R.string.takecare_notification_channel_name));
+
+        Intent notificationIntent = new Intent(getApplicationContext(), TakerMenuActivity.class);
+
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        notificationIntent.putExtra(TakeCareActivity.EXTRA_CHANGE_ACTIVITY,
+                ActivityCode.ActivitySharedItems);
+
+        // This intent will start when the user clicks the notification.
+        // A pending intent is required because it's "lazy" - a regular intent is instantaneous
+        // and requires a context. We wrap it in a pending intent
+        PendingIntent notificationPendingIntent = PendingIntent.getActivity(this, 0,
+                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if (photo != null && !photo.equals("NA")) {
+            FutureTarget<Bitmap> futureTarget = Glide.with(this)
+                    .asBitmap()
+                    .load(photo)
+                    .submit();
+
+            try {
+                Bitmap bitmap = futureTarget.get();
+                builder.setLargeIcon(bitmap);
+            } catch (InterruptedException e) {
+                // do nothing
+            } catch (ExecutionException e) {
+                // do nothing
+            }
+
+            Glide.with(this).clear(futureTarget);
+        }
+
+        // Add the notification's properties
+        builder.setSmallIcon(R.drawable.ic_app_notifications)
+                .setColor(getResources().getColor(R.color.colorPrimary))
+                .setWhen(System.currentTimeMillis())
+                .setContentTitle(title)
+                .setContentText(message)
+                .setDefaults(NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_VIBRATE)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(message))
+                .setContentIntent(notificationPendingIntent)
+                .setLights(getResources().getColor(R.color.colorPrimary), 3000, 3000)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVisibility(VISIBILITY_PUBLIC)
+                .setGroup(GROUP_KEY_ITEMS)
+                .setAutoCancel(true);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+        Log.d(TAG, "sendRequestNotification: firing notification");
+
+        Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // On newer APIs - need to set the channel ID for our notification
+//            builder.setChannelId(getString(R.string.takecare_notification_channel_name));
+
+            AudioAttributes attributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+
+            NotificationChannel notificationChannel = new NotificationChannel(getString(R.string.takecare_notification_channel_name),
+                    getString(R.string.app_name),
+                    NotificationManager.IMPORTANCE_HIGH);
+
+
+            // Configure the notification channel.
+            notificationChannel.setDescription(message);
+            notificationChannel.enableLights(true);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setSound(sound, attributes);
+
+
+            if (notificationManager != null)
+                notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        if (notificationManager != null) {
+            // We want unique notifications for these events
+            int time = (int) System.currentTimeMillis();
+            notificationManager.notify(time, builder.build());
         }
     }
 
@@ -206,7 +303,7 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
     }
 
 
-    private void sendAcceptedItemNotification(String title, String message, String itemId) {
+    private void sendAcceptedItemNotification(String title, String message, String photo) {
         Log.d(TAG, "sendAcceptedItemNotification: building an admin broadcast notification");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),
                 getString(R.string.takecare_notification_channel_name));
@@ -223,10 +320,10 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
         PendingIntent notificationPendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        if (itemId != null && !itemId.equals("NA")) {
+        if (photo != null && !photo.equals("NA")) {
             FutureTarget<Bitmap> futureTarget = Glide.with(this)
                     .asBitmap()
-                    .load(itemId)
+                    .load(photo)
                     .submit();
 
             try {
