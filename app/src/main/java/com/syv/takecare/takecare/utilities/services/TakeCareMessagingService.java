@@ -83,6 +83,10 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
         String photo;
 
         switch (notificationType) {
+            case "FAVORITES":
+                photo = messageData.get(getString(R.string.payload_data_photo));
+                sendFavoritesNotification(title, message, photo);
+                break;
             case "REQUESTED":
                 photo = messageData.get(getString(R.string.payload_data_photo));
                 sendRequestNotification(title, message, photo);
@@ -101,6 +105,93 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
         }
     }
 
+    private void sendFavoritesNotification(String title, String message, String photo) {
+        Log.d(TAG, "sendFavoritesNotification: building an admin broadcast notification");
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),
+                getString(R.string.takecare_notification_channel_name));
+
+        Intent notificationIntent = new Intent(getApplicationContext(), TakerMenuActivity.class);
+
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        // This intent will start when the user clicks the notification.
+        // A pending intent is required because it's "lazy" - a regular intent is instantaneous
+        // and requires a context. We wrap it in a pending intent
+        PendingIntent notificationPendingIntent = PendingIntent.getActivity(this, 0,
+                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if (photo != null && !photo.equals("NA")) {
+            FutureTarget<Bitmap> futureTarget = Glide.with(this)
+                    .asBitmap()
+                    .load(photo)
+                    .submit();
+
+            try {
+                Bitmap bitmap = futureTarget.get();
+                builder.setLargeIcon(bitmap);
+            } catch (InterruptedException e) {
+                // do nothing
+            } catch (ExecutionException e) {
+                // do nothing
+            }
+
+            Glide.with(this).clear(futureTarget);
+        }
+
+        // Add the notification's properties
+        builder.setSmallIcon(R.drawable.ic_app_notifications)
+                .setColor(getResources().getColor(R.color.colorPrimary))
+                .setWhen(System.currentTimeMillis())
+                .setContentTitle(title)
+                .setContentText(message)
+                .setDefaults(NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_VIBRATE)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(message))
+                .setContentIntent(notificationPendingIntent)
+                .setLights(getResources().getColor(R.color.colorPrimary), 3000, 3000)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVisibility(VISIBILITY_PUBLIC)
+                .setGroup(GROUP_KEY_ITEMS)
+                .setAutoCancel(true);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Log.d(TAG, "sendFavoritesNotification: firing notification");
+
+        Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // On newer APIs - need to set the channel ID for our notification
+//            builder.setChannelId(getString(R.string.takecare_notification_channel_name));
+
+            AudioAttributes attributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+
+            NotificationChannel notificationChannel = new NotificationChannel(getString(R.string.takecare_notification_channel_name),
+                    getString(R.string.app_name),
+                    NotificationManager.IMPORTANCE_HIGH);
+
+
+            // Configure the notification channel.
+            notificationChannel.setDescription(message);
+            notificationChannel.enableLights(true);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setSound(sound, attributes);
+
+
+            if (notificationManager != null)
+                notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        if (notificationManager != null) {
+            // We want unique notifications for these events
+            int time = (int) System.currentTimeMillis();
+            notificationManager.notify(time, builder.build());
+        }
+    }
+
     private void sendRequestNotification(String title, String message, String photo) {
         Log.d(TAG, "sendRequestNotification: building an admin broadcast notification");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),
@@ -108,7 +199,8 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
 
         Intent notificationIntent = new Intent(getApplicationContext(), TakerMenuActivity.class);
 
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         notificationIntent.putExtra(TakeCareActivity.EXTRA_CHANGE_ACTIVITY,
                 ActivityCode.ActivitySharedItems);
 
@@ -203,6 +295,8 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
                 getString(R.string.takecare_notification_channel_name));
 
         Intent notificationIntent = new Intent(getApplicationContext(), TakerMenuActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         notificationIntent.putExtra("CHAT_ID", chatId);
         notificationIntent.putExtra("OTHER_ID", senderId);
         notificationIntent.putExtra("ITEM_ID", itemId);
@@ -310,7 +404,8 @@ public class TakeCareMessagingService extends FirebaseMessagingService {
 
         Intent notificationIntent = new Intent(getApplicationContext(), TakerMenuActivity.class);
 
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         notificationIntent.putExtra(TakeCareActivity.EXTRA_CHANGE_ACTIVITY,
                 ActivityCode.ActivityRequestedItems);
 

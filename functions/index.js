@@ -184,76 +184,81 @@ exports.onMessageSentNotify = db.document('chats/{chatId}/messages/{messageId}')
 });
 
 
-//TODO: UNTESTED & UNDEPLOYED! Need to flush DB & add uid field to users' document before deploying
 // Listens to item creations.
-// Sends a notification to all the users who have chosen a keyword that the published item was posted with
+// Sends a notification to all the users who have wish-listed at least one keyword that the published item was posted with
 exports.onItemCreatedNotifications = db.document('items/{itemId}').onCreate((snap, context) => {
 	console.log('Item creation event');
 	const itemKeywords = snap.data().tags;
 	console.log('Item has the following tags: ', itemKeywords);
 
-	if (itemKeywords === 'undefined' ||
+	if (typeof itemKeywords === 'undefined' ||
 		itemKeywords === null) {
-		// User has no favorite keywords - finish
+		// Item has no associated keywords - finish
 		return null;
 	}
 
 	let tokens = [];
 
+    var photo = "NA";
+    if (typeof snap.data().photo !== 'undefined') {
+        photo = snap.data().photo;
+    }
     const payload = {
-        //TODO: change this to "data" and add relevant fields
-        notification: {
-            title: "TakeCare",
-            body: "One of your favorites has been posted! Click here to check out the feed"
-        }
-    };
 
+        data: {
+            display_status: "admin_broadcast",
+            notification_type: "FAVORITES",
+            title: "Favorites",
+            body: "One of your favorites has been posted: \"" + snap.data().title + "\".\nClick here to check out the feed!",
+            photo: photo
+        }
+
+    };
 
     return admin.firestore()
     .collection('users')
     .get()
-    .then(function(querySnapshot) {
-        return querySnapshot.foreach(function(doc) {
-            console.log('Checking user: ', doc.data().name);
-            const userKeywords = doc.data().tags;
-            if (userKeywords === 'undefined' ||
+    .then(querySnapshot => {
+        console.log('Iterating over all the users in the db');
+        for (let i = 0; i < querySnapshot.size; i++) {
+            const data = querySnapshot.docs[i].data();
+            const userKeywords = data.tags;
+            if (typeof userKeywords === 'undefined' ||
                 userKeywords === null) {
-                    return null;
+                continue;
             }
 
             var hasMatch = false;
-            for (var i = 0; i < itemKeywords.length; i++) {
-                if (userKeywords.includes(itemKeywords[i])) {
+
+            for (let j = 0; j < itemKeywords.length; j++) {
+                if (userKeywords.includes(itemKeywords[j])) {
                     hasMatch = true;
                 }
             }
 
             if (hasMatch) {
                 // Match found
-                console.log('Found a user interested in this item: ', doc.data().name);
-
-                if (doc.data().uid === snap.data().publisher) {
+                console.log('Found a user interested in this item: ', data.name);
+                if (data.uid === snap.data().publisher) {
                     // User is the item's publisher
-                    console.log('...but the interested user is the publisher! I won\'t send a notification for them\nFOR TESTING PURPOSES I WILL!');
-//    						return null;
+                    console.log('...but the interested user is the publisher! I won\'t send a notification to them\n');
+                    continue;
                 }
 
-                tokens = tokens.concat(doc.data().tokens);
-                return null;
+                tokens = tokens.concat(data.tokens);
             }
-        })
-    })
-    .then(function() {
+        }
+
         console.log("Sending notification");
         return admin.messaging().sendToDevice(tokens, payload)
         .then(function(response) {
-            console.log("Successfully sent wish-listed item notification to " + doc.data().name +"\nResponse: ", response);
+            console.log("Successfully sent chat notification\nResponse: ", response);
             return response;
         })
         .catch(function(error) {
-            console.log("Error sending wish-listed item notification " + doc.data().name + "\nError message: ", error)
+            console.log("Error sending chat notification\nError message: ", error)
         });
-    })
+    });
 });
 
 
