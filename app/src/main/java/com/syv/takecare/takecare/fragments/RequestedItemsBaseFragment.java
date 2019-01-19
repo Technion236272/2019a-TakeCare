@@ -439,8 +439,8 @@ public class RequestedItemsBaseFragment extends Fragment {
                                     @Override
                                     public void onClick(View v) {
                                         Intent intent = new Intent(getContext(), ItemInfoActivity.class);
-                                        intent.putExtra(Intent.EXTRA_UID, user.getUid());
-                                        intent.putExtra(EXTRA_ITEM_ID, documentSnapshot.getString("id"));
+                                        intent.putExtra(Intent.EXTRA_UID, documentSnapshot.getString("publisher"));
+                                        intent.putExtra(EXTRA_ITEM_ID, documentSnapshot.getString("itemId"));
 //                                        String path = model.getItemRef().getPath();
 //                                        intent.putExtra(EXTRA_ITEM_ID, path.replace("items/", ""));
                                         startActivity(intent);
