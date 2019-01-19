@@ -4,7 +4,7 @@ This is a project for the course "236503 - Project in Software - Android Applica
 TakeCare is a social Android app written in Java and developed on Android Studio, suitable for all audiences over the age of 13.
 
 In the app, you choose the role of either a giver or a taker at any given time.
-A giver shares a thing that they own but are not interested in, whereas a taker can browse such things and choose one to schedule a pickup.
+A giver shares a thing that they own but are not interested in, whereas a taker can browse such things and choose one to schedule a pickup. Start a chat with others to schedule pick-ups and recieve notifications for various events, such as when someone makes a request for one of your listings or when a wish-listed item is posted!
 Among the things you can share with others (or express your interest in):
 * Food
 * Furniture
@@ -13,7 +13,7 @@ Among the things you can share with others (or express your interest in):
 * Lost & Founds
 * Just about anything you see fit!
 
-Join the sharing revolution: help brighten someone's day, and also help the world by not excessively throwing away like in most modern families!
+Join the sharing revolution: help brighten someone's day and also help the world by not excessively throwing away like in most modern families!
 
 
 ## Built With
@@ -22,6 +22,10 @@ Join the sharing revolution: help brighten someone's day, and also help the worl
 * [FirebaseUI](https://github.com/firebase/FirebaseUI-Android) - Used to sync lists with Firebase to create RT feeds
 * [Glide](https://bumptech.github.io/glide/) - Used for loading image URLs from the server
 * [Facebook Login](https://developers.facebook.com/docs/facebook-login/android) - Integration with Facebook accounts
+* [Nachos](https://github.com/hootsuite/nachos) - Used for tags-based user input
+* [SuperToolTips](https://github.com/nhaarman/supertooltips) - Used for tooltips to ensure clarity
+* [LikeButton](https://github.com/jd-alexander/LikeButton) - Provides animation for "like" button
+* [TouchImageView](https://github.com/MikeOrtiz/TouchImageView) - Used for zooming-in on pictures
 * [Gradle](https://gradle.org/) - Dependency Management
 
 ## Authors
