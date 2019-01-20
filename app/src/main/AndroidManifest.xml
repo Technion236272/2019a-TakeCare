@@ -121,6 +121,8 @@
             android:label="@string/item_info_title" />
         <activity
             android:name=".activities.GiverFormActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:parentActivityName=".activities.GatewayActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
