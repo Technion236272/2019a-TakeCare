@@ -144,6 +144,7 @@
     <string name="item_description_title_ext">Description</string>
     <string name="item_default_pickup_text">Flexible</string>
     <string name="item_default_location_text">Unspecified</string>
+    <string name="search_button_description">Press to search</string>
 
 
     <!--User Profile elements-->

@@ -52,14 +52,17 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
+import com.hootsuite.nachos.NachoTextView;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.ortiz.touchview.TouchImageView;
@@ -69,9 +72,12 @@ import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.POJOs.RequestedByCardHolder;
 import com.syv.takecare.takecare.POJOs.RequesterCardInformation;
 
+import java.lang.reflect.Array;
 import java.text.BreakIterator;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -84,6 +90,7 @@ public class ItemInfoActivity extends TakeCareActivity {
     private final static String TAG = "TakeCare/ItemInfo";
     private static final String EXTRA_ITEM_ID = "Item Id";
     private static final int USER_LIKES_MAX_DISPLAY = 999;
+    private static final int TAGS_SEPARATING_LENGTH = 4;
 
     private RelativeLayout root;
     private Toolbar toolbar;
@@ -104,6 +111,12 @@ public class ItemInfoActivity extends TakeCareActivity {
     private ImageView expandedImageView;
     private LikeButton likeButton;
     private TextView likesCounterView;
+    private ImageView categoryIcon;
+    private TextView category;
+    private ImageView pickupMethodIcon;
+    private TextView pickupMethod;
+    private Button showOnMap;
+    private NachoTextView tagsBox;
 
     private Animator mCurrentAnimator;
     private int mShortAnimationDuration;
@@ -167,7 +180,14 @@ public class ItemInfoActivity extends TakeCareActivity {
         likeButton = findViewById(R.id.like_button);
         likesCounterView = findViewById(R.id.likes_counter);
         root = findViewById(R.id.item_root);
+        categoryIcon = findViewById(R.id.item_category_icon);
+        category = findViewById(R.id.item_category);
+        pickupMethodIcon = findViewById(R.id.item_pickup_method_icon);
+        pickupMethod = findViewById(R.id.item_pickup_method);
+        showOnMap = findViewById(R.id.item_map_button);
+        tagsBox = findViewById(R.id.item_tags_box);
 
+        // Enable transition animations only for supported systems (API 21 and above).
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bundle extras = getIntent().getExtras();
             String transitionName = extras.getParcelable(TakerMenuActivity.EXTRA_ITEM);
@@ -210,7 +230,7 @@ public class ItemInfoActivity extends TakeCareActivity {
             }
         });
 
-        DocumentReference docRef = db.collection("items").document(itemId);
+        final DocumentReference docRef = db.collection("items").document(itemId);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -266,21 +286,65 @@ public class ItemInfoActivity extends TakeCareActivity {
                                     break;
                             }
                         }
-                        if (document.getString("description") != null) {
+                        String description = document.getString("description");
+                        if (description != null) {
                             Log.d(TAG, "Found description. Writing: ");
-                            itemDescriptionView.setText(document.getString("description"));
+                            itemDescriptionView.setText(description);
                         }
-                        if (document.getString("pickupInformation") != null) {  // Change key to "pickupTime"
+                        String pickupInformation = document.getString("pickupInformation");
+                        if (pickupInformation != null) {
                             Log.d(TAG, "Found pickup time.");
-                            itemPickupTimeView.setText(document.getString("pickupInformation"));
+                            itemPickupTimeView.setText(pickupInformation);
                         } else {
                             Log.d(TAG, "No Pickup time found.");
                             itemPickupTimeView.setText(R.string.flexible);
                         }
-                        if (document.getString("pickupLocation") != null) {
+                        String pickupLocation = document.getString("pickupLocation");
+                        if (pickupLocation != null) {
                             Log.d(TAG, "Found pickup location.");
-                            itemLocationView.setText(document.getString("pickupLocation"));
+                            itemLocationView.setText(pickupLocation);
                         }
+                        GeoPoint location = document.getGeoPoint("location");
+                        if (location != null) {
+                            if (pickupLocation == null)
+                                itemLocationView.setVisibility(View.GONE);
+                            showOnMap.setVisibility(View.VISIBLE);
+                            showOnMap.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    // TODO: Redirect to map with given GeoPoint
+                                }
+                            });
+                        }
+                        String category = document.getString("category");
+                        if (category != null) {
+                            Log.d(TAG, "Found category.");
+                            setCategory(category);
+                        }
+                        String pickupMethod = document.getString("pickupMethod");
+                        if (pickupMethod != null) {
+                            Log.d(TAG, "Found pickup method.");
+                            ItemInfoActivity.this.pickupMethod.setText(document.getString("pickupMethod"));
+                            switch (pickupMethod) {
+                                case "In Person" :
+                                    pickupMethodIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_in_person_purple));
+                                    break;
+                                case "Giveaway" :
+                                    pickupMethodIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_giveaway_purple));
+                                    break;
+                                case "Race" :
+                                    pickupMethodIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_race_purple));
+
+                            }
+                        }
+                        try {
+                            findViewById(R.id.item_tags_layout).setVisibility(View.VISIBLE);
+                            List<String> tags = (List<String>) document.get("tags");
+                            initChips(tags);
+                        } catch (NullPointerException e) {
+                            Log.d(TAG, "No tags for this item");
+                        }
+
                         Log.d(TAG, "user fetch: onComplete finished ");
 
 
@@ -356,6 +420,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                 }
             });
         }
+
         Log.d(TAG, "onCreate: finished");
     }
 
@@ -1080,6 +1145,53 @@ public class ItemInfoActivity extends TakeCareActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+    }
+
+    private void setCategory(String category) {
+        switch (category) {
+            case "Food":
+                categoryIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_pizza_96_big_purple));
+                this.category.setText(R.string.nav_food_title);
+                break;
+            case "Study Material":
+                categoryIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_book_purple));
+                this.category.setText(R.string.nav_study_material_title);
+                break;
+            case "Households":
+                categoryIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_lamp_purple));
+                this.category.setText(R.string.nav_furniture_title);
+                break;
+            case "Lost & Found":
+                categoryIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_lost_and_found_purple));
+                this.category.setText(R.string.nav_lost_and_found_title);
+                break;
+            case "Hitchhikes":
+                categoryIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_car_purple));
+                this.category.setText(R.string.nav_hitchhike_title);
+                break;
+            default:
+                categoryIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_treasure_purple));
+                this.category.setText(R.string.nav_other);
+                break;
+        }
+    }
+
+    private void initChips(Collection<String> tags) {
+        if (tags == null || tags.isEmpty()) {
+            tagsBox.setText("");
+            return;
+        }
+        StringBuilder tagsTextBuilder = new StringBuilder();
+        for (String tag : tags) {
+            tagsTextBuilder.append(tag);
+        }
+
+        tagsBox.setText(tagsTextBuilder.toString());
+        int index = 0;
+        for (String tag : tags) {
+            tagsBox.chipify(index, index + tag.length());
+            index += tag.length() + TAGS_SEPARATING_LENGTH;
         }
     }
 }

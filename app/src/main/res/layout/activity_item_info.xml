@@ -152,13 +152,116 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/item_title" />
 
+                <LinearLayout
+                    android:id="@+id/item_filters_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/profile_card"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginTop="88dp">
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/item_category_card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_weight="1"
+                        app:cardBackgroundColor="@color/colorCards"
+                        app:cardCornerRadius="10dp"
+                        app:cardElevation="3dp">
+
+                        <RelativeLayout
+                            android:id="@+id/item_category_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="8dp">
+
+                            <ImageView
+                                android:id="@+id/item_category_icon"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:srcCompat="@drawable/ic_pizza_slice_purple" />
+
+                            <TextView
+                                android:id="@+id/item_category"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginRight="15dp"
+                                android:layout_toEndOf="@id/item_category_icon"
+                                android:layout_toRightOf="@id/item_category_icon"
+                                android:text="Food"
+                                android:textColor="@color/primary_text"
+                                android:textSize="16sp" />
+
+                        </RelativeLayout>
+
+                    </android.support.v7.widget.CardView>
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/item_pickup_method_card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_weight="1"
+                        app:cardBackgroundColor="@color/colorCards"
+                        app:cardCornerRadius="10dp"
+                        app:cardElevation="3dp">
+
+                        <RelativeLayout
+                            android:id="@+id/item_pickup_method_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="8dp">
+
+                            <ImageView
+                                android:id="@+id/item_pickup_method_icon"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:srcCompat="@drawable/ic_in_person_purple" />
+
+                            <TextView
+                                android:id="@+id/item_pickup_method"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginEnd="15dp"
+                                android:layout_marginRight="15dp"
+                                android:layout_toEndOf="@id/item_pickup_method_icon"
+                                android:layout_toRightOf="@id/item_pickup_method_icon"
+                                android:text="In Person"
+                                android:textColor="@color/primary_text"
+                                android:textSize="16sp" />
+
+                        </RelativeLayout>
+
+                    </android.support.v7.widget.CardView>
+
+                </LinearLayout>
+
                 <android.support.v7.widget.CardView
                     android:id="@+id/item_description_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginTop="88dp"
+                    android:layout_marginTop="17dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
                     app:cardBackgroundColor="@color/colorCards"
@@ -166,7 +269,7 @@
                     app:cardElevation="3dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/profile_card"
+                    app:layout_constraintTop_toBottomOf="@id/item_filters_layout"
                     tools:layout_editor_absoluteY="275dp">
 
                     <RelativeLayout
@@ -294,7 +397,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginBottom="10dp"
-                    app:layout_constraintBottom_toTopOf="@+id/item_description_card"
+                    app:layout_constraintBottom_toTopOf="@+id/item_filters_layout"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent">
 
@@ -327,7 +430,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginBottom="56dp"
-                    app:layout_constraintBottom_toTopOf="@+id/item_description_card"
+                    app:layout_constraintBottom_toTopOf="@+id/item_filters_layout"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
@@ -406,6 +509,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent">
 
+                    <!--
                         <ImageView
                             android:id="@+id/distance_image"
                             android:layout_width="30dp"
@@ -422,11 +526,13 @@
                             android:textColor="@color/secondary_text"
                             android:textSize="20sp"
                             android:visibility="gone" />
+                            -->
 
                         <ImageView
                             android:id="@+id/location_image"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
+                            android:layout_gravity="center_vertical"
                             app:srcCompat="@drawable/map_marker" />
 
                         <TextView
@@ -440,8 +546,71 @@
                             android:text="@string/item_default_location_text"
                             android:textColor="@color/primary_text"
                             android:textSize="16sp" />
+
+                        <Button
+                            android:id="@+id/item_map_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Show on map  "
+                            android:layout_marginStart="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:textAllCaps="false"
+                            android:textSize="16sp"
+                            android:textColor="@android:color/white"
+                            android:background="@color/colorAccent"
+                            android:drawableRight="@drawable/ic_map_display"
+                            android:paddingLeft="4dp"
+                            android:paddingRight="4dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:visibility="gone"
+                            android:foreground="?android:attr/selectableItemBackground"/>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
+
+                <LinearLayout
+                    android:id="@+id/item_tags_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/location_card">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Keywords: "
+                        android:textColor="@color/secondary_text"
+                        android:textSize="16sp"
+                        android:visibility="gone"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <com.hootsuite.nachos.NachoTextView
+                        android:id="@+id/item_tags_box"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:focusable="false"
+                        android:clickable="false"
+                        android:cursorVisible="false"
+                        android:background="@android:color/transparent"
+                        app:chipBackground="@color/colorPrimary"
+                        app:chipHeight="30dp"
+                        app:chipSpacing="2sp"
+                        app:chipTextColor="#FFFFFE"
+                        app:chipTextSize="14sp"
+                        android:visibility="gone"/>
+
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/requested_by_list_text"
@@ -496,7 +665,7 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/location_card" />
+                    app:layout_constraintTop_toBottomOf="@id/item_tags_layout" />
 
                 <ImageButton
                     android:id="@+id/delete_post_button"
@@ -508,7 +677,7 @@
                     android:layout_marginBottom="8dp"
                     android:background="@android:color/transparent"
                     android:onClick="onDeletePost"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     app:layout_constraintBottom_toTopOf="@+id/divider"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
