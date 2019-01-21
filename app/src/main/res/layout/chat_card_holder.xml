@@ -2,10 +2,13 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="96dp"
     android:background="@color/colorCards"
     android:id="@+id/chat_card_root"
+    android:clickable="true"
+    android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground">
 
     <android.support.v7.widget.AppCompatImageView
@@ -62,7 +65,7 @@
         app:layout_constraintTop_toBottomOf="@+id/chat_card_item_title"
         app:layout_constraintVertical_bias="0.51" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/chat_card_user_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -74,11 +77,17 @@
         android:scrollHorizontally="true"
         android:maxLines="2"
         android:textColor="@color/secondary_text"
+        android:textAlignment="gravity"
+        android:gravity="left"
+        app:autoSizeMaxTextSize="14sp"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toBottomOf="@+id/chat_card_user_photo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/chat_card_user_photo"
-        app:layout_constraintTop_toTopOf="@+id/chat_card_user_photo" />
+        app:layout_constraintTop_toTopOf="@+id/chat_card_user_photo"
+        tools:ignore="RtlHardcoded" />
 
     <TextView
         android:id="@+id/chat_card_timestamp"
@@ -96,5 +105,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/chat_card_user_name"
         app:layout_constraintTop_toBottomOf="@+id/chat_card_item_title" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/divider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </View>
 
 </android.support.constraint.ConstraintLayout>

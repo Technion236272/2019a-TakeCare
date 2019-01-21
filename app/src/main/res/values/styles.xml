@@ -53,4 +53,8 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
+    <style name="ChatBackground" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/chat_background_texture</item>
+    </style>
+
 </resources>

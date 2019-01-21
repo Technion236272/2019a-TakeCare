@@ -10,7 +10,6 @@
         android:id="@+id/chat_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/chat_background_texture"
         tools:context=".activities.ChatRoomActivity">
 
         <android.support.design.widget.AppBarLayout
@@ -74,7 +73,7 @@
         </android.support.design.widget.AppBarLayout>
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/request_button"
+            android:id="@+id/accept_request_button_chat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorAccent"
@@ -91,7 +90,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/chat_toolbar_wrapper"
             tools:layout_editor_absoluteX="115dp"
-            tools:layout_editor_absoluteY="1047dp" />
+            tools:layout_editor_absoluteY="1047dp"
+            android:visibility="gone"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/chat_recycler_view"

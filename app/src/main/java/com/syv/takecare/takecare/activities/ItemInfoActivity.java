@@ -72,11 +72,8 @@ import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.POJOs.RequestedByCardHolder;
 import com.syv.takecare.takecare.POJOs.RequesterCardInformation;
 
-import java.lang.reflect.Array;
-import java.text.BreakIterator;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -337,12 +334,11 @@ public class ItemInfoActivity extends TakeCareActivity {
 
                             }
                         }
-                        try {
-                            findViewById(R.id.item_tags_layout).setVisibility(View.VISIBLE);
-                            List<String> tags = (List<String>) document.get("tags");
+                        List<String> tags = (List<String>) document.get("tags");
+                        if (tags == null || tags.isEmpty()) {
+                            findViewById(R.id.item_tags_layout).setVisibility(View.GONE);
+                        } else {
                             initChips(tags);
-                        } catch (NullPointerException e) {
-                            Log.d(TAG, "No tags for this item");
                         }
 
                         Log.d(TAG, "user fetch: onComplete finished ");
@@ -461,60 +457,17 @@ public class ItemInfoActivity extends TakeCareActivity {
                                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
                                     public void onSuccess(final DocumentSnapshot selfDocument) {
+                                        requestButton.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                requestItem(v);
+                                                createNewChatSession(v, userDocument, giverDocument, selfDocument, false);
+                                            }
+                                        });
                                         messageButton.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(final View v) {
-                                                Log.d(TAG, "creating new chat session document");
-                                                startLoading("Creating new chat session...",  null);
-
-                                                v.setClickable(false);
-
-                                                final Map<String, Object> newChat = new HashMap<>();
-
-                                                try {
-                                                    newChat.put("giver", publisherID);
-                                                    newChat.put("giverName", userDocument.getString("name"));
-                                                    newChat.put("giverPhoto", userDocument.getString("profilePicture"));
-                                                    newChat.put("item", itemId);
-                                                    newChat.put("itemPhoto", giverDocument.getString("photo"));
-                                                    newChat.put("title", giverDocument.getString("title"));
-                                                    newChat.put("taker", user.getUid());
-                                                    newChat.put("takerName", selfDocument.getString("name"));
-                                                    newChat.put("takerPhoto", selfDocument.getString("profilePicture"));
-                                                    newChat.put("timestamp", FieldValue.serverTimestamp());
-                                                    newChat.put("messagesCount", 0);
-
-                                                    final DocumentReference chatRef = db.collection("chats").document();
-                                                    newChat.put("chat", chatRef.getId());
-                                                    chatRef.set(newChat)
-                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                @Override
-                                                                public void onSuccess(Void aVoid) {
-                                                                    Intent intent = new Intent(ItemInfoActivity.this, ChatRoomActivity.class);
-
-                                                                    intent.putExtra("CHAT_MODE", "taker");
-                                                                    intent.putExtra("CHAT_ID", chatRef.getId());
-                                                                    intent.putExtra("OTHER_ID", publisherID);
-                                                                    intent.putExtra("ITEM_ID", itemId);
-                                                                    intent.putExtra("IS_NOT_REFERENCED_FROM_LOBBY", true);
-
-                                                                    stopLoading();
-                                                                    startActivity(intent);
-                                                                    finish();
-                                                                }
-                                                            })
-                                                            .addOnFailureListener(new OnFailureListener() {
-                                                                @Override
-                                                                public void onFailure(@NonNull Exception e) {
-                                                                    v.setClickable(true);
-                                                                    stopLoading();
-                                                                    makeHighlightedSnackbar(root, "Error opening chat. Please check your internet connection");
-                                                                }
-                                                            });
-
-                                                } catch (NullPointerException e) {
-                                                    Log.d(TAG, "error setting message button: one of the fields is missing. " + e.getMessage());
-                                                }
+                                                createNewChatSession(v, userDocument, giverDocument, selfDocument, true);
                                             }
                                         });
 
@@ -1193,5 +1146,63 @@ public class ItemInfoActivity extends TakeCareActivity {
             tagsBox.chipify(index, index + tag.length());
             index += tag.length() + TAGS_SEPARATING_LENGTH;
         }
+    }
+
+    private void createNewChatSession(final View v, DocumentSnapshot userDocument, DocumentSnapshot giverDocument,
+                                     DocumentSnapshot selfDocument, boolean fromMessageButton) {
+        Log.d(TAG, "creating new chat session document");
+        startLoading("Creating new chat session...",  null);
+
+        v.setClickable(false);
+
+        final Map<String, Object> newChat = new HashMap<>();
+
+        try {
+            newChat.put("giver", publisherID);
+            newChat.put("giverName", userDocument.getString("name"));
+            newChat.put("giverPhoto", userDocument.getString("profilePicture"));
+            newChat.put("item", itemId);
+            newChat.put("itemPhoto", giverDocument.getString("photo"));
+            newChat.put("title", giverDocument.getString("title"));
+            newChat.put("taker", user.getUid());
+            newChat.put("takerName", selfDocument.getString("name"));
+            newChat.put("takerPhoto", selfDocument.getString("profilePicture"));
+            newChat.put("timestamp", FieldValue.serverTimestamp());
+            newChat.put("messagesCount", 0);
+
+            final DocumentReference chatRef = db.collection("chats").document();
+            newChat.put("chat", chatRef.getId());
+            Task<Void> task = chatRef.set(newChat);
+            if (fromMessageButton) {
+                task.addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Intent intent = new Intent(ItemInfoActivity.this, ChatRoomActivity.class);
+
+                        intent.putExtra("CHAT_MODE", "taker");
+                        intent.putExtra("CHAT_ID", chatRef.getId());
+                        intent.putExtra("OTHER_ID", publisherID);
+                        intent.putExtra("ITEM_ID", itemId);
+                        intent.putExtra("IS_NOT_REFERENCED_FROM_LOBBY", true);
+
+                        stopLoading();
+                        startActivity(intent);
+                        finish();
+                    }
+                })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                v.setClickable(true);
+                                stopLoading();
+                                makeHighlightedSnackbar(root, "Error opening chat. Please check your internet connection");
+                            }
+                        });
+            }
+
+        } catch (NullPointerException e) {
+            Log.d(TAG, "error setting message button: one of the fields is missing. " + e.getMessage());
+        }
+
     }
 }

@@ -152,7 +152,8 @@
 
         <activity
             android:name=".activities.ChatRoomActivity"
-            android:parentActivityName=".activities.ChatLobbyActivity">
+            android:parentActivityName=".activities.ChatLobbyActivity"
+            android:theme="@style/ChatBackground">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.syv.takecare.takecare.activities.ChatLobbyActivity" />
