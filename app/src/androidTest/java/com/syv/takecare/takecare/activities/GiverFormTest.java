@@ -1,16 +1,17 @@
-package com.syv.takecare.takecare;
+package com.syv.takecare.takecare.activities;
 
 
 import android.support.test.espresso.DataInteraction;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import com.syv.takecare.takecare.activities.LoginActivity;
+import com.syv.takecare.takecare.R;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -24,7 +25,6 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -38,13 +38,19 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class GiverMenuActivityTest {
+public class GiverFormTest {
 
     @Rule
     public ActivityTestRule<LoginActivity> mActivityTestRule = new ActivityTestRule<>(LoginActivity.class);
 
+    @Rule
+    public GrantPermissionRule mGrantPermissionRule =
+            GrantPermissionRule.grant(
+                    "android.permission.ACCESS_FINE_LOCATION",
+                    "android.permission.CAMERA");
+
     @Test
-    public void giverMenuActivityTest() {
+    public void giverFormTest() {
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
@@ -54,15 +60,35 @@ public class GiverMenuActivityTest {
             e.printStackTrace();
         }
 
-        ViewInteraction loginButton = onView(
-                allOf(withId(R.id.facebook_login_button), withText("Log in with Facebook"),
+        ViewInteraction ix = onView(
+                allOf(withText("Sign In"),
+                        childAtPosition(
+                                allOf(withId(R.id.google_login_button),
+                                        childAtPosition(
+                                                withClassName(is("android.support.constraint.ConstraintLayout")),
+                                                3)),
+                                0),
+                        isDisplayed()));
+        ix.perform(click());
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ViewInteraction floatingActionButton = onView(
+                allOf(withId(R.id.fab),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.login_screen_fragment),
+                                        withId(R.id.drawer_layout),
                                         0),
-                                1),
+                                2),
                         isDisplayed()));
-        loginButton.perform(click());
+        floatingActionButton.perform(click());
 
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
@@ -72,15 +98,6 @@ public class GiverMenuActivityTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        ViewInteraction constraintLayout = onView(
-                allOf(childAtPosition(
-                        childAtPosition(
-                                withId(android.R.id.content),
-                                0),
-                        1),
-                        isDisplayed()));
-        constraintLayout.perform(click());
 
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
@@ -92,56 +109,75 @@ public class GiverMenuActivityTest {
         }
 
         ViewInteraction appCompatImageButton = onView(
+                allOf(withId(R.id.upload_picture_button),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.item_image_card),
+                                        0),
+                                1)));
+        appCompatImageButton.perform(scrollTo(), click());
+
+        ViewInteraction appCompatTextView = onView(
+                allOf(withId(android.R.id.title), withText("Camera"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("com.android.internal.view.menu.ListMenuItemView")),
+                                        0),
+                                0),
+                        isDisplayed()));
+        appCompatTextView.perform(click());
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ViewInteraction appCompatImageButton2 = onView(
                 allOf(withId(R.id.category_food_btn),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.categories_buttons_1),
                                         0),
                                 1)));
-        appCompatImageButton.perform(scrollTo(), click());
+        appCompatImageButton2.perform(scrollTo(), click());
 
-        ViewInteraction appCompatImageButton2 = onView(
+        ViewInteraction appCompatImageButton3 = onView(
                 allOf(withId(R.id.category_study_material_btn),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.categories_buttons_1),
                                         1),
                                 1)));
-        appCompatImageButton2.perform(scrollTo(), click());
+        appCompatImageButton3.perform(scrollTo(), click());
 
-        ViewInteraction appCompatImageButton3 = onView(
+        ViewInteraction appCompatImageButton4 = onView(
                 allOf(withId(R.id.category_households_btn),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.categories_buttons_1),
                                         2),
                                 1)));
-        appCompatImageButton3.perform(scrollTo(), click());
+        appCompatImageButton4.perform(scrollTo(), click());
 
-        ViewInteraction appCompatImageButton4 = onView(
+        ViewInteraction appCompatImageButton5 = onView(
                 allOf(withId(R.id.category_lost_and_found_btn),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.categories_buttons_2),
                                         0),
                                 1)));
-        appCompatImageButton4.perform(scrollTo(), click());
+        appCompatImageButton5.perform(scrollTo(), click());
 
-        ViewInteraction appCompatImageButton5 = onView(
+        ViewInteraction appCompatImageButton6 = onView(
                 allOf(withId(R.id.category_hitchhikes_btn),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.categories_buttons_2),
                                         1),
-                                1)));
-        appCompatImageButton5.perform(scrollTo(), click());
-
-        ViewInteraction appCompatImageButton6 = onView(
-                allOf(withId(R.id.category_other_btn),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.categories_buttons_2),
-                                        2),
                                 1)));
         appCompatImageButton6.perform(scrollTo(), click());
 
@@ -154,33 +190,6 @@ public class GiverMenuActivityTest {
                                 1)));
         appCompatImageButton7.perform(scrollTo(), click());
 
-        ViewInteraction appCompatImageButton8 = onView(
-                allOf(withId(R.id.category_other_btn),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.categories_buttons_2),
-                                        2),
-                                1)));
-        appCompatImageButton8.perform(scrollTo(), click());
-
-        ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.send_form_button), withText("Share"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.ScrollView")),
-                                        0),
-                                9)));
-        appCompatButton.perform(scrollTo(), click());
-
-        ViewInteraction appCompatButton2 = onView(
-                allOf(withId(android.R.id.button3), withText("OK"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.buttonPanel),
-                                        0),
-                                0)));
-        appCompatButton2.perform(scrollTo(), click());
-
         ViewInteraction appCompatEditText = onView(
                 allOf(withId(R.id.title_input),
                         childAtPosition(
@@ -188,16 +197,7 @@ public class GiverMenuActivityTest {
                                         withId(R.id.description_card),
                                         0),
                                 1)));
-        appCompatEditText.perform(scrollTo(), replaceText("title"), closeSoftKeyboard());
-
-        ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.title_input), withText("title"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.description_card),
-                                        0),
-                                1)));
-        appCompatEditText2.perform(pressImeActionButton());
+        appCompatEditText.perform(scrollTo(), replaceText("Title"), closeSoftKeyboard());
 
         ViewInteraction textInputEditText = onView(
                 allOf(withId(R.id.item_description),
@@ -207,16 +207,15 @@ public class GiverMenuActivityTest {
                                         0),
                                 0),
                         isDisplayed()));
-        textInputEditText.perform(replaceText("description"), closeSoftKeyboard());
-
-        pressBack();
+        textInputEditText.perform(replaceText("Description"), closeSoftKeyboard());
 
         ViewInteraction appCompatSpinner = onView(
                 allOf(withId(R.id.pickup_method_spinner),
                         childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.pickup_time_card),
-                                        0),
+                                allOf(withId(R.id.pickup_info_layout),
+                                        childAtPosition(
+                                                withId(R.id.pickup_time_card),
+                                                0)),
                                 1)));
         appCompatSpinner.perform(scrollTo(), click());
 
@@ -224,15 +223,16 @@ public class GiverMenuActivityTest {
                 .inAdapterView(childAtPosition(
                         withClassName(is("android.widget.PopupWindow$PopupBackgroundView")),
                         0))
-                .atPosition(1);
+                .atPosition(2);
         linearLayout.perform(click());
 
         ViewInteraction appCompatSpinner2 = onView(
                 allOf(withId(R.id.pickup_method_spinner),
                         childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.pickup_time_card),
-                                        0),
+                                allOf(withId(R.id.pickup_info_layout),
+                                        childAtPosition(
+                                                withId(R.id.pickup_time_card),
+                                                0)),
                                 1)));
         appCompatSpinner2.perform(scrollTo(), click());
 
@@ -240,7 +240,7 @@ public class GiverMenuActivityTest {
                 .inAdapterView(childAtPosition(
                         withClassName(is("android.widget.PopupWindow$PopupBackgroundView")),
                         0))
-                .atPosition(2);
+                .atPosition(1);
         linearLayout2.perform(click());
 
         ViewInteraction textInputEditText2 = onView(
@@ -251,38 +251,7 @@ public class GiverMenuActivityTest {
                                         0),
                                 0),
                         isDisplayed()));
-        textInputEditText2.perform(replaceText("12:00\n"), closeSoftKeyboard());
-
-        // Added a sleep statement to match the app's execution delay.
-        // The recommended way to handle such scenarios is to use Espresso idling resources:
-        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-        try {
-            Thread.sleep(7000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        ViewInteraction appCompatImageButton9 = onView(
-                allOf(withContentDescription("Navigate up"),
-                        childAtPosition(
-                                allOf(withId(R.id.giver_form_toolbar),
-                                        childAtPosition(
-                                                withClassName(is("android.support.design.widget.AppBarLayout")),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton9.perform(click());
-
-        ViewInteraction appCompatButton3 = onView(
-                allOf(withId(android.R.id.button2), withText("Cancel"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.buttonPanel),
-                                        0),
-                                2)));
-        appCompatButton3.perform(scrollTo(), click());
-
-        pressBack();
+        textInputEditText2.perform(replaceText("12:00"), closeSoftKeyboard());
 
         ViewInteraction textInputEditText3 = onView(
                 allOf(withId(R.id.item_location),
@@ -292,40 +261,68 @@ public class GiverMenuActivityTest {
                                         0),
                                 0),
                         isDisplayed()));
-        textInputEditText3.perform(replaceText("her"), closeSoftKeyboard());
+        textInputEditText3.perform(replaceText("Haifa"), closeSoftKeyboard());
 
         pressBack();
 
-        ViewInteraction textInputEditText4 = onView(
-                allOf(withId(R.id.item_location), withText("her"),
+        ViewInteraction appCompatTextView2 = onView(
+                allOf(withId(R.id.air_time_change), withText("Change"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.text_input_layout_location),
+                                        withId(R.id.form_scroll),
                                         0),
-                                0),
-                        isDisplayed()));
-        textInputEditText4.perform(replaceText("here"));
+                                8)));
+        appCompatTextView2.perform(scrollTo(), click());
 
-        ViewInteraction textInputEditText5 = onView(
-                allOf(withId(R.id.item_location), withText("here"),
+        ViewInteraction appCompatTextView3 = onView(
+                allOf(withId(R.id.add_keywords_text), withText("Add keywords"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.text_input_layout_location),
+                                        withId(R.id.form_scroll),
                                         0),
-                                0),
-                        isDisplayed()));
-        textInputEditText5.perform(closeSoftKeyboard());
+                                12)));
+        appCompatTextView3.perform(scrollTo(), click());
 
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(7000);
+            Thread.sleep(300);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        ViewInteraction appCompatImageButton10 = onView(
+        ViewInteraction nachoTextView = onView(
+                allOf(withId(R.id.keywords_tag_box),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.form_scroll),
+                                        0),
+                                15)));
+        nachoTextView.perform(scrollTo(), click());
+
+        ViewInteraction nachoTextView2 = onView(
+                allOf(withId(R.id.keywords_tag_box),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.form_scroll),
+                                        0),
+                                15)));
+        nachoTextView2.perform(scrollTo(), replaceText(" \u001Ftag1\u001F  \u001Ftag2\u001F "), closeSoftKeyboard());
+
+        pressBack();
+
+        ViewInteraction appCompatButton = onView(
+                allOf(withId(R.id.add_location_button), withText("Choose a location"),
+                        childAtPosition(
+                                allOf(withId(R.id.pickup_info_layout),
+                                        childAtPosition(
+                                                withId(R.id.pickup_time_card),
+                                                0)),
+                                6)));
+        appCompatButton.perform(scrollTo(), click());
+
+        ViewInteraction appCompatImageButton8 = onView(
                 allOf(withContentDescription("Navigate up"),
                         childAtPosition(
                                 allOf(withId(R.id.giver_form_toolbar),
@@ -334,16 +331,16 @@ public class GiverMenuActivityTest {
                                                 0)),
                                 1),
                         isDisplayed()));
-        appCompatImageButton10.perform(click());
+        appCompatImageButton8.perform(click());
 
-        ViewInteraction appCompatButton4 = onView(
+        ViewInteraction appCompatButton2 = onView(
                 allOf(withId(android.R.id.button1), withText("OK"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.buttonPanel),
                                         0),
                                 3)));
-        appCompatButton4.perform(scrollTo(), click());
+        appCompatButton2.perform(scrollTo(), click());
     }
 
     private static Matcher<View> childAtPosition(

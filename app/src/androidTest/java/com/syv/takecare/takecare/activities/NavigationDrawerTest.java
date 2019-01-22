@@ -1,4 +1,4 @@
-package com.syv.takecare.takecare;
+package com.syv.takecare.takecare.activities;
 
 
 import android.support.test.espresso.ViewInteraction;
@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import com.syv.takecare.takecare.activities.LoginActivity;
+import com.syv.takecare.takecare.R;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -19,7 +19,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.longClick;
+import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
@@ -31,13 +35,13 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class TakerMenuFilterAndShareItemTest {
+public class NavigationDrawerTest {
 
     @Rule
     public ActivityTestRule<LoginActivity> mActivityTestRule = new ActivityTestRule<>(LoginActivity.class);
 
     @Test
-    public void takerMenuFilterAndShareItemTest() {
+    public void navigationDrawerTest() {
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
@@ -47,33 +51,16 @@ public class TakerMenuFilterAndShareItemTest {
             e.printStackTrace();
         }
 
-        ViewInteraction loginButton = onView(
-                allOf(withId(R.id.facebook_login_button), withText("Log in with Facebook"),
+        ViewInteraction ix = onView(
+                allOf(withText("Sign In"),
                         childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.login_screen_fragment),
-                                        0),
-                                1),
-                        isDisplayed()));
-        loginButton.perform(click());
-
-        // Added a sleep statement to match the app's execution delay.
-        // The recommended way to handle such scenarios is to use Espresso idling resources:
-        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-        try {
-            Thread.sleep(7000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        ViewInteraction constraintLayout = onView(
-                allOf(childAtPosition(
-                        childAtPosition(
-                                withId(android.R.id.content),
+                                allOf(withId(R.id.google_login_button),
+                                        childAtPosition(
+                                                withClassName(is("android.support.constraint.ConstraintLayout")),
+                                                3)),
                                 0),
-                        0),
                         isDisplayed()));
-        constraintLayout.perform(click());
+        ix.perform(click());
 
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
@@ -95,6 +82,15 @@ public class TakerMenuFilterAndShareItemTest {
                         isDisplayed()));
         appCompatImageButton.perform(click());
 
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         ViewInteraction navigationMenuItemView = onView(
                 allOf(childAtPosition(
                         allOf(withId(R.id.design_navigation_view),
@@ -105,15 +101,14 @@ public class TakerMenuFilterAndShareItemTest {
                         isDisplayed()));
         navigationMenuItemView.perform(click());
 
-        ViewInteraction appCompatImageView = onView(
-                allOf(withId(R.id.item_category),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.taker_feed_card),
-                                        0),
-                                5),
-                        isDisplayed()));
-        appCompatImageView.perform(click());
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         ViewInteraction appCompatImageButton2 = onView(
                 allOf(withContentDescription("Open navigation drawer"),
@@ -126,42 +121,51 @@ public class TakerMenuFilterAndShareItemTest {
                         isDisplayed()));
         appCompatImageButton2.perform(click());
 
-        ViewInteraction cardView = onView(
-                allOf(withId(R.id.taker_feed_card),
-                        childAtPosition(
-                                allOf(withId(R.id.card_view),
-                                        childAtPosition(
-                                                withId(R.id.card_root),
-                                                0)),
-                                0),
+        ViewInteraction navigationMenuItemView2 = onView(
+                allOf(childAtPosition(
+                        allOf(withId(R.id.design_navigation_view),
+                                childAtPosition(
+                                        withId(R.id.nav_view),
+                                        0)),
+                        4),
                         isDisplayed()));
-        cardView.perform(click());
+        navigationMenuItemView2.perform(click());
 
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(7000);
+            Thread.sleep(300);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         ViewInteraction appCompatImageButton3 = onView(
-                allOf(withContentDescription("Navigate up"),
+                allOf(withContentDescription("Open navigation drawer"),
                         childAtPosition(
-                                allOf(withId(R.id.item_info_toolbar),
+                                allOf(withId(R.id.toolbar),
                                         childAtPosition(
-                                                withId(R.id.item_info_toolbar_layout),
+                                                withClassName(is("android.support.design.widget.AppBarLayout")),
                                                 0)),
                                 1),
                         isDisplayed()));
         appCompatImageButton3.perform(click());
 
+        ViewInteraction navigationMenuItemView3 = onView(
+                allOf(childAtPosition(
+                        allOf(withId(R.id.design_navigation_view),
+                                childAtPosition(
+                                        withId(R.id.nav_view),
+                                        0)),
+                        7),
+                        isDisplayed()));
+        navigationMenuItemView3.perform(click());
+
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(7000);
+            Thread.sleep(300);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -177,20 +181,29 @@ public class TakerMenuFilterAndShareItemTest {
                         isDisplayed()));
         appCompatImageButton4.perform(click());
 
-        ViewInteraction navigationMenuItemView2 = onView(
+        ViewInteraction navigationMenuItemView4 = onView(
                 allOf(childAtPosition(
                         allOf(withId(R.id.design_navigation_view),
                                 childAtPosition(
                                         withId(R.id.nav_view),
                                         0)),
-                        4),
+                        11),
                         isDisplayed()));
-        navigationMenuItemView2.perform(click());
+        navigationMenuItemView4.perform(click());
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         ViewInteraction appCompatImageButton5 = onView(
-                allOf(withContentDescription("Open navigation drawer"),
+                allOf(withContentDescription("Navigate up"),
                         childAtPosition(
-                                allOf(withId(R.id.toolbar),
+                                allOf(withId(R.id.shared_items_toolbar),
                                         childAtPosition(
                                                 withClassName(is("android.support.design.widget.AppBarLayout")),
                                                 0)),
@@ -198,15 +211,14 @@ public class TakerMenuFilterAndShareItemTest {
                         isDisplayed()));
         appCompatImageButton5.perform(click());
 
-        ViewInteraction navigationMenuItemView3 = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.design_navigation_view),
-                                childAtPosition(
-                                        withId(R.id.nav_view),
-                                        0)),
-                        5),
-                        isDisplayed()));
-        navigationMenuItemView3.perform(click());
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         ViewInteraction appCompatImageButton6 = onView(
                 allOf(withContentDescription("Open navigation drawer"),
@@ -219,17 +231,86 @@ public class TakerMenuFilterAndShareItemTest {
                         isDisplayed()));
         appCompatImageButton6.perform(click());
 
-        ViewInteraction navigationMenuItemView4 = onView(
+        ViewInteraction navigationMenuItemView5 = onView(
                 allOf(childAtPosition(
                         allOf(withId(R.id.design_navigation_view),
                                 childAtPosition(
                                         withId(R.id.nav_view),
                                         0)),
-                        3),
+                        12),
                         isDisplayed()));
-        navigationMenuItemView4.perform(click());
+        navigationMenuItemView5.perform(click());
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ViewInteraction cardView = onView(
+                allOf(withId(R.id.taker_feed_card),
+                        childAtPosition(
+                                allOf(withId(R.id.card_root),
+                                        childAtPosition(
+                                                withId(R.id.requested_feed_list),
+                                                0)),
+                                0),
+                        isDisplayed()));
+        cardView.perform(click());
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         ViewInteraction appCompatImageButton7 = onView(
+                allOf(withContentDescription("Navigate up"),
+                        childAtPosition(
+                                allOf(withId(R.id.item_info_toolbar),
+                                        childAtPosition(
+                                                withId(R.id.item_info_toolbar_layout),
+                                                0)),
+                                1),
+                        isDisplayed()));
+        appCompatImageButton7.perform(click());
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ViewInteraction appCompatImageButton8 = onView(
+                allOf(withContentDescription("Navigate up"),
+                        childAtPosition(
+                                allOf(withId(R.id.requested_items_toolbar),
+                                        childAtPosition(
+                                                withClassName(is("android.support.design.widget.AppBarLayout")),
+                                                0)),
+                                1),
+                        isDisplayed()));
+        appCompatImageButton8.perform(click());
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ViewInteraction appCompatImageButton9 = onView(
                 allOf(withContentDescription("Open navigation drawer"),
                         childAtPosition(
                                 allOf(withId(R.id.toolbar),
@@ -238,80 +319,111 @@ public class TakerMenuFilterAndShareItemTest {
                                                 0)),
                                 1),
                         isDisplayed()));
-        appCompatImageButton7.perform(click());
+        appCompatImageButton9.perform(click());
 
-        ViewInteraction navigationMenuItemView5 = onView(
+        ViewInteraction navigationMenuItemView6 = onView(
                 allOf(childAtPosition(
                         allOf(withId(R.id.design_navigation_view),
                                 childAtPosition(
                                         withId(R.id.nav_view),
                                         0)),
-                        1),
+                        14),
                         isDisplayed()));
-        navigationMenuItemView5.perform(click());
+        navigationMenuItemView6.perform(click());
 
-        ViewInteraction actionMenuItemView = onView(
-                allOf(withId(R.id.action_filter), withContentDescription("Filter"),
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ViewInteraction nachoTextView = onView(
+                allOf(withId(R.id.favorites_tag_box),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.toolbar),
-                                        2),
-                                1),
-                        isDisplayed()));
-        actionMenuItemView.perform(click());
+                                        withClassName(is("android.widget.ScrollView")),
+                                        0),
+                                4)));
+        nachoTextView.perform(scrollTo(), longClick());
 
-        ViewInteraction appCompatImageButton8 = onView(
-                allOf(withId(R.id.pickup_in_person_button),
-                        childAtPosition(
-                                allOf(withId(R.id.filter_menu_popup),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.LinearLayout")),
-                                                0)),
-                                4),
-                        isDisplayed()));
-        appCompatImageButton8.perform(click());
-
-        ViewInteraction actionMenuItemView2 = onView(
-                allOf(withId(R.id.action_filter), withContentDescription("Filter"),
+        ViewInteraction nachoTextView2 = onView(
+                allOf(withId(R.id.favorites_tag_box),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.toolbar),
-                                        2),
-                                1),
-                        isDisplayed()));
-        actionMenuItemView2.perform(click());
+                                        withClassName(is("android.widget.ScrollView")),
+                                        0),
+                                4)));
+        nachoTextView2.perform(scrollTo(), click());
 
-        ViewInteraction appCompatImageButton9 = onView(
-                allOf(withId(R.id.pickup_race_button),
-                        childAtPosition(
-                                allOf(withId(R.id.filter_menu_popup),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.LinearLayout")),
-                                                0)),
-                                8),
-                        isDisplayed()));
-        appCompatImageButton9.perform(click());
-
-        ViewInteraction actionMenuItemView3 = onView(
-                allOf(withId(R.id.action_filter), withContentDescription("Filter"),
+        ViewInteraction nachoTextView3 = onView(
+                allOf(withId(R.id.favorites_tag_box),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.toolbar),
-                                        2),
-                                1),
-                        isDisplayed()));
-        actionMenuItemView3.perform(click());
+                                        withClassName(is("android.widget.ScrollView")),
+                                        0),
+                                4)));
+        nachoTextView3.perform(scrollTo(), click());
+
+        ViewInteraction nachoTextView4 = onView(
+                allOf(withId(R.id.favorites_tag_box),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.ScrollView")),
+                                        0),
+                                4)));
+        nachoTextView4.perform(scrollTo(), replaceText(" \u001Ftag\u001F  \u001Ftag2\u001F "), closeSoftKeyboard());
+
+        pressBack();
+
+        ViewInteraction appCompatImageView = onView(
+                allOf(withId(R.id.tags_help),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.ScrollView")),
+                                        0),
+                                2)));
+        appCompatImageView.perform(scrollTo(), click());
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         ViewInteraction appCompatImageButton10 = onView(
-                allOf(withId(R.id.pickup_any_button),
+                allOf(withContentDescription("Navigate up"),
                         childAtPosition(
-                                allOf(withId(R.id.filter_menu_popup),
+                                allOf(withId(R.id.shared_items_toolbar),
                                         childAtPosition(
-                                                withClassName(is("android.widget.LinearLayout")),
+                                                withClassName(is("android.support.design.widget.AppBarLayout")),
                                                 0)),
-                                2),
+                                1),
                         isDisplayed()));
         appCompatImageButton10.perform(click());
+
+        ViewInteraction appCompatButton = onView(
+                allOf(withId(android.R.id.button1), withText("OK"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.buttonPanel),
+                                        0),
+                                3)));
+        appCompatButton.perform(scrollTo(), click());
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         ViewInteraction appCompatImageButton11 = onView(
                 allOf(withContentDescription("Open navigation drawer"),
@@ -324,7 +436,7 @@ public class TakerMenuFilterAndShareItemTest {
                         isDisplayed()));
         appCompatImageButton11.perform(click());
 
-        ViewInteraction navigationMenuItemView6 = onView(
+        ViewInteraction navigationMenuItemView7 = onView(
                 allOf(childAtPosition(
                         allOf(withId(R.id.design_navigation_view),
                                 childAtPosition(
@@ -332,46 +444,7 @@ public class TakerMenuFilterAndShareItemTest {
                                         0)),
                         2),
                         isDisplayed()));
-        navigationMenuItemView6.perform(click());
-
-        ViewInteraction floatingActionButton = onView(
-                allOf(withId(R.id.fab),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.drawer_layout),
-                                        0),
-                                2),
-                        isDisplayed()));
-        floatingActionButton.perform(click());
-
-        // Added a sleep statement to match the app's execution delay.
-        // The recommended way to handle such scenarios is to use Espresso idling resources:
-        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-        try {
-            Thread.sleep(7000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        ViewInteraction appCompatImageButton12 = onView(
-                allOf(withContentDescription("Navigate up"),
-                        childAtPosition(
-                                allOf(withId(R.id.giver_form_toolbar),
-                                        childAtPosition(
-                                                withClassName(is("android.support.design.widget.AppBarLayout")),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton12.perform(click());
-
-        ViewInteraction appCompatButton = onView(
-                allOf(withId(android.R.id.button1), withText("OK"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.buttonPanel),
-                                        0),
-                                3)));
-        appCompatButton.perform(scrollTo(), click());
+        navigationMenuItemView7.perform(click());
     }
 
     private static Matcher<View> childAtPosition(
