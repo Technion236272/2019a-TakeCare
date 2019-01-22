@@ -121,6 +121,8 @@
             android:label="@string/item_info_title" />
         <activity
             android:name=".activities.GiverFormActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:parentActivityName=".activities.GatewayActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -150,7 +152,8 @@
 
         <activity
             android:name=".activities.ChatRoomActivity"
-            android:parentActivityName=".activities.ChatLobbyActivity">
+            android:parentActivityName=".activities.ChatLobbyActivity"
+            android:theme="@style/ChatBackground">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.syv.takecare.takecare.activities.ChatLobbyActivity" />

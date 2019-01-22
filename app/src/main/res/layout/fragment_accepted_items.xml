@@ -47,18 +47,18 @@
 
             <ImageView
                 android:id="@+id/empty_feed_muffin"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="10dp"
+                android:src="@drawable/ic_bitten_muffin"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/empty_feed_text"
-                app:srcCompat="@drawable/ic_heart_muffin" />
+                app:layout_constraintTop_toBottomOf="@+id/empty_feed_text" />
 
         </android.support.constraint.ConstraintLayout>
 

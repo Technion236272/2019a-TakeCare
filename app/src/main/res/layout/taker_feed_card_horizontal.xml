@@ -101,6 +101,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
+                        android:background="@drawable/round_feed_picture_frame"
                         android:layout_weight="36" />
 
                     <android.support.constraint.ConstraintLayout

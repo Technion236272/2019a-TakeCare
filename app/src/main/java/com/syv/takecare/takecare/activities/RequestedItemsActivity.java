@@ -57,7 +57,8 @@ public class RequestedItemsActivity extends TakeCareActivity {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
         adapter.addFragment(new PendingRequestsFragment(), "Pending");
         adapter.addFragment(new AcceptedRequestsFragment(), "Accepted");
-        adapter.addFragment(new RejectedRequestsFragment(), "Rejected");
+        // This is scrapped:
+//        adapter.addFragment(new RejectedRequestsFragment(), "Rejected");
         viewPager.setAdapter(adapter);
     }
 }

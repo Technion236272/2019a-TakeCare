@@ -43,6 +43,6 @@ public class MyTakenItemsFragment extends SharedItemsBaseFragment {
                 .setQuery(query, FeedCardInformation.class)
                 .build();
 
-        return super.setFirestoreRecyclerAdapter(response, 2);
+        return super.setFirestoreRecyclerAdapter(response);
     }
 }

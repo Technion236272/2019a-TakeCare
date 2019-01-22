@@ -2,6 +2,8 @@ package com.syv.takecare.takecare.fragments;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import java.lang.String;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -31,6 +34,7 @@ import com.syv.takecare.takecare.POJOs.ChatCardHolder;
 import com.syv.takecare.takecare.POJOs.ChatCardInformation;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.activities.ChatRoomActivity;
+import com.syv.takecare.takecare.customViews.FeedRecyclerView;
 
 import java.text.SimpleDateFormat;
 import java.util.Map;
@@ -44,7 +48,7 @@ public class MessagingBaseFragment extends Fragment {
     public static final String ITEM_ID = "ITEM_ID";
     public static final String OTHER_ID = "OTHER_ID";
 
-    protected RecyclerView recyclerView;
+    protected FeedRecyclerView recyclerView;
     protected FirestoreRecyclerAdapter adapter;
     protected int orientation;
     protected Parcelable listState;
@@ -102,6 +106,7 @@ public class MessagingBaseFragment extends Fragment {
         recyclerView = view.findViewById(R.id.chat_lobby_recycler_view);
         if (recyclerView == null)
             Log.w(TAG, "recyclerView is null");
+        recyclerView.setEmptyView(emptyChatView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         //Optimizing recycler view's performance:
@@ -132,15 +137,40 @@ public class MessagingBaseFragment extends Fragment {
 
                 RequestOptions requestOptions = new RequestOptions();
                 requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
-
                 holder.title.setText(model.getTitle());
-                try {
+
+                if (model.getItemPhoto() == null) {
+                    Bitmap bitmap;
+                    switch (model.getCategory()) {
+                        case "Food":
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_pizza_black_big);
+                            break;
+                        case "Study Material":
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_book_black_big);
+                            break;
+                        case "Households":
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_lamp_black_big);
+                            break;
+                        case "Lost & Found":
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_lost_and_found_black_big);
+                            break;
+                        case "Hitchhikes":
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_car_black_big);
+                            break;
+                        default:
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_treasure_black_big);
+                            break;
+                    }
+                    if (bitmap != null) {
+                        Bitmap bitmapScaled = Bitmap.createScaledBitmap(bitmap, 128, 128, true);
+                        holder.itemPhoto.setImageBitmap(bitmapScaled);
+                        holder.itemPhoto.setScaleType(ImageView.ScaleType.CENTER);
+                    }
+                } else if (getActivity() != null) {
                     Glide.with(getActivity().getApplicationContext())
                             .load(model.getItemPhoto())
                             .apply(requestOptions)
                             .into(holder.itemPhoto);
-                } catch (NullPointerException e) {
-                    Log.d(TAG, "Failed to load item photo");
                 }
 
                 final boolean isCurrentUserGiver = model.getGiver().equals(user.getUid());

@@ -43,12 +43,12 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.3" />
+                app:layout_constraintVertical_bias="0.25" />
 
             <ImageView
                 android:id="@+id/empty_feed_bitten_muffin"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="40dp"
