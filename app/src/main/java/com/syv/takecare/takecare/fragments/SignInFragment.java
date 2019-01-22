@@ -89,6 +89,8 @@ public class SignInFragment extends Fragment  implements View.OnClickListener {
         if (checkFields(email, password)) {
             final ProgressDialog dialog = new ProgressDialog(getActivity());
             dialog.setMessage("Signing in...");
+            dialog.setCancelable(false);
+            dialog.setIndeterminate(true);
             dialog.show();
             auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {

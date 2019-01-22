@@ -181,6 +181,8 @@ public class LoginScreenFragment extends Fragment {
         Log.d(TAG, "handleGoogleAccount:" + account.getId());
         dialog = new ProgressDialog(getActivity());
         dialog.setMessage("Loading data...");
+        dialog.setCancelable(false);
+        dialog.setIndeterminate(true);
         dialog.show();
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         auth.signInWithCredential(credential)
