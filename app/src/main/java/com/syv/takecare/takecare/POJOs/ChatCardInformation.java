@@ -14,6 +14,7 @@ public class ChatCardInformation {
     private String taker;
     private String takerName;
     private String takerPhoto;
+    private String category;
     private Timestamp timestamp;
     private String chat;
 
@@ -122,5 +123,13 @@ public class ChatCardInformation {
 
     public void setChat(String chat) {
         this.chat = chat;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

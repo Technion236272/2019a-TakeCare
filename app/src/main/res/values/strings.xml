@@ -181,7 +181,7 @@
     <string name="edit_location">Edit location</string>
 
 
-    <!-- About -->
+    <!-- About page elements-->
     <string name="my_link"><a href="http://somesite.com/">Click me!</a></string>
     <string name="icon_credits">Icon made by <a href="https://www.flaticon.com/authors/freepik/">Freepik</a> from <a href="https://www.flaticon.com/">www.flaticon.com</a></string>
     <string name="about_title">About</string>
@@ -192,8 +192,16 @@
     <string name="title_activity_feed_map">Map</string>
     <string name="add_location_button_text">Choose a location</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Chat Lobby elements -->
+    <string name="empty_chat_lobby">You have no messages</string>
+    <string name="chat_lobby_title">Chat</string>
+    <string name="empty_chat_giver_text">There are no active chats regarding your listings yet</string>
+    <string name="empty_chat_taker_text">You haven\'t started a chat regarding any listing yet</string>
+
+
+    <!--Chat Activity elements -->
+    <string name="accept_button_text">Accept Request</string>
 
 
     <!--FCM-->
@@ -210,21 +218,13 @@
     <string name="payload_data_notification_time">notification_time</string>
     <string name="payload_data_sender_msg">sender_msg</string>
     <string name="payload_data_sender_name">sender_name</string>
+    <string name="payload_data_chat_id">chat_id</string>
+    <string name="payload_data_photo">photo</string>
 
 
     <!--MISC-->
     <string name="error_timeout_message">\"Loading process takes too long!\\nCheck your internet connection and try again.\"</string>
-
-
-    <!-- Chat Lobby Strings -->
-    <string name="empty_chat_lobby">You have no messages</string>
-    <string name="chat_lobby_title">Chat</string>
-
-
-    <!--Chat -->
-    <string name="accept_button_text">Accept Request</string>
-    <string name="payload_data_chat_id">chat_id</string>
-    <string name="payload_data_photo">photo</string>
+    <string name="chat_card_timestamp_title_text">Last update at:</string>
 
 
     <!---->

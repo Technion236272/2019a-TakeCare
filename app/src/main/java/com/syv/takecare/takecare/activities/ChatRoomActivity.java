@@ -78,7 +78,7 @@ public class ChatRoomActivity extends TakeCareActivity {
     private TextView enlargedPhotoToolbarTitle;
     private EditText userInput;
     private RecyclerView recyclerView;
-    private Button acceptButton;
+//    private Button acceptButton;
     private FirestoreRecyclerAdapter<ChatMessageInformation, MessagesHolder> adapter;
 
     private String chatMode;
@@ -123,7 +123,8 @@ public class ChatRoomActivity extends TakeCareActivity {
         sendButton = findViewById(R.id.send_button);
         userInput = findViewById(R.id.user_input_text);
         recyclerView = findViewById(R.id.chat_recycler_view);
-        acceptButton = findViewById(R.id.accept_request_button_chat);
+        //TODO: bring this back later
+//        acceptButton = findViewById(R.id.accept_request_button_chat);
 
         enlargedPhotoToolbar = findViewById(R.id.enlarged_item_pic_toolbar);
         enlargedPhotoToolbarTitle = findViewById(R.id.enlarged_item_pic_toolbar_title);
@@ -300,20 +301,22 @@ public class ChatRoomActivity extends TakeCareActivity {
                         itemTitle = documentSnapshot.getString("title");
                         enlargedPhotoToolbarTitle.setText(itemTitle);
 
+                        /*
                         String pickupMethod = documentSnapshot.getString("pickupMethod");
                         if (pickupMethod != null && pickupMethod.equals("In Person")) {
                             if (chatMode.equals("giver"))
                                 acceptButton.setVisibility(View.VISIBLE);
-                            /* TODO:
-                                add to the chat document a field of "requested" to distinguish between
-                                chats that are open for requested items, and chats that are open without the
-                                taker requesting them
-                            */
-//                            else {
-//                                acceptButton.setText(R.string.request_item);
-//                                acceptButton.setVisibility(View.VISIBLE);
-//                            }
+//                             // TODO:
+//                                add to the chat document a field of "requested" to distinguish between
+//                                chats that are open for requested items, and chats that are open without the
+//                                taker requesting them
+//
+                            else {
+                                acceptButton.setText(R.string.request_item);
+                                acceptButton.setVisibility(View.VISIBLE);
+                            }
                         }
+                        */
 
                         if (itemPhotoURL != null) {
                             Glide.with(getApplicationContext())

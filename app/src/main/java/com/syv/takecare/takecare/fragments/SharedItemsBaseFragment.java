@@ -3,6 +3,8 @@ package com.syv.takecare.takecare.fragments;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -190,7 +193,7 @@ public class SharedItemsBaseFragment extends Fragment {
         return null;
     }
 
-    protected FirestoreRecyclerAdapter setFirestoreRecyclerAdapter(FirestoreRecyclerOptions response, final int status) {
+    protected FirestoreRecyclerAdapter setFirestoreRecyclerAdapter(FirestoreRecyclerOptions response) {
         Log.d(TAG, "setFirestoreRecyclerAdapter: Starting.");
         // Returns the appropriate Recycler Adapter using the passed query wrapper.
         // Called from the child class (with its appropriate query)
@@ -200,40 +203,68 @@ public class SharedItemsBaseFragment extends Fragment {
                 Log.d(TAG, "model " + model.getPhoto());
                 final String itemId = model.getItemId();
 
-                switch (status) {
+                switch (model.getStatus()) {
                     case 0:
                         Log.d(TAG, "card in position " + position + " is REQUESTED");
                         holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorAccentLite));
-                        holder.itemTitle.setTextColor(getResources().getColor(R.color.colorAccent));
-                        break;
-                    case 1:
-                        Log.d(TAG, "card in position " + position + " is AVAILABLE");
-                        holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorCardDefault));
+//                        holder.itemTitle.setTextColor(getResources().getColor(R.color.colorAccent));
+                        holder.itemPhoto.setBackgroundResource(R.drawable.requested_round_feed_picture_frame);
                         break;
                     case 2:
                         Log.d(TAG, "card in position " + position + " is TAKEN");
                         holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryLite));
                         holder.itemTitle.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                        holder.itemPhoto.setBackgroundResource(R.drawable.accepted_round_feed_picture_frame);
                         break;
                     case 3:
                         Log.d(TAG, "card in position " + position + " is TIMED OUT");
                         holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorRedLite));
                         holder.itemTitle.setTextColor(Color.RED);
+                        holder.itemPhoto.setBackgroundResource(R.drawable.expired_round_feed_picture_frame);
                         ViewCompat.setBackgroundTintList(holder.itemCategory, getResources().getColorStateList(R.color.secondary_text));
                         ViewCompat.setBackgroundTintList(holder.itemPickupMethod, getResources().getColorStateList(R.color.secondary_text));
                         break;
+                    default:
+                        // status == 1
+                        Log.d(TAG, "card in position " + position + " is AVAILABLE");
+                        holder.card.setCardBackgroundColor(getResources().getColor(R.color.colorCardDefault));
                 }
 
                 holder.itemTitle.setText(model.getTitle());
                 RequestOptions requestOptions = new RequestOptions();
                 requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
-                try {
+                if (model.getPhoto() == null) {
+                    Bitmap bitmap;
+                    switch (model.getCategory()) {
+                        case "Food":
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_pizza_black_big);
+                            break;
+                        case "Study Material":
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_book_black_big);
+                            break;
+                        case "Households":
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_lamp_black_big);
+                            break;
+                        case "Lost & Found":
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_lost_and_found_black_big);
+                            break;
+                        case "Hitchhikes":
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_car_black_big);
+                            break;
+                        default:
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_treasure_black_big);
+                            break;
+                    }
+                    if (bitmap != null) {
+                        Bitmap bitmapScaled = Bitmap.createScaledBitmap(bitmap, 256, 256, true);
+                        holder.itemPhoto.setImageBitmap(bitmapScaled);
+                        holder.itemPhoto.setScaleType(ImageView.ScaleType.CENTER);
+                    }
+                } else if (getActivity() != null) {
                     Glide.with(getActivity().getApplicationContext())
                             .load(model.getPhoto())
                             .apply(requestOptions)
                             .into(holder.itemPhoto);
-                } catch (NullPointerException e) {
-                    Log.d(TAG, "could not load picture");
                 }
 
                 // Category selection

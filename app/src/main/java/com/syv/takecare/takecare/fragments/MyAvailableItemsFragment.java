@@ -37,13 +37,14 @@ public class MyAvailableItemsFragment extends SharedItemsBaseFragment {
 
         Query query = db.collection("items")
                 .whereEqualTo("publisher", user.getUid())
-                .whereEqualTo("status", 1)
+                .whereLessThanOrEqualTo("status", 1)
+                .orderBy("status", Query.Direction.ASCENDING)
                 .orderBy("timestamp", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
                 .setQuery(query, FeedCardInformation.class)
                 .build();
 
-        return super.setFirestoreRecyclerAdapter(response, 1);
+        return super.setFirestoreRecyclerAdapter(response);
     }
 }

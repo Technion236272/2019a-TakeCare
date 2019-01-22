@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -74,6 +75,7 @@ import com.syv.takecare.takecare.POJOs.RequesterCardInformation;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -131,6 +133,8 @@ public class ItemInfoActivity extends TakeCareActivity {
     private View.OnClickListener minimizer = null;
     private ProgressBar uploaderProgress;
     private TextView recyclerViewText;
+    private TextView publishTimeTextView;
+    private TextView timeLeftTextView;
 
     @Override
     protected void onStart() {
@@ -183,6 +187,8 @@ public class ItemInfoActivity extends TakeCareActivity {
         pickupMethod = findViewById(R.id.item_pickup_method);
         showOnMap = findViewById(R.id.item_map_button);
         tagsBox = findViewById(R.id.item_tags_box);
+        publishTimeTextView = findViewById(R.id.item_publish_time);
+        timeLeftTextView = findViewById(R.id.item_time_left);
 
         // Enable transition animations only for supported systems (API 21 and above).
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -207,8 +213,6 @@ public class ItemInfoActivity extends TakeCareActivity {
                 recyclerViewText.setVisibility(View.VISIBLE);
             }
         } else {
-            RelativeLayout requestButton = findViewById(R.id.request_button_layout);
-            requestButton.setVisibility(View.VISIBLE);
             messageButton.setVisibility(View.VISIBLE);
         }
 
@@ -261,26 +265,55 @@ public class ItemInfoActivity extends TakeCareActivity {
                             mShortAnimationDuration = getResources().getInteger(
                                     android.R.integer.config_shortAnimTime);
 
-                        } else {
+                        } else if (document.getString("category") != null){
+                            Bitmap bitmap;
                             switch (document.getString("category")) {
                                 case "Food":
-                                    itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_pizza_96_big_purple));
+                                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_pizza_black_big);
                                     break;
                                 case "Study Material":
-                                    itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_book_purple));
+                                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_book_black_big);
                                     break;
                                 case "Households":
-                                    itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_lamp_purple));
+                                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_lamp_black_big);
                                     break;
                                 case "Lost & Found":
-                                    itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_lost_and_found_purple));
+                                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_lost_and_found_black_big);
                                     break;
                                 case "Hitchhikes":
-                                    itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_car_purple));
+                                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_car_black_big);
                                     break;
                                 default:
-                                    itemImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_treasure_purple));
+                                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_treasure_black_big);
                                     break;
+                            }
+                            if (bitmap != null) {
+                                Bitmap bitmapScaled = Bitmap.createScaledBitmap(bitmap, 256, 256, true);
+                                itemImageView.setImageBitmap(bitmapScaled);
+                                itemImageView.setScaleType(ImageView.ScaleType.CENTER);
+                            }
+                        }
+
+                        Date timestamp = document.getDate("timestamp");
+                        if (timestamp != null) {
+                            Log.d(TAG, "setting publish timestamp date");
+                            SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd hh:mm");
+                            String dateText = "Published at: " + formatter.format(timestamp);
+                            publishTimeTextView.setText(dateText);
+                            Long airTime = document.getLong("airTime");
+                            if (airTime != null) {
+                                Log.d(TAG, "setting airtime");
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTime(timestamp);
+                                calendar.add(Calendar.HOUR_OF_DAY, (int) ((long) airTime));
+                                Date targetTime = calendar.getTime();
+                                Date currentTime = Calendar.getInstance().getTime();
+                                Log.d(TAG, "current time is: " + currentTime + "\ntarget time is: " + targetTime);
+                                if (currentTime.before(targetTime)) {
+                                    String timeLeftText = "Expires at: " + formatter.format(targetTime);
+                                    timeLeftTextView.setText(timeLeftText);
+                                }
+
                             }
                         }
                         String description = document.getString("description");
@@ -315,7 +348,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                         }
                         String category = document.getString("category");
                         if (category != null) {
-                            Log.d(TAG, "Found category.");
+                            Log.d(TAG, "Found category: " + category);
                             setCategory(category);
                         }
                         String pickupMethod = document.getString("pickupMethod");
@@ -323,15 +356,17 @@ public class ItemInfoActivity extends TakeCareActivity {
                             Log.d(TAG, "Found pickup method.");
                             ItemInfoActivity.this.pickupMethod.setText(document.getString("pickupMethod"));
                             switch (pickupMethod) {
-                                case "In Person" :
+                                case "In Person":
                                     pickupMethodIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_in_person_purple));
                                     break;
-                                case "Giveaway" :
+                                case "Giveaway":
                                     pickupMethodIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_giveaway_purple));
                                     break;
-                                case "Race" :
+                                case "Race":
                                     pickupMethodIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_race_purple));
-
+                            }
+                            if (pickupMethod.equals("In Person") && !isPublisher) {
+                                tryShowRequestButton();
                             }
                         }
                         List<String> tags = (List<String>) document.get("tags");
@@ -420,6 +455,33 @@ public class ItemInfoActivity extends TakeCareActivity {
         Log.d(TAG, "onCreate: finished");
     }
 
+    private void tryShowRequestButton() {
+        db.collection("users")
+                .document(user.getUid())
+                .collection("requestedItems")
+                .document(itemId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot == null || !documentSnapshot.exists()) {
+                            Log.d(TAG, "showing request button");
+                            RelativeLayout requestButton = findViewById(R.id.request_button_layout);
+                            requestButton.setVisibility(View.VISIBLE);
+                        } else {
+                            Log.d(TAG, "user already requested this item");
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "could not show request button");
+                        makeHighlightedSnackbar(root, "Error fully loading this page. Please check your internet connection");
+                    }
+                });
+    }
+
     private void setExistingChatSessionListener(final DocumentSnapshot chatDocument) {
         assert chatDocument != null;
 
@@ -428,7 +490,6 @@ public class ItemInfoActivity extends TakeCareActivity {
             public void onClick(View v) {
                 v.setClickable(false);
                 Log.d(TAG, "redirecting to existing chat session");
-                startLoading("Opening your chat session...", null);
                 Intent intent = new Intent(ItemInfoActivity.this, ChatRoomActivity.class);
 
                 intent.putExtra("CHAT_MODE", "taker");
@@ -438,7 +499,6 @@ public class ItemInfoActivity extends TakeCareActivity {
                 intent.putExtra("IS_NOT_REFERENCED_FROM_LOBBY", true);
 
                 startActivity(intent);
-                stopLoading();
                 finish();
             }
         });
@@ -809,6 +869,8 @@ public class ItemInfoActivity extends TakeCareActivity {
         Map<String, Object> doc = new HashMap<>();
         doc.put("timestamp", FieldValue.serverTimestamp());
         doc.put("userRef", userRef);
+
+        startLoading("Making a request...", null);
         db.collection("items").document(itemId).collection("requestedBy").document(userId)
                 .set(doc)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -836,6 +898,9 @@ public class ItemInfoActivity extends TakeCareActivity {
                                                         Log.d(TAG, "item requested successfully!");
                                                         //TODO: eliminate post from user feed, and finish the activity
                                                         Toast.makeText(getApplicationContext(), "You've successfully requested the item!", Toast.LENGTH_SHORT).show();
+                                                        RelativeLayout requestButton = findViewById(R.id.request_button_layout);
+                                                        requestButton.setVisibility(View.GONE);
+                                                        stopLoading();
                                                     }
                                                 })
                                                 .addOnFailureListener(new OnFailureListener() {
@@ -847,6 +912,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                                                                 .collection("requestedItems")
                                                                 .document(itemId)
                                                                 .delete();
+                                                        stopLoading();
                                                     }
 
                                                 });
@@ -855,7 +921,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-
+                                        stopLoading();
                                     }
                                 });
                     }
@@ -864,6 +930,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d(TAG, "requestedItem: failed to request item");
+                        stopLoading();
                     }
                 });
     }
@@ -1149,9 +1216,8 @@ public class ItemInfoActivity extends TakeCareActivity {
     }
 
     private void createNewChatSession(final View v, DocumentSnapshot userDocument, DocumentSnapshot giverDocument,
-                                     DocumentSnapshot selfDocument, boolean fromMessageButton) {
+                                      DocumentSnapshot selfDocument, boolean fromMessageButton) {
         Log.d(TAG, "creating new chat session document");
-        startLoading("Creating new chat session...",  null);
 
         v.setClickable(false);
 
@@ -1168,33 +1234,36 @@ public class ItemInfoActivity extends TakeCareActivity {
             newChat.put("takerName", selfDocument.getString("name"));
             newChat.put("takerPhoto", selfDocument.getString("profilePicture"));
             newChat.put("timestamp", FieldValue.serverTimestamp());
+            newChat.put("category", giverDocument.getString("category"));
             newChat.put("messagesCount", 0);
 
             final DocumentReference chatRef = db.collection("chats").document();
             newChat.put("chat", chatRef.getId());
             Task<Void> task = chatRef.set(newChat);
             if (fromMessageButton) {
+                startLoading("Opening new chat session...", null);
                 task.addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "chat document created. starting chat activity");
                         Intent intent = new Intent(ItemInfoActivity.this, ChatRoomActivity.class);
-
                         intent.putExtra("CHAT_MODE", "taker");
                         intent.putExtra("CHAT_ID", chatRef.getId());
                         intent.putExtra("OTHER_ID", publisherID);
                         intent.putExtra("ITEM_ID", itemId);
                         intent.putExtra("IS_NOT_REFERENCED_FROM_LOBBY", true);
 
-                        stopLoading();
                         startActivity(intent);
+                        stopLoading();
+                        Log.d(TAG, "closing ItemInfoActivity");
                         finish();
                     }
                 })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                v.setClickable(true);
                                 stopLoading();
+                                v.setClickable(true);
                                 makeHighlightedSnackbar(root, "Error opening chat. Please check your internet connection");
                             }
                         });

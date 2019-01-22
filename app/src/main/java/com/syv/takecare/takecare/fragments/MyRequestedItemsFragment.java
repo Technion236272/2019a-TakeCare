@@ -43,6 +43,6 @@ public class MyRequestedItemsFragment extends SharedItemsBaseFragment {
                 .setQuery(query, FeedCardInformation.class)
                 .build();
 
-        return super.setFirestoreRecyclerAdapter(response, 0);
+        return super.setFirestoreRecyclerAdapter(response);
     }
 }

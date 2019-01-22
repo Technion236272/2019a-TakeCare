@@ -43,6 +43,6 @@ public class MyExpiredItemsFragment extends SharedItemsBaseFragment {
                 .setQuery(query, FeedCardInformation.class)
                 .build();
 
-        return super.setFirestoreRecyclerAdapter(response, 3);
+        return super.setFirestoreRecyclerAdapter(response);
     }
 }

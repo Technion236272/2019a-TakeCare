@@ -287,7 +287,6 @@
                 android:background="@android:color/holo_red_dark"
                 android:clickable="true"
                 android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
                 android:gravity="start"
                 android:padding="30dp"
                 android:text="@string/log_out"

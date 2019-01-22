@@ -35,7 +35,6 @@ public class GiverMessagesFragment extends MessagingBaseFragment {
         final FirebaseUser user = auth.getCurrentUser();
         assert user != null;
 
-        Log.d(TAG, "my ID: " + user.getUid());
         Query query = db.collection("chats")
                 .whereEqualTo("giver", user.getUid())
                 .orderBy("timestamp", Query.Direction.DESCENDING);

@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -269,29 +271,33 @@ public class FeedListFragment extends Fragment {
                 RequestOptions requestOptions = new RequestOptions();
                 requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
                 if (model.getPhoto() == null) {
-                    holder.itemPhoto.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    Bitmap bitmap;
                     switch (model.getCategory()) {
                         case "Food":
-                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_pizza_slice_purple));
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_pizza_black_big);
                             break;
                         case "Study Material":
-                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_book_purple));
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_book_black_big);
                             break;
                         case "Households":
-                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_lamp_purple));
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_lamp_black_big);
                             break;
                         case "Lost & Found":
-                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_lost_and_found_purple));
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_lost_and_found_black_big);
                             break;
                         case "Hitchhikes":
-                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_car_purple));
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_car_black_big);
                             break;
                         default:
-                            holder.itemPhoto.setImageDrawable(getResources().getDrawable(R.drawable.ic_treasure_purple));
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_treasure_black_big);
                             break;
                     }
-                    holder.itemPhoto.setScaleType(ImageView.ScaleType.CENTER);
-                } else {
+                    if (bitmap != null) {
+                        Bitmap bitmapScaled = Bitmap.createScaledBitmap(bitmap, 256, 256, true);
+                        holder.itemPhoto.setImageBitmap(bitmapScaled);
+                        holder.itemPhoto.setScaleType(ImageView.ScaleType.CENTER);
+                    }
+                } else if (getActivity() != null) {
                     Glide.with(getActivity().getApplicationContext())
                             .load(model.getPhoto())
                             .apply(requestOptions)
@@ -608,7 +614,7 @@ public class FeedListFragment extends Fragment {
                 try {
                     recyclerView.getLayoutManager().onRestoreInstanceState(listState);
                     position = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-                } catch (NullPointerException e ) {
+                } catch (NullPointerException e) {
                     Log.d(TAG, "Activity is null");
                 }
             }

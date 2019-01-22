@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/chat_card_root"
     android:layout_width="match_parent"
     android:layout_height="96dp"
     android:background="@color/colorCards"
-    android:id="@+id/chat_card_root"
     android:clickable="true"
-    android:focusable="true"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:focusable="true">
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/chat_card_item_photo"
@@ -56,7 +54,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:adjustViewBounds="true"
-        android:background="@drawable/round_feed_picture_frame"
+        android:background="@drawable/round_picture_frame_no_border"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="@+id/chat_card_item_photo"
         app:layout_constraintEnd_toEndOf="parent"
@@ -74,11 +72,11 @@
         android:layout_marginEnd="100dp"
         android:layout_marginRight="100dp"
         android:ellipsize="end"
-        android:scrollHorizontally="true"
-        android:maxLines="2"
-        android:textColor="@color/secondary_text"
-        android:textAlignment="gravity"
         android:gravity="left"
+        android:maxLines="2"
+        android:scrollHorizontally="true"
+        android:textAlignment="gravity"
+        android:textColor="@color/secondary_text"
         app:autoSizeMaxTextSize="14sp"
         app:autoSizeMinTextSize="10sp"
         app:autoSizeTextType="uniform"
@@ -90,21 +88,39 @@
         tools:ignore="RtlHardcoded" />
 
     <TextView
-        android:id="@+id/chat_card_timestamp"
-        android:layout_width="0dp"
+        android:id="@+id/chat_card_timestamp_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
         android:gravity="center"
+        android:text="@string/chat_card_timestamp_title_text"
         android:textColor="@color/secondary_text"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/chat_card_user_name"
         app:layout_constraintTop_toBottomOf="@+id/chat_card_item_title" />
+
+    <TextView
+        android:id="@+id/chat_card_timestamp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="65dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:textColor="@color/secondary_text"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/chat_card_user_name"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:layout_width="match_parent"

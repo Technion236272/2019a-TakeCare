@@ -72,26 +72,26 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/accept_request_button_chat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorAccent"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:maxLines="1"
-            android:padding="10dp"
-            android:text="@string/accept_button_text"
-            android:textAllCaps="false"
-            android:textColor="@color/icons"
-            android:textStyle="italic"
-            app:autoSizeTextType="uniform"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/chat_toolbar_wrapper"
-            tools:layout_editor_absoluteX="115dp"
-            tools:layout_editor_absoluteY="1047dp"
-            android:visibility="gone"/>
+        <!--TODO: bring this back-->
+        <!--<android.support.v7.widget.AppCompatButton-->
+            <!--android:id="@+id/accept_request_button_chat"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@color/colorAccent"-->
+            <!--android:focusable="true"-->
+            <!--android:maxLines="1"-->
+            <!--android:padding="10dp"-->
+            <!--android:text="@string/accept_button_text"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:textColor="@color/icons"-->
+            <!--android:textStyle="italic"-->
+            <!--app:autoSizeTextType="uniform"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@id/chat_toolbar_wrapper"-->
+            <!--tools:layout_editor_absoluteX="115dp"-->
+            <!--tools:layout_editor_absoluteY="1047dp"-->
+            <!--android:visibility="gone"/>-->
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/chat_recycler_view"
