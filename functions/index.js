@@ -321,7 +321,7 @@ exports.onRequestCreatedNotify = db.document('users/{userId}/requestedItems/{req
 				if (typeof selfDoc.data().profilePicture !== 'undefined') {
 					photo = selfDoc.data().profilePicture;
 				}
-				const msg = selfDoc.data().name + "is interested in your listing of \"" + itemDoc.data().title + "\".\nClick here to view your listings";
+				const msg = selfDoc.data().name + " is interested in your listing of \"" + itemDoc.data().title + "\".\nClick here to view your listings";
 
 				const payload = {
 

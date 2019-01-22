@@ -338,13 +338,14 @@ public class ItemInfoActivity extends TakeCareActivity {
                         if (location != null) {
                             if (pickupLocation == null)
                                 itemLocationView.setVisibility(View.GONE);
+                            /*
                             showOnMap.setVisibility(View.VISIBLE);
                             showOnMap.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     // TODO: Redirect to map with given GeoPoint
                                 }
-                            });
+                            });*/
                         }
                         String category = document.getString("category");
                         if (category != null) {

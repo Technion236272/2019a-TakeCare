@@ -175,11 +175,11 @@ public class TakerMenuActivity extends TakeCareActivity
             changeFragment();
         }
 
-        Intent intent = getIntent();
-        if (intent != null) {
-            boolean welcomeToast = intent.getBooleanExtra(Intent.EXTRA_TEXT, false);
-            makeWelcomeToast(welcomeToast);
-        }
+//        Intent intent = getIntent();
+//        if (intent != null) {
+//            boolean welcomeToast = intent.getBooleanExtra(Intent.EXTRA_TEXT, false);
+//            makeWelcomeToast(welcomeToast);
+//        }
 
         // Set the search bar and search button in the filter menu
         searchBar = findViewById(R.id.search_bar);
