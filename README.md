@@ -1,4 +1,4 @@
-# TakeCare
+# TakeCare <img src="https://user-images.githubusercontent.com/28847788/51694511-a5cd4b00-2009-11e9-8468-80cbd893d39a.png" align="left" height="48" width="48" >
 
 This is a project for the course "236503 - Project in Software - Android Applications" of the Technion.
 TakeCare is a social Android app written in Java and developed on Android Studio, suitable for all audiences over the age of 13.
@@ -13,7 +13,18 @@ Among the things you can share with others (or express your interest in):
 * Lost & Founds
 * Just about anything you see fit!
 
-Join the sharing revolution: help brighten someone's day and also help the world by not excessively throwing away like in most modern families!
+Join the sharing revolution: help brighten someone's day and also help the world by not excessively throwing away like in most modern families! [Find us in Google Play store!](https://play.google.com/store/apps/details?id=com.syv.takecare.takecare)
+
+
+
+![Login Screen](https://user-images.githubusercontent.com/28847788/51693782-4884ca00-2008-11e9-9c95-815f85cd39dd.PNG)
+![User Feed In List Display](https://user-images.githubusercontent.com/28847788/51693783-491d6080-2008-11e9-82ff-9929506080fa.PNG)
+![User Feed In Map Display](https://user-images.githubusercontent.com/28847788/51693784-491d6080-2008-11e9-9f07-a0649f6d387d.PNG)
+![Item Information Top](https://user-images.githubusercontent.com/28847788/51693787-49b5f700-2008-11e9-9924-7fcc41bd1cc2.PNG)
+![Chat Room](https://user-images.githubusercontent.com/28847788/51693791-4a4e8d80-2008-11e9-8fdc-84d4a3161e3b.PNG)
+![Various Notifications](https://user-images.githubusercontent.com/28847788/51693790-49b5f700-2008-11e9-9040-5678d4bd11fd.PNG)
+
+
 
 
 ## Built With
@@ -34,5 +45,4 @@ Join the sharing revolution: help brighten someone's day and also help the world
 
 ## Acknowledgments 
 
-We thank our mentor [Ron Marcovich](https://github.com/ron4548) for guiding and supporting us throughout the semester.
-
+We thank our mentor [Ron Marcovich](https://github.com/ron4548) for his amazing guidance and support throughout the semester.
