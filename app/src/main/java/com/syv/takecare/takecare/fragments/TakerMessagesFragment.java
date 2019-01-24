@@ -69,7 +69,7 @@ public class TakerMessagesFragment extends MessagingBaseFragment {
                 holder.userPhoto.setBackgroundResource(R.drawable.requested_round_picture_frame_no_border);
                 holder.itemRoot.setBackgroundColor(getResources().getColor(R.color.colorAccentLite));
 
-                if (model.getItemPhoto() == null) {
+                if (model.getItemPhoto() == null && model.getCategory() != null) {
                     Bitmap bitmap;
                     switch (model.getCategory()) {
                         case "Food":
@@ -96,7 +96,7 @@ public class TakerMessagesFragment extends MessagingBaseFragment {
                         holder.itemPhoto.setImageBitmap(bitmapScaled);
                         holder.itemPhoto.setScaleType(ImageView.ScaleType.CENTER);
                     }
-                } else if (getActivity() != null) {
+                } else if (getActivity() != null && model.getCategory() != null) {
                     Glide.with(getActivity().getApplicationContext())
                             .load(model.getItemPhoto())
                             .apply(requestOptions)

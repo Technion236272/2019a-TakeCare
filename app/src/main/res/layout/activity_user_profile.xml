@@ -275,7 +275,8 @@
                 android:layout_below="@id/pending_requests"
                 android:layout_marginTop="10dp"
                 android:padding="20dp"
-                android:text="@string/get_favorites_notifications" />
+                android:text="@string/get_favorites_notifications"
+                android:visibility="gone"/>
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/logout"
