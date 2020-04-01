@@ -2,9 +2,9 @@ package com.syv.takecare.takecare.activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.tabs.TabLayout;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
@@ -13,7 +13,6 @@ import com.syv.takecare.takecare.adapters.SectionsPageAdapter;
 import com.syv.takecare.takecare.customViews.CustomViewPager;
 import com.syv.takecare.takecare.fragments.AcceptedRequestsFragment;
 import com.syv.takecare.takecare.fragments.PendingRequestsFragment;
-import com.syv.takecare.takecare.fragments.RejectedRequestsFragment;
 
 public class RequestedItemsActivity extends TakeCareActivity {
 

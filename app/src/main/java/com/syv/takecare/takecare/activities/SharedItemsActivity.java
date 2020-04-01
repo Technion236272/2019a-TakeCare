@@ -1,17 +1,16 @@
 package com.syv.takecare.takecare.activities;
 
 import android.content.res.Configuration;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
+import com.google.android.material.tabs.TabLayout;
+import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
 import com.syv.takecare.takecare.customViews.CustomViewPager;
 import com.syv.takecare.takecare.fragments.MyAvailableItemsFragment;
 import com.syv.takecare.takecare.fragments.MyExpiredItemsFragment;
-import com.syv.takecare.takecare.fragments.MyRequestedItemsFragment;
 import com.syv.takecare.takecare.fragments.MyTakenItemsFragment;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.adapters.SectionsPageAdapter;

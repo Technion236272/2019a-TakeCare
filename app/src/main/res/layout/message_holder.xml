@@ -7,13 +7,13 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/time_user_wrapper1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right">
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/message_holder_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
             android:maxWidth="270dp"
              />
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/time_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -51,15 +51,15 @@
             app:layout_constraintEnd_toStartOf="@+id/message_holder_user"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/time_user_wrapper2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left">
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/message_holder_other"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
             android:maxWidth="270dp"
             />
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/time_other"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -97,6 +97,6 @@
             app:layout_constraintStart_toEndOf="@+id/message_holder_other"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintEnd_toEndOf="parent" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

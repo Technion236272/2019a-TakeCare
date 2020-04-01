@@ -10,19 +10,19 @@
     android:windowSoftInputMode="stateAlwaysHidden"
     tools:context=".activities.UserProfileActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/user_profile_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
         android:id="@+id/scroll_view"
@@ -44,7 +44,7 @@
                 android:layout_marginTop="96dp"
                 android:layout_marginBottom="10dp" />
 
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/camera_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
                 android:layout_marginTop="248dp"
                 app:srcCompat="@drawable/ic_camera_purple" />
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/rating_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
                     app:layout_constraintStart_toEndOf="@+id/rating_icon"
                     app:layout_constraintTop_toTopOf="parent" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             <ImageButton
@@ -133,7 +133,7 @@
                 app:backgroundTint="@android:color/holo_red_light"
                 app:srcCompat="@drawable/ic_close" />
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/name_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -174,7 +174,7 @@
                     app:srcCompat="@drawable/ic_edit_black_24dp"
                     app:tint="@color/colorPrimary" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <EditText
                 android:id="@+id/about"
@@ -228,7 +228,7 @@
                 app:backgroundTint="@android:color/holo_red_light"
                 app:srcCompat="@drawable/ic_close" />
 
-            <android.support.v7.widget.AppCompatButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/my_favorites"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -242,7 +242,7 @@
                 app:backgroundTint="@android:color/transparent"
                 app:backgroundTintMode="add" />
 
-            <android.support.v7.widget.AppCompatButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/my_items"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -255,7 +255,7 @@
                 app:backgroundTint="@android:color/transparent"
                 app:backgroundTintMode="add" />
 
-            <android.support.v7.widget.AppCompatButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/pending_requests"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -278,7 +278,7 @@
                 android:text="@string/get_favorites_notifications"
                 android:visibility="gone"/>
 
-            <android.support.v7.widget.AppCompatButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -318,14 +318,14 @@
     </ScrollView>
 
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/enlarged_user_pic_toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/enlarged_user_pic_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -334,7 +334,7 @@
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:title="" />
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout
         android:id="@+id/fullscreen_image_container"

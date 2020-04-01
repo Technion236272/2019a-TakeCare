@@ -4,7 +4,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +20,8 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.syv.takecare.takecare.R;
+
+import androidx.annotation.NonNull;
 
 public class GatewayActivity extends TakeCareActivity {
     private final static String TAG = "TakeCare/Gateway";

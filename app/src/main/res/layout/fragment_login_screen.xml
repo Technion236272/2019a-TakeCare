@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -33,7 +33,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.13999999">
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/login_activity_title"
             android:layout_width="match_parent"
             android:layout_height="100dp"
@@ -72,7 +72,7 @@
         app:layout_constraintStart_toStartOf="@+id/facebook_login_button"
         app:layout_constraintTop_toBottomOf="@+id/facebook_login_button" />
 
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/sign_up_with_email_button"
         android:layout_width="0dp"
         android:layout_height="40dp"
@@ -134,4 +134,4 @@
             app:layout_constraintStart_toEndOf="@+id/sign_in_text" />
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,8 +11,8 @@ import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
@@ -24,17 +24,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.syv.takecare.takecare.POJOs.ActivityCode;
-import com.syv.takecare.takecare.activities.LoginActivity;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.activities.TakeCareActivity;
 import com.syv.takecare.takecare.activities.TakerMenuActivity;
 
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
+import static androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static com.squareup.okhttp.internal.http.HttpDate.parse;
 
 

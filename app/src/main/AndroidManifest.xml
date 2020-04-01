@@ -29,7 +29,7 @@
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="com.syv.takecare.takecare.provider"
             android:exported="false"
             android:grantUriPermissions="true">

@@ -1,18 +1,17 @@
 package com.syv.takecare.takecare.fragments;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import androidx.fragment.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
+
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,13 +41,10 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.syv.takecare.takecare.activities.TakeCareActivity;
-import com.syv.takecare.takecare.adapters.SectionsPageAdapter;
 import com.syv.takecare.takecare.customViews.CustomInfoWindow;
 import com.syv.takecare.takecare.activities.ItemInfoActivity;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.activities.TakerMenuActivity;
-import com.syv.takecare.takecare.customViews.CustomViewPager;
 
 import java.util.HashMap;
 

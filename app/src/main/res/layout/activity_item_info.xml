@@ -8,29 +8,29 @@
     android:background="@android:color/black"
     tools:context=".activities.ItemInfoActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/item_info_toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/item_info_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/enlarged_item_info_toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/enlarged_item_info_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -39,7 +39,7 @@
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:title="">
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/enlarged_item_info_toolbar_title"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -55,9 +55,9 @@
                 app:autoSizeMinTextSize="10sp"
                 app:autoSizeTextType="uniform" />
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout
         android:id="@+id/fullscreen_image_container"
@@ -107,14 +107,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/item_info_root"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/image_space"
                 android:background="@android:color/white">
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/item_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -163,7 +163,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/profile_card">
 
-                    <android.support.v7.widget.CardView
+                    <androidx.cardview.widget.CardView
                         android:id="@+id/item_category_card"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -206,9 +206,9 @@
 
                         </RelativeLayout>
 
-                    </android.support.v7.widget.CardView>
+                    </androidx.cardview.widget.CardView>
 
-                    <android.support.v7.widget.CardView
+                    <androidx.cardview.widget.CardView
                         android:id="@+id/item_pickup_method_card"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -251,11 +251,11 @@
 
                         </RelativeLayout>
 
-                    </android.support.v7.widget.CardView>
+                    </androidx.cardview.widget.CardView>
 
                 </LinearLayout>
 
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:id="@+id/item_description_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -307,9 +307,9 @@
                             android:textSize="18sp" />
 
                     </RelativeLayout>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
-                <android.support.constraint.ConstraintLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/profile_card"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -366,7 +366,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/publisher_profile_pic" />
 
-                </android.support.constraint.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView
                     android:id="@+id/likes_counter"
@@ -472,7 +472,7 @@
 
                 </LinearLayout>
 
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:id="@+id/pickup_time_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -520,9 +520,9 @@
 
                     </RelativeLayout>
 
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:id="@+id/location_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -604,7 +604,7 @@
                             android:textSize="16sp"
                             android:visibility="gone" />
                     </LinearLayout>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <LinearLayout
                     android:id="@+id/item_tags_layout"
@@ -678,7 +678,7 @@
 
                 </com.syv.takecare.takecare.customViews.FeedRecyclerView>
 
-                <android.support.v7.widget.AppCompatButton
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/send_message_button"
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
@@ -724,7 +724,7 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/send_message_button" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </RelativeLayout>
 
@@ -739,7 +739,7 @@
         android:visibility="gone"
         tools:layout_editor_absoluteY="490dp">
 
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/request_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
