@@ -91,12 +91,12 @@
     <string name="report_alert_warning">This will permanently remove the item from your feed</string>
 
 
-    <!--Image upload elements-->
+    <!-- Image upload elements -->
     <string name="upload_camera_text">Camera</string>
     <string name="upload_gallery_text">Gallery</string>
 
 
-    <!--Empty feed elements-->
+    <!-- Empty feed elements -->
     <string name="empty_feed_text_1">Uh-oh…\n\nSeems like there are no nearby items available right now!\n\nThe good news is:"</string>
     <string name="empty_feed_text_2">you can share the first one!</string>>
     <string name="shared_items_empty_feed_text">You didn\'t share any items yet</string>
@@ -109,7 +109,7 @@
     <string name="my_expired_items_empty_feed_text">None of your items have expired</string>
 
 
-    <!--Favorites page elements-->
+    <!-- Favorites page elements -->
     <string name="favorites_tags_title">Tags:</string>
     <string name="favorites_tag_hint">e.g. "muffins", "giveaway", "music"…</string>
     <string name="favorites_instruction_text">Type in words that interest you.\nWe\'ll make sure to notify you when a suitable item is posted!</string>
@@ -134,7 +134,7 @@
     <string name="add_profile_pic">Add a Profile Picture:</string>
 
 
-    <!--ItemInfo elements-->
+    <!-- ItemInfo elements -->
     <string name="request_item">I Want That!</string>
     <string name="send_message_from_item_info">Send Message</string>
     <string name="report">Report</string>
@@ -145,9 +145,11 @@
     <string name="item_default_pickup_text">Flexible</string>
     <string name="item_default_location_text">Unspecified</string>
     <string name="search_button_description">Press to search</string>
+    <string name="item_info_published_at">Published at: </string>
+    <string name="item_info_expires_at">Expires at: </string>
 
 
-    <!--User Profile elements-->
+    <!-- User Profile elements -->
     <string name="user_settings_default_user_text">User</string>
     <string name="user_description_text">Tell about yourself</string>
     <string name="show_phone_number">Show Phone Number</string>
@@ -157,8 +159,23 @@
     <string name="my_items">My Items</string>
     <string name="pending_requests">Requested Items</string>
     <string name="log_out">Log Out</string>
+    <string name="discard_changes_title">Discard changes</string>
+    <string name="discard_changes_name_body">Are you sure you want to discard the changes to your name?</string>
+    <string name="discard_changes_profile_body">Are you sure you want to discard the changes to your profile?</string>
+    <string name="updating_profile_name">Updating name…</string>
+    <string name="profile_name_updated">Name updated!</string>
+    <string name="undo_snackbar">UNDO</string>
+    <string name="profile_name_restored">Previous name restored</string>
+    <string name="profile_name_error">Error updating your name. Please check your internet connection</string>
+    <string name="profile_name_empty_warning">Please don\'t leave your name empty</string>
+    <string name="profile_page_updating">Updating your page…</string>
+    <string name="profile_page_updated">Page updated!</string>
+    <string name="profile_restored">Previous profile restored</string>
+    <string name="profile_page_error">An error has occurred. Please check your internet connection</string>
+    <string name="profile_logout_title">Log Out</string>
+    <string name="profile_logout_body">Are you sure you want to log out?</string>
 
-    <!--GiverForm elements-->
+    <!-- GiverForm elements -->
     <string name="giver_form_title_input_hint">Add a title</string>
     <string name="giver_form_add_a_picture_button_text">Add a picture:</string>
     <string name="enter_description_hint">Enter description</string>
@@ -179,9 +196,21 @@
     <string name="tags_tooltip_text">Enter keywords to describe your item.\nSeparate with comma and enter,\n3\-15 characters long</string>
     <string name="save_location">Save location</string>
     <string name="edit_location">Edit location</string>
+    <string name="giver_pickup_in_person">In Person</string>
+    <string name="giver_pickup_giveaway">Giveaway</string>
+    <string name="giver_pickup_race">Race</string>
+    <string name="giver_discard_message_title">Exit Form</string>
+    <string name="giver_discard_message_body">Are you sure you want to discard the form?</string>
+    <string name="giver_uploading">Uploading…</string>
+    <string name="giver_error_unknown">An unknown error has occurred. Please try again later</string>
+    <string name="giver_error_title">Please include a title to describe your item</string>
+    <string name="giver_error_picture">Please include a picture of the item</string>
+    <string name="giver_error_no_category">Please select the item\'s category</string>
+    <string name="item_uploaded">Item uploaded successfully!</string>
+    <string name="upload_failed">Upload failed. Please check your internet connection</string>
 
 
-    <!-- About page elements-->
+    <!-- About page elements -->
     <string name="my_link"><a href="http://somesite.com/">Click me!</a></string>
     <string name="icon_credits">Icon made by <a href="https://www.flaticon.com/authors/freepik/">Freepik</a> from <a href="https://www.flaticon.com/">www.flaticon.com</a></string>
     <string name="about_title">About</string>
@@ -198,11 +227,21 @@
     <string name="chat_lobby_title">Chat</string>
     <string name="empty_chat_giver_text">There are no active chats regarding your listings yet</string>
     <string name="empty_chat_taker_text">You haven\'t started a chat regarding any listing yet</string>
+    <string name="chat_lobby_my_items_tab">My Items</string>
+    <string name="chat_lobby_requested_items_tab">Requested Items</string>
 
 
-    <!--Chat Activity elements -->
+    <!-- Chat Activity elements -->
     <string name="accept_button_text">Accept Request</string>
 
+    <!-- Shared Items elements -->
+    <string name="shared_items_available_tab">Available</string>
+    <string name="shared_items_taken_tab">Taken</string>
+    <string name="shared_items_expired_tab">Expired</string>
+
+    <!-- Requested Items elements -->
+    <string name="requested_items_pending_tab">Pending</string>
+    <string name="requested_items_accepted_tab">Accepted</string>
 
     <!--FCM-->
     <string name="takecare_notification_channel_name">TakeCare</string>

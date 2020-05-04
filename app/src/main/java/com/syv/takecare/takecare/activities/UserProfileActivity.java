@@ -172,7 +172,7 @@ public class UserProfileActivity extends TakeCareActivity {
                         editNameBtn.setVisibility(View.VISIBLE);
                     } else {
                         alertTextChanges(v, currentName,
-                                "Are you sure you want to discard the changes to your name?",
+                                getString(R.string.discard_changes_name_body),
                                 acceptNameBtn, declineNameBtn, true);
                     }
                 }
@@ -197,7 +197,7 @@ public class UserProfileActivity extends TakeCareActivity {
                         imm.hideSoftInputFromWindow(userNameView.getWindowToken(), 0);
                     } else {
                         alertTextChanges(v, currentDescription,
-                                "Are you sure you want to discard the changes to your profile?",
+                                getString(R.string.discard_changes_profile_body),
                                 acceptDescriptionBtn, declineDescriptionBtn, false);
                     }
                 }
@@ -334,7 +334,7 @@ public class UserProfileActivity extends TakeCareActivity {
                                   final ImageButton acceptBtn, final ImageButton declineBtn,
                                   final boolean isName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(UserProfileActivity.this);
-        builder.setTitle("Discard changes")
+        builder.setTitle(R.string.discard_changes_title)
                 .setMessage(msg)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -421,7 +421,7 @@ public class UserProfileActivity extends TakeCareActivity {
             userNameView.setText(restore);
             return;
         }
-        startLoading("Updating name...", null);
+        startLoading(getString(R.string.updating_profile_name), null);
         db.collection("users").document(user.getUid())
                 .update("name", newName)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -430,8 +430,8 @@ public class UserProfileActivity extends TakeCareActivity {
                         Log.d(TAG, "user name updated!");
                         if (undoable) {
                             Snackbar override = Snackbar
-                                    .make(root, "Name updated!", Snackbar.LENGTH_LONG)
-                                    .setAction("UNDO", new View.OnClickListener() {
+                                    .make(root, getString(R.string.profile_name_updated), Snackbar.LENGTH_LONG)
+                                    .setAction(getString(R.string.undo_snackbar), new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
                                             setUserName(restore, restore, false);
@@ -439,7 +439,7 @@ public class UserProfileActivity extends TakeCareActivity {
                                     });
                             override.show();
                         } else {
-                            Snackbar undo = Snackbar.make(root, "Previous name restored", Snackbar.LENGTH_SHORT);
+                            Snackbar undo = Snackbar.make(root, getString(R.string.profile_name_restored), Snackbar.LENGTH_SHORT);
                             undo.show();
                         }
                         userNameView.setText(newName);
@@ -450,7 +450,7 @@ public class UserProfileActivity extends TakeCareActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d(TAG, "onFailure: error updating name");
-                        makeHighlightedSnackbar(root, "Error updating your name. Please check your internet connection");
+                        makeHighlightedSnackbar(root, getString(R.string.profile_name_error));
                         currentName = restore;
                         userNameView.setText(restore);
                         stopLoading();
@@ -460,7 +460,7 @@ public class UserProfileActivity extends TakeCareActivity {
                     @Override
                     public void onCanceled() {
                         Log.d(TAG, "onCanceled: error updating name (no internet connection?)");
-                        makeHighlightedSnackbar(root, "Error updating your name. Please check your internet connection");
+                        makeHighlightedSnackbar(root, getString(R.string.profile_name_error));
                         currentName = restore;
                         userNameView.setText(restore);
                         stopLoading();
@@ -470,7 +470,7 @@ public class UserProfileActivity extends TakeCareActivity {
 
     private boolean isNameValid(String newName) {
         if (newName == null || newName.replace(" ", "").isEmpty()) {
-            Toast.makeText(this, "Please don\'t leave your name empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.profile_name_empty_warning), Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -483,7 +483,7 @@ public class UserProfileActivity extends TakeCareActivity {
         if (user == null) {
             return;
         }
-        startLoading("Updating your page...", null);
+        startLoading(getString(R.string.profile_page_updating), null);
         db.collection("users").document(user.getUid())
                 .update("description", newText)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -492,8 +492,8 @@ public class UserProfileActivity extends TakeCareActivity {
                         Log.d(TAG, "user description updated!");
                         if (undoable) {
                             Snackbar override = Snackbar
-                                    .make(root, "Profile updated!", Snackbar.LENGTH_LONG)
-                                    .setAction("UNDO", new View.OnClickListener() {
+                                    .make(root, getString(R.string.profile_page_updated), Snackbar.LENGTH_LONG)
+                                    .setAction(getString(R.string.undo_snackbar), new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
                                             setUserDescription(restore, null, false);
@@ -501,7 +501,7 @@ public class UserProfileActivity extends TakeCareActivity {
                                     });
                             override.show();
                         } else {
-                            Snackbar undo = Snackbar.make(root, "Previous profile restored", Snackbar.LENGTH_SHORT);
+                            Snackbar undo = Snackbar.make(root, getString(R.string.profile_restored), Snackbar.LENGTH_SHORT);
                             undo.show();
                         }
                         userDescriptionView.setText(newText);
@@ -512,7 +512,7 @@ public class UserProfileActivity extends TakeCareActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d(TAG, "onFailure: error updating description");
-                        makeHighlightedSnackbar(root, "An error has occurred. Please check your internet connection");
+                        makeHighlightedSnackbar(root, getString(R.string.profile_page_error));
                         currentDescription = restore;
                         userDescriptionView.setText(restore);
                         stopLoading();
@@ -522,7 +522,7 @@ public class UserProfileActivity extends TakeCareActivity {
                     @Override
                     public void onCanceled() {
                         Log.d(TAG, "onCanceled: error updating description (no internet connection?)");
-                        makeHighlightedSnackbar(root, "An error has occurred. Please check your internet connection");
+                        makeHighlightedSnackbar(root, getString(R.string.profile_page_error));
                         currentDescription = restore;
                         userDescriptionView.setText(restore);
                         stopLoading();
@@ -534,8 +534,8 @@ public class UserProfileActivity extends TakeCareActivity {
     public void onLogOutClick(View view) {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(this);
-        builder.setTitle("Log Out")
-                .setMessage("Are you sure you want to log out?")
+        builder.setTitle(R.string.profile_logout_title)
+                .setMessage(R.string.profile_logout_body)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         //Close login session of the user: delete token

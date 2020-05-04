@@ -56,9 +56,9 @@ public class SharedItemsActivity extends TakeCareActivity {
     private void setupViewPager(ViewPager viewPager) {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
 //        adapter.addFragment(new MyRequestedItemsFragment(), "Requested"); <- this is scrapped
-        adapter.addFragment(new MyAvailableItemsFragment(), "Available");
-        adapter.addFragment(new MyTakenItemsFragment(), "Taken");
-        adapter.addFragment(new MyExpiredItemsFragment(), "Expired");
+        adapter.addFragment(new MyAvailableItemsFragment(), getString(R.string.shared_items_available_tab));
+        adapter.addFragment(new MyTakenItemsFragment(), getString(R.string.shared_items_taken_tab));
+        adapter.addFragment(new MyExpiredItemsFragment(), getString(R.string.shared_items_expired_tab));
         viewPager.setAdapter(adapter);
     }
 }

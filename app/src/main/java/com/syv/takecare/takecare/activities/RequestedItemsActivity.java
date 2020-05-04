@@ -54,8 +54,8 @@ public class RequestedItemsActivity extends TakeCareActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new PendingRequestsFragment(), "Pending");
-        adapter.addFragment(new AcceptedRequestsFragment(), "Accepted");
+        adapter.addFragment(new PendingRequestsFragment(), getString(R.string.requested_items_pending_tab));
+        adapter.addFragment(new AcceptedRequestsFragment(), getString(R.string.requested_items_accepted_tab));
         // This is scrapped:
 //        adapter.addFragment(new RejectedRequestsFragment(), "Rejected");
         viewPager.setAdapter(adapter);
