@@ -1,0 +1,267 @@
+<resources>
+    <string name="app_name">TakeCare</string>
+
+    <!-- Facebook elements -->
+    <string name="facebook_app_id">1213943598760666</string>
+    <string name="fb_login_protocol_scheme">fb1213943598760666</string>
+
+
+    <string name="fabric_app_id">7f7506f3cfaf9acbb75e34b8b44d610c12a1dccf</string>
+
+
+    <!-- Gateway activity elements -->
+    <string name="text_take_role">Need Something?</string>
+    <string name="text_give_role">Share Something?</string>
+    <string name="font_title">serif</string>
+
+    <!-- Activity title elements -->
+    <string name="taker_menu_title">TakeCare</string>
+    <string name="giver_menu_title">TakeCare</string>
+    <string name="shared_items_menu_title">הפריטים שלי</string>
+    <string name="requested_items_menu_title">פריטים מבוקשים</string>
+    <string name="user_favorites_menu_title">מועדפים</string>
+    <string name="user_profile_menu_title">הפרופיל שלי</string>
+    <string name="item_info_title">מידע על פריט</string>
+    <string name="title_activity_giver_menu">GiverMenu</string>
+    <string name="title_activity_sign_up">היכנס</string>
+
+
+    <!-- Drawer elements -->
+    <string name="navigation_drawer_open">פתח תפריט</string>
+    <string name="navigation_drawer_close">סגור תפריט</string>
+    <string name="nav_header_title">Pick-Up Menu</string>
+    <string name="nav_header_subtitle">חפשו פריטים שמתאימים לצרכים שלכם</string>
+    <string name="nav_header_desc">תפריט</string>
+
+    <string name="nav_show_all_title">הצג הכל</string>
+    <string name="nav_filter_title">סינון</string>
+    <string name="nav_food_title">מזון</string>
+    <string name="nav_study_material_title">חומרי לימוד</string>
+    <string name="nav_furniture_title">מוצרי בית</string>
+    <string name="nav_lost_and_found_title">אבידות ומציאות</string>
+    <string name="nav_hitchhike_title">טרמפים</string>
+    <string name="nav_other">אחר</string>
+    <string name="nav_favorites">מועדפים</string>
+    <string name="categories_menu_title">קטגוריות</string>
+    <string name="nav_requested_items">פריטים מבוקשים</string>
+    <string name="nav_my_items">הפריטים שלי</string>
+    <string name="nav_manage_favorites">ניהול מועדפים</string>
+    <string name="nav_chat">צ\'אט</string>
+    <string name="nav_user_settings">הגדרות משתמש</string>
+
+    <!-- Taker activity AppBar elements -->
+    <string name="title_activity_taker_menu">TakeCare</string>
+    <string name="action_switch_to_map">תצוגת מפה</string>
+    <string name="action_switch_to_list">תצוגת רשימה</string>
+    <string name="action_search">חיפוש</string>
+    <string name="action_filter">סינון</string>
+    <string name="action_chat">צ\'אט</string>
+    <string name="action_user_settings">הגדרות משתמש</string>
+    <string name="action_my_items">הפריטים שלי</string>
+    <string name="action_requested_items">פריטים מבוקשים</string>
+    <string name="action_favorites">מועדפים</string>
+
+
+    <!-- Taker activity popup elements -->
+    <string name="filter_menu_display_mode_text">Display Mode:</string>
+    <string name="filter_menu_pickup_method_text">אופן איסוף:</string>
+    <string name="filter_menu_pickup_any">הכל</string>
+    <string name="filter_menu_pickup_in_person">אישי</string>
+    <string name="filter_menu_pickup_giveaway">פומבי</string>
+    <string name="filter_menu_pickup_race">מירוץ</string>
+    <string name="filter_menu_search_hint">הכנס מילת מפתח</string>
+    <string name="jump_to_top_button">קפוץ למעלה</string>
+    <string name="jump_to_top_button_landscape">החלק להתחלה</string>
+
+
+    <!-- Login activity elements -->
+    <string name="email_signin_text">הירשם באמצעות דוא\"ל</string>
+
+
+    <!-- Report option elements -->
+    <string name="report_inappropriate_text">Inappropriate content</string>
+    <string name="report_no_fit_text">Does not fit description</string>
+    <string name="report_spam_text">Spam</string>
+    <string name="report_hide_text">Hide</string>
+    <string name="report_inappropriate_alert">Are you sure you want to report this item for being inappropriate?</string>
+    <string name="report_not_fit_description_alert">Are you sure you want to report this item for not fitting its description?</string>
+    <string name="report_spam_alert">Are you sure you want to report this item for being spam?</string>
+    <string name="report_hide_alert">Are you sure you want to permanently remove the item from your feed?</string>
+    <string name="report_alert_warning">This will permanently remove the item from your feed</string>
+
+
+    <!-- Image upload elements -->
+    <string name="upload_camera_text">מצלמה</string>
+    <string name="upload_gallery_text">גלריה</string>
+
+
+    <!-- Empty feed elements -->
+    <string name="empty_feed_text_1">אופס…\n\nנראה שאף אחד לא שיתף פריטים בסביבה!\n\nהחדשות הטובות הן:</string>
+    <string name="empty_feed_text_2">אתה יכול להיות הראשון!</string>>
+    <string name="shared_items_empty_feed_text">לא שיתפת עדיין אף פריט</string>
+    <string name="accepted_items_empty_feed_text">אף אחת מבקשותיך עדיין לא התקבלה</string>
+    <string name="pending_items_empty_feed_text">אין לך פריטים מבוקשים</string>
+    <string name="rejected_items_empty_feed_text">אף אחת מבקשותיך לא נדחתה</string>
+    <string name="my_requested_items_empty_feed_text">אף אחד מפריטיך עדיין לא קיבל בקשה</string>
+    <string name="my_available_items_empty_feed_text">אין לך פריטים זמינים כרגע</string>
+    <string name="my_taken_items_empty_feed_text">אף אחד מפריטיך לא נמסרו</string>
+    <string name="my_expired_items_empty_feed_text">אף אחד מפריטיך אינו פג תוקף</string>
+
+
+    <!-- Favorites page elements -->
+    <string name="favorites_tags_title">תגיות:</string>
+    <string name="favorites_tag_hint">e.g. "muffins", "giveaway", "music"…</string>
+    <string name="favorites_instruction_text">הקלד מילים שמעניינות אותך.\nאנו נעדכן אותך כשפריט מתאים יפורסם!</string>
+    <string name="favorites_save_changes">שמור שינויים</string>
+    <string name="favorites_help_popup_text">3\-15 תווים.\nהפרד בעזרת פסיק או enter.\nלא ניתן לשמור כפילויות.</string>
+
+    <!-- Strings related to sign up -->
+    <string name="prompt_email">דוא\"ל</string>
+    <string name="prompt_password">סיסמה</string>
+    <string name="prompt_confirm_password">הזן שוב סיסמה</string>
+    <string name="action_sign_up">הירשם</string>
+    <string name="error_invalid_name">שם המשתמש אינו תקין</string>
+    <string name="error_invalid_email">כתובת הדוא\"ל אינה תקינה</string>
+    <string name="error_invalid_password">הסיסמה קצרה מדי</string>
+    <string name="error_incorrect_password">הסיסמה שגויה</string>
+    <string name="error_invalid_re_password">סיסמה זו לא תואמת את הסיסמה שהוזנה קודם</string>
+    <string name="error_field_required">שדה זה הינו חובה</string>
+    <string name="permission_rationale">"הרשאות אנשי קשר הינם חובה לצורך השלמת כתבות דוא\"ל"</string>
+    <string name="user_name">שם</string>
+    <string name="sign_up_form_text">הירשם</string>
+    <string name="add_profile_pic">הוסף תמונת פרופיל</string>
+
+
+    <!-- ItemInfo elements -->
+    <string name="request_item">אני רוצה את זה!</string>
+    <string name="send_message_from_item_info">שלח הודעה</string>
+    <string name="report">דווח</string>
+    <string name="flexible">גמיש</string>
+    <string name="no_description">לא ניתן תיאור.</string>
+    <string name="requests_list_text">מבוקש על ידי:</string>
+    <string name="item_description_title_ext">תיאור</string>
+    <string name="item_default_pickup_text">גמיש</string>
+    <string name="item_default_location_text">לא צוין</string>
+    <string name="search_button_description">לחץ לחיפוש</string>
+    <string name="item_info_published_at">פורסם ב: </string>
+    <string name="item_info_expires_at">פג תוקף ב: </string>
+
+
+    <!-- User Profile elements -->
+    <string name="user_settings_default_user_text">משתמש</string>
+    <string name="user_description_text">ספר על עצמך</string>
+    <string name="show_phone_number">הצג מספר טלפון</string>
+    <string name="get_favorites_notifications">קבל התראות ממועדפים</string>
+    <string name="change_password">שנה סיסמה</string>
+    <string name="my_favorites">המועדפים שלי</string>
+    <string name="my_items">הפריטים שלי</string>
+    <string name="pending_requests">פריטים מבוקשים</string>
+    <string name="log_out">התנתק</string>
+    <string name="discard_changes_title">התעלם מהשינויים</string>
+    <string name="discard_changes_name_body">האם אתה בטוח שברצונך להתעלם משינוי השם?</string>
+    <string name="discard_changes_profile_body">האם אתה בטוח שברצונך להתעלם משינוי הפרופיל?</string>
+    <string name="updating_profile_name">מעדכן את השם…</string>
+    <string name="profile_name_updated">השם עודכן!</string>
+    <string name="undo_snackbar">בטל</string>
+    <string name="profile_name_restored">השם הקודם שוחזר</string>
+    <string name="profile_name_error">שגיאה בעדכון השם. אנא בדוק את החיבור שלך לאינטרנט</string>
+    <string name="profile_name_empty_warning">אנא מלא את השם</string>
+    <string name="profile_page_updating">מעדכן את דף הפרופיל…</string>
+    <string name="profile_page_updated">דף הפרופיל עודכן!</string>
+    <string name="profile_restored">הפרופיל הקודם שוחזר</string>
+    <string name="profile_page_error">אירעה שגיאה. אנא בדוק את החיבור שלך לאינטרנט</string>
+    <string name="profile_logout_title">התנתקות</string>
+    <string name="profile_logout_body">האם אתה בטוח שברצונך להתנתק?</string>
+
+    <!-- GiverForm elements -->
+    <string name="giver_form_title_input_hint">הוסף כותרת</string>
+    <string name="giver_form_add_a_picture_button_text">הוסף תמונה:</string>
+    <string name="enter_description_hint">הוסף תיאור</string>
+    <string name="enter_time_hint">ציין זמן</string>
+    <string name="pickup_method_prompt_text">אופן איסוף</string>
+    <string name="share_button_text">פרסם</string>
+    <string name="air_time_clickable_change_text">שנה</string>
+    <string name="enter_location_hint">הכנס מיקום</string>
+    <string name="enter_location_to_hint">אל</string>
+    <string name="enter_location_from_hint">מ-</string>
+    <string name="picture_prompt">הוסף תמונה</string>
+    <string name="pickup_information_prompt_text">מידע אודות איסוף</string>
+    <string name="select_category_prompt">בחר קטגוריה:</string>
+    <string name="giver_form_item_information_title">מידע על פריט</string>
+    <string name="tags_box_show_text">הוסף מילות מפתח</string>
+    <string name="tags_box_hide_text">הסתר מילות מפתח</string>
+    <string name="air_time_tooltip_text">בחר כמה זמן הפריט יופיע\nברשימת הפרסומים</string>
+    <string name="tags_tooltip_text">3\-15 תווים.\nהפרד בעזרת פסיק או enter.\nלא ניתן לשמור כפילויות.</string>
+    <string name="save_location">שמור מיקום</string>
+    <string name="edit_location">שנה מיקום</string>
+    <string name="giver_pickup_in_person">אישי</string>
+    <string name="giver_pickup_giveaway">פומבי</string>
+    <string name="giver_pickup_race">מירוץ</string>
+    <string name="giver_discard_message_title">יציאה מהטופס</string>
+    <string name="giver_discard_message_body">האם אתה בטוח שברצונך לצאת מהטופס?</string>
+    <string name="giver_uploading">מעלה…</string>
+    <string name="giver_error_unknown">אירעה שגיאה. אנא בדוק את החיבור שלך לאינטרנט</string>
+    <string name="giver_error_title">אנא הוסף כותרת לתיאור הפריט שלך</string>
+    <string name="giver_error_picture">אנא הוסף תמונה של הפריט שלך</string>
+    <string name="giver_error_no_category">אנא בחר את הקטגוריה של הפריט שלך</string>
+    <string name="item_uploaded">הפריט הועלה בהצלחה!</string>
+    <string name="upload_failed">ההעלאה נכשלה. אנא בדוק את החיבור שלך לאינטרנט</string>
+
+    <!-- About page elements-->
+    <string name="my_link"><a href="http://somesite.com/">Click me!</a></string>
+    <string name="icon_credits">Icon made by <a href="https://www.flaticon.com/authors/freepik/">Freepik</a> from <a href="https://www.flaticon.com/">www.flaticon.com</a></string>
+    <string name="about_title">אודות</string>
+    <string name="nav_about">אודות</string>
+    <string name="about_text"><![CDATA[TakeCare is a social Android app written in Java and developed on Android Studio, suitable for all audiences over the age of 13.\nIn the app, you choose the role of either a giver or a taker at any given time. A giver shares a thing that they own but are not interested in, whereas a taker can browse such things and choose one to schedule a pickup.\n\nAmong the things you can share with others (or express your interest in):\n\u2022 Food\n\u2022 Furniture\n\u2022 Study material\n\u2022 Hitchhikes\n\u2022 Lost & Founds\n\u2022 Just about anything you see fit!\n\nJoin the sharing revolution: help brighten someone\'s day, and also help the world by not excessively throwing away like in most modern families!]]></string>
+    <string name="credits_title">קרדיטים</string>
+    <string name="item_notifications">התעדכנו אודות פריטים מועדפים</string>
+    <string name="title_activity_feed_map">מפה</string>
+    <string name="add_location_button_text">בחר מיקום</string>
+
+
+    <!-- Chat Lobby elements -->
+    <string name="empty_chat_lobby">אין לך הודעות</string>
+    <string name="chat_lobby_title">צ\'אט</string>
+    <string name="empty_chat_giver_text">אין צ\'אטים פעילים בקשר לפריט שלך</string>
+    <string name="empty_chat_taker_text">לא התחלת אף צ\'אט בנוגע לפריט</string>
+    <string name="chat_lobby_my_items_tab">הפריטים שלי</string>
+    <string name="chat_lobby_requested_items_tab">פריטים מבוקשים</string>
+
+
+    <!-- Chat Activity elements -->
+    <string name="accept_button_text">אשר בקשה</string>
+
+    <!-- Shared Items elements -->
+    <string name="shared_items_available_tab">זמין</string>
+    <string name="shared_items_taken_tab">נמסר</string>
+    <string name="shared_items_expired_tab">פג תוקף</string>
+
+    <!-- Requested Items elements -->
+    <string name="requested_items_pending_tab">ממתין לאישור</string>
+    <string name="requested_items_accepted_tab">התקבל</string>
+
+    <!--FCM-->
+    <string name="takecare_notification_channel_name">TakeCare</string>
+    <string name="payload_display_status">display_status</string>
+    <string name="payload_admin_broadcast">admin_broadcast</string>
+    <string name="payload_item_request_message">item_request_message</string>
+    <string name="payload_data_message_title">title</string>
+    <string name="payload_data_message_body">body</string>
+    <string name="payload_data_notification_type">notification_type</string>
+    <string name="payload_data_sender_id">sender_id</string>
+    <string name="payload_data_item_id">item_id</string>
+    <string name="payload_data_sender_photo">sender_photo_url</string>
+    <string name="payload_data_notification_time">notification_time</string>
+    <string name="payload_data_sender_msg">sender_msg</string>
+    <string name="payload_data_sender_name">sender_name</string>
+    <string name="payload_data_chat_id">chat_id</string>
+    <string name="payload_data_photo">photo</string>
+
+
+    <!--MISC-->
+    <string name="error_timeout_message">\"Loading process takes too long!\\nCheck your internet connection and try again.\"</string>
+    <string name="chat_card_timestamp_title_text">עדכון אחרון ב:</string>
+
+
+    <!---->
+</resources>

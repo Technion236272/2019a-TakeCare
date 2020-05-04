@@ -298,15 +298,15 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        pickupMethod = "In Person";
+                        pickupMethod = getString(R.string.giver_pickup_in_person);
                         pickupDescription.setVisibility(View.VISIBLE);
                         break;
                     case 1:
-                        pickupMethod = "Giveaway";
+                        pickupMethod = getString(R.string.giver_pickup_giveaway);
                         pickupDescription.setVisibility(View.VISIBLE);
                         break;
                     case 2:
-                        pickupMethod = "Race";
+                        pickupMethod = getString(R.string.giver_pickup_race);
                         pickupDescription.setVisibility(View.GONE);
                         break;
                     default:
@@ -483,7 +483,10 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
         airTimePicker.getThumb().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
 
         // Pickup method spinner initialization
-        String[] spinnerNames = new String[]{"In Person", "Giveaway", "Race"};
+        String[] spinnerNames = new String[]{
+                getString(R.string.giver_pickup_in_person),
+                getString(R.string.giver_pickup_giveaway),
+                getString(R.string.giver_pickup_race) };
         int[] spinnerIcons = new int[]{R.drawable.ic_in_person, R.drawable.ic_giveaway, R.drawable.ic_race};
         IconTextAdapter ita = new IconTextAdapter(this, spinnerNames, spinnerIcons);
         pickup.setAdapter(ita);
@@ -705,8 +708,8 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
     public void onBackPressed() {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(this);
-        builder.setTitle("Exit Form")
-                .setMessage("Are you sure you want to discard the form?")
+        builder.setTitle(R.string.giver_discard_message_title)
+                .setMessage(R.string.giver_discard_message_body)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         //discard the giver form
@@ -733,7 +736,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
 
     public void onSendForm(View view) {
         Log.d(TAG, "entered send form method");
-        startLoading("Uploading...", 15000);
+        startLoading(getString(R.string.giver_uploading), 15000);
         Map<String, Object> itemInfo = new HashMap<>();
         if (marker != null) {
             itemInfo.put("location", new GeoPoint(marker.getPosition().latitude, marker.getPosition().longitude));
@@ -743,20 +746,20 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
         switch (formStatus(itemInfo, user, timestamp)) {
             case ERROR_UNKNOWN:
                 stopLoading();
-                showAlertMessage("An unknown error has occurred. Please try again later");
+                showAlertMessage(getString(R.string.giver_error_unknown));
                 break;
             case ERROR_TITLE:
                 stopLoading();
-                showAlertMessage("Please include a title to describe your item");
+                showAlertMessage(getString(R.string.giver_error_title));
                 break;
             case ERROR_PICTURE_NOT_INCLUDED:
                 stopLoading();
-                showAlertMessage("Please include a picture of the item"); //TODO: change this
+                showAlertMessage(getString(R.string.giver_error_picture)); //TODO: change this
 //                showAlertMessage("Please include a picture of the item when posting for pick-up in person");
                 break;
             case ERROR_NO_CATEGORY:
                 stopLoading();
-                showAlertMessage("Please select the item's category");
+                showAlertMessage(getString(R.string.giver_error_no_category));
                 break;
             case PICTURE_MISSING:
                 assert user != null;
@@ -794,7 +797,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                                     public void onSuccess(Void aVoid) {
                                         Log.d(TAG, "uploadItemAndPictureData: item added successfully ");
                                         stopLoading();
-                                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
+                                        Toast.makeText(GiverFormActivity.this, getString(R.string.item_uploaded),
                                                 Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(GiverFormActivity.this, TakerMenuActivity.class);
                                         startActivity(intent);
@@ -804,7 +807,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        makeHighlightedSnackbar(root, "Upload failed. Please check your internet connection");
+                                        makeHighlightedSnackbar(root, getString(R.string.upload_failed));
                                         stopLoading();
                                     }
                                 });
@@ -813,7 +816,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        makeHighlightedSnackbar(root, "Upload failed. Please check your internet connection");
+                        makeHighlightedSnackbar(root, getString(R.string.upload_failed));
                         stopLoading();
                     }
                 });
@@ -871,7 +874,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                                                                 .addOnFailureListener(new OnFailureListener() {
                                                                     @Override
                                                                     public void onFailure(@NonNull Exception e) {
-                                                                        makeHighlightedSnackbar(root, "Upload failed. Please check your internet connection");
+                                                                        makeHighlightedSnackbar(root, getString(R.string.upload_failed));
                                                                         stopLoading();
                                                                     }
                                                                 });
@@ -880,7 +883,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                                                 .addOnFailureListener(new OnFailureListener() {
                                                     @Override
                                                     public void onFailure(@NonNull Exception e) {
-                                                        makeHighlightedSnackbar(root, "Upload failed. Please check your internet connection");
+                                                        makeHighlightedSnackbar(root, getString(R.string.upload_failed));
                                                         stopLoading();
                                                     }
                                                 });
@@ -889,7 +892,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        makeHighlightedSnackbar(root, "Upload failed. Please check your internet connection");
+                                        makeHighlightedSnackbar(root, getString(R.string.upload_failed));
                                         stopLoading();
                                     }
                                 });
@@ -898,7 +901,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        makeHighlightedSnackbar(root, "Upload failed. Please check your internet connection");
+                        makeHighlightedSnackbar(root, getString(R.string.upload_failed));
                         stopLoading();
                     }
                 });

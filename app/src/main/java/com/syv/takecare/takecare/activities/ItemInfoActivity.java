@@ -298,7 +298,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                         if (timestamp != null) {
                             Log.d(TAG, "setting publish timestamp date");
                             SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd hh:mm");
-                            String dateText = "Published at: " + formatter.format(timestamp);
+                            String dateText = getString(R.string.item_info_published_at) + formatter.format(timestamp);
                             publishTimeTextView.setText(dateText);
                             Long airTime = document.getLong("airTime");
                             if (airTime != null) {
@@ -310,7 +310,8 @@ public class ItemInfoActivity extends TakeCareActivity {
                                 Date currentTime = Calendar.getInstance().getTime();
                                 Log.d(TAG, "current time is: " + currentTime + "\ntarget time is: " + targetTime);
                                 if (currentTime.before(targetTime)) {
-                                    String timeLeftText = "Expires at: " + formatter.format(targetTime);
+                                    String timeLeftText = getString(R.string.item_info_expires_at) +
+                                            formatter.format(targetTime);
                                     timeLeftTextView.setText(timeLeftText);
                                 }
 
@@ -355,17 +356,7 @@ public class ItemInfoActivity extends TakeCareActivity {
                         String pickupMethod = document.getString("pickupMethod");
                         if (pickupMethod != null) {
                             Log.d(TAG, "Found pickup method.");
-                            ItemInfoActivity.this.pickupMethod.setText(document.getString("pickupMethod"));
-                            switch (pickupMethod) {
-                                case "In Person":
-                                    pickupMethodIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_in_person_purple));
-                                    break;
-                                case "Giveaway":
-                                    pickupMethodIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_giveaway_purple));
-                                    break;
-                                case "Race":
-                                    pickupMethodIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_race_purple));
-                            }
+                            setPickupMethod(pickupMethod);
                             if (pickupMethod.equals("In Person") && !isPublisher) {
                                 tryShowRequestButton();
                             }
@@ -454,6 +445,25 @@ public class ItemInfoActivity extends TakeCareActivity {
         }
 
         Log.d(TAG, "onCreate: finished");
+    }
+
+    private void setPickupMethod(String pickupMethod) {
+        switch (pickupMethod) {
+            case "In Person":
+                pickupMethodIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_in_person_purple));
+                ItemInfoActivity.this.pickupMethod.setText(R.string.giver_pickup_in_person);
+                break;
+            case "Giveaway":
+                pickupMethodIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_giveaway_purple));
+                ItemInfoActivity.this.pickupMethod.setText(R.string.giver_pickup_giveaway);
+            case "Race":
+                pickupMethodIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_race_purple));
+                ItemInfoActivity.this.pickupMethod.setText(R.string.giver_pickup_race);
+                break;
+            default:
+                Log.w(TAG, "Error fetching pickup method");
+                break;
+        }
     }
 
     private void tryShowRequestButton() {

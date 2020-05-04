@@ -45,8 +45,8 @@ public class ChatLobbyActivity extends TakeCareActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new GiverMessagesFragment(), "My Items");
-        adapter.addFragment(new TakerMessagesFragment(), "Requested Items");
+        adapter.addFragment(new GiverMessagesFragment(), getString(R.string.chat_lobby_my_items_tab));
+        adapter.addFragment(new TakerMessagesFragment(), getString(R.string.chat_lobby_requested_items_tab));
         viewPager.setAdapter(adapter);
     }
 
