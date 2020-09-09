@@ -6,6 +6,16 @@ const db = functions.firestore;
 // -- End of initialization --
 
 
+// -- Helper functions --
+
+Date.prototype.addHours = function(hours) {
+	this.setHours(this.getHours() + hours);
+	return this;
+};
+
+
+// -- Handler declarations --
+
 // Listens to item request changes.
 // Sends a notification to the user who requested the item when their item is accepted
 exports.onRequestedItemUpdated = db.document('users/{userId}/requestedItems/{itemId}').onUpdate((snap, context) => {
@@ -31,7 +41,7 @@ exports.onRequestedItemUpdated = db.document('users/{userId}/requestedItems/{ite
 			.then(itemDoc => {
 				console.log(doc.data().name + " had his item request accepted!");
 				const msg = "Good news " + doc.data().name + "!\nYour request for " + itemDoc.data().title + " was accepted!\nClick here to check it out";
-				let tokens = doc.data().tokens
+				let tokens = doc.data().tokens;
 				var photo = "NA";
 				if (typeof itemDoc.data().photo !== 'undefined') {
 					photo = itemDoc.data().photo;
@@ -272,16 +282,16 @@ exports.onItemCreatedAddTags = db.document('items/{itemID}').onCreate((snap, con
 			return null;
 	}
 
-	var batch = admin.firestore().batch();
+	const batch = admin.firestore().batch();
 
-	for (var i = 0; i < itemKeywords.length; i++) {
+	for (let i = 0; i < itemKeywords.length; i++) {
 	    console.log('Creating document for: ', itemKeywords[i]);
 
-		var tagObject = {
+		const tagObject = {
 			tag : itemKeywords[i],
 		};
 
-		var tagDocRef = admin.firestore().doc('tags/' + itemKeywords[i]);
+		const tagDocRef = admin.firestore().doc('tags/' + itemKeywords[i]);
 		batch.set(tagDocRef, { tag : itemKeywords[i] });
 	}
 
@@ -293,13 +303,13 @@ exports.onItemCreatedAddTags = db.document('items/{itemID}').onCreate((snap, con
 	    console.log('Error adding the item keywords: ', error);
 	    return null;
 	});
-})
+});
 
 
 // Listens to request creations.
 // Sends a notification to the user who posted the item when a request is made
 exports.onRequestCreatedNotify = db.document('users/{userId}/requestedItems/{requestId}').onCreate((snap, context) => {
-    var ref = snap.data().itemRef;
+    const ref = snap.data().itemRef;
     console.log('Request made for: ', ref);
 	return admin.firestore()
 	.doc(ref.path)
@@ -316,7 +326,7 @@ exports.onRequestCreatedNotify = db.document('users/{userId}/requestedItems/{req
 			.get()
 			.then(selfDoc => {
 				console.log('Sending request notification to: ', userDoc.data().name);
-				let tokens = userDoc.data().tokens
+				let tokens = userDoc.data().tokens;
 				var photo = "NA";
 				if (typeof selfDoc.data().profilePicture !== 'undefined') {
 					photo = selfDoc.data().profilePicture;
@@ -348,3 +358,34 @@ exports.onRequestCreatedNotify = db.document('users/{userId}/requestedItems/{req
 	});
 });
 
+
+// Performs clean-up of expired posts once every 60 minutes
+exports.scheduledPostRemoval = functions.pubsub.schedule('every 60 minutes').onRun((context) => {
+    console.log('scheduledPostRemoval is running!');
+    const currentTime = Date.now();
+
+	return admin.firestore()
+		.collection('items')
+		.get()
+		.then(itemSnaps => {
+			const deletionTasks = [];
+			itemSnaps.forEach(itemSnap => {
+				// item was taken already
+				if (itemSnap.data().status !== 2) {
+					const itemExpirationDate = itemSnap.data().timestamp
+						.toDate()
+						.addHours(itemSnap.data().airTime);
+					if (currentTime > itemExpirationDate) {
+						const deletePostTask = admin.firestore()
+							.collection('items')
+							.doc(itemSnap.id)
+							.delete();
+						deletionTasks.push(deletePostTask);
+					}
+				}
+			});
+			return Promise.all(deletionTasks);
+		}).catch(error => {
+		console.log("Posts clean-up failed. Error message: ", error)
+	});
+});
