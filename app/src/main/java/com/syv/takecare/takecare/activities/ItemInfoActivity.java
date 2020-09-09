@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -67,6 +68,7 @@ import com.hootsuite.nachos.NachoTextView;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.ortiz.touchview.TouchImageView;
+import com.syv.takecare.takecare.fragments.FeedMapFragment;
 import com.syv.takecare.takecare.fragments.UserProfileFragment;
 import com.syv.takecare.takecare.customViews.FeedRecyclerView;
 import com.syv.takecare.takecare.R;
@@ -338,14 +340,32 @@ public class ItemInfoActivity extends TakeCareActivity {
                         if (location != null) {
                             if (pickupLocation == null)
                                 itemLocationView.setVisibility(View.GONE);
-                            /*
+
                             showOnMap.setVisibility(View.VISIBLE);
                             showOnMap.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    Log.d(TAG, "Clicked on Show on map");
                                     // TODO: Redirect to map with given GeoPoint
+                                    boolean mLocationPermissionGranted = ContextCompat.checkSelfPermission(
+                                            ItemInfoActivity.this,
+                                            android.Manifest.permission.ACCESS_FINE_LOCATION)
+                                            == PackageManager.PERMISSION_GRANTED;
+                                    if(mLocationPermissionGranted) {
+                                        Intent intent = new Intent(ItemInfoActivity.this, TakerMenuActivity.class);
+                                        intent.putExtra("LaunchInMapMode", true);
+                                        Bundle geoPoint = new Bundle();
+                                        geoPoint.putString("Lat", "32.77656875467437");
+                                        geoPoint.putString("Lng", "35.023163482546806");
+                                        intent.putExtra("GeoPointToShow", geoPoint);
+                                        startActivity(intent);
+                                    } else{
+                                        ActivityCompat.requestPermissions(ItemInfoActivity.this,
+                                                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                                1);
+                                    }
                                 }
-                            });*/
+                            });
                         }
                         String category = document.getString("category");
                         if (category != null) {
