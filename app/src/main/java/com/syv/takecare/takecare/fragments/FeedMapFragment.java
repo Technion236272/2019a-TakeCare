@@ -59,6 +59,7 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location mLastKnownLocation;
     private final LatLng mDefaultLocation = new LatLng(32.777751, 35.021508);
+    private boolean showProvidedLocation = false;
 
     @Nullable
     @Override
@@ -72,6 +73,9 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.feed_map);
         mapFragment.getMapAsync(this);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+
+        showProvidedLocation = ((TakerMenuActivity)getActivity()).launchInMapMode;
+
         return view;
     }
 
@@ -94,9 +98,9 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
         mMap.setOnMyLocationClickListener(onMyLocationClickListener);
 
         updateLocationUI();
-        getDeviceLocation();
+        getLocation();
 
-        mMap.setMinZoomPreference(11);
+        //mMap.setMinZoomPreference(11);
         Query query = db.collection("items")
                 .whereEqualTo("displayStatus", true);
 
@@ -229,7 +233,7 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-    private void getDeviceLocation() {
+    private void getLocation() {
         /*
          * Get the best and most recent location of the device, which may be null in rare
          * cases when a location is not available.
@@ -242,12 +246,6 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
                     if (task.isSuccessful()) {
                         // Set the map's camera position to the current location of the device.
                         mLastKnownLocation = task.getResult();
-                        if (mLastKnownLocation == null) {
-                            return;
-                        }
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(mLastKnownLocation.getLatitude(),
-                                        mLastKnownLocation.getLongitude()), 15));
                     } else {
                         Log.d(TAG, "Current location is null. Using defaults.");
                         Log.e(TAG, "Exception: %s", task.getException());
@@ -257,6 +255,16 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
                     }
                 }
             });
+            if (mLastKnownLocation == null) return;
+            if (showProvidedLocation) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(((TakerMenuActivity)getActivity()).getLat(),
+                                ((TakerMenuActivity)getActivity()).getLng()), 15));
+            } else {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(mLastKnownLocation.getLatitude(),
+                                mLastKnownLocation.getLongitude()), 15));
+            }
         } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
@@ -279,7 +287,7 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
                 @Override
                 public void onMyLocationClick(@NonNull Location location) {
 
-                    mMap.setMinZoomPreference(12);
+                    //mMap.setMinZoomPreference(12);
 
                     CircleOptions circleOptions = new CircleOptions();
                     circleOptions.center(new LatLng(location.getLatitude(),
@@ -297,7 +305,7 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
             new GoogleMap.OnMyLocationButtonClickListener() {
                 @Override
                 public boolean onMyLocationButtonClick() {
-                    mMap.setMinZoomPreference(15);
+                    //mMap.setMinZoomPreference(15);
                     return false;
                 }
             };

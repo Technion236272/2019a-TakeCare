@@ -85,6 +85,10 @@ public class TakerMenuActivity extends TakeCareActivity
     private boolean mapViewEnabled;
     private boolean mLocationPermissionGranted;
 
+    // Used in case the activity was started in order to display a location of a given item only
+    private double Lat, Lng;
+    public boolean launchInMapMode = false;
+
     final Runnable suggestionsTask = new Runnable() {
         @Override
         public void run() {
@@ -172,6 +176,11 @@ public class TakerMenuActivity extends TakeCareActivity
                 == PackageManager.PERMISSION_GRANTED;
         if (savedInstanceState == null) {
             Log.d(TAG, "onCreate: saveInstanceState is null");
+            Intent intent = getIntent();
+            if (intent != null) {
+                launchInMapMode = intent.getBooleanExtra("LaunchInMapMode", false);
+                mapViewEnabled = launchInMapMode;
+            }
             changeFragment();
         }
 
@@ -530,21 +539,34 @@ public class TakerMenuActivity extends TakeCareActivity
         return true;
     }
 
-    private void changeFragment(){
+    private void changeFragment() {
         Log.d(TAG, "changeFragment: Starting");
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        if(mapViewEnabled) {
-            if(mLocationPermissionGranted) {
+        if (mapViewEnabled) {
+            if (mLocationPermissionGranted) {
+                Intent intent = getIntent();
+                if (intent != null) {
+                    if (launchInMapMode) {
+                        Bundle geoPoint = intent.getBundleExtra("GeoPointToShow");
+                        try {
+                            Lat = Double.parseDouble(geoPoint.getString("Lat"));
+                            Lng = Double.parseDouble(geoPoint.getString("Lng"));
+                        } catch (NullPointerException e) {
+                            Log.d(TAG, "Unable to fetch coordinates from bundle");
+                        }
+                    }
+                }
                 ft.replace(R.id.fragment_container, new FeedMapFragment());
-            } else{
+            } else {
                 getLocationPermission();
                 return;
             }
-        }  else {
+        } else {
             ft.replace(R.id.fragment_container, new FeedListFragment());
         }
         ft.disallowAddToBackStack().commit();
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[],
@@ -658,5 +680,13 @@ public class TakerMenuActivity extends TakeCareActivity
                 (getApplicationContext(), R.layout.auto_complete_dropdown_item, allExistingTags);
         searchBar.setAdapter(adapter);
         Log.d(TAG, "set the auto-complete adapter");
+    }
+
+    public double getLat() {
+        return Lat;
+    }
+
+    public double getLng() {
+        return Lng;
     }
 }

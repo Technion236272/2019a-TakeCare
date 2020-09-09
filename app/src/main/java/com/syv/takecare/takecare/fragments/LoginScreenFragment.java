@@ -308,7 +308,7 @@ public class LoginScreenFragment extends Fragment {
                             dialog.dismiss();
                             Intent intent = new Intent(getActivity(), TakerMenuActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            intent.putExtra(Intent.EXTRA_TEXT, true);
+//                            intent.putExtra(Intent.EXTRA_TEXT, true);
                             startActivity(intent);
                         } else {
                             db.collection("users").document(uid)
