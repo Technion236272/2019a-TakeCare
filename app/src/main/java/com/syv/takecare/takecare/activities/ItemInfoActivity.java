@@ -1,5 +1,6 @@
 package com.syv.takecare.takecare.activities;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -12,11 +13,15 @@ import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AlertDialog;
 import android.os.Bundle;
@@ -33,6 +38,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -51,6 +57,16 @@ import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -68,12 +84,14 @@ import com.hootsuite.nachos.NachoTextView;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.ortiz.touchview.TouchImageView;
+import com.syv.takecare.takecare.customViews.CustomInfoWindow;
 import com.syv.takecare.takecare.fragments.FeedMapFragment;
 import com.syv.takecare.takecare.fragments.UserProfileFragment;
 import com.syv.takecare.takecare.customViews.FeedRecyclerView;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.POJOs.RequestedByCardHolder;
 import com.syv.takecare.takecare.POJOs.RequesterCardInformation;
+import com.syv.takecare.takecare.fragments.WorkaroundMapFragment;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -86,7 +104,7 @@ import java.util.Map;
 
 import static com.google.firebase.firestore.FieldValue.serverTimestamp;
 
-public class ItemInfoActivity extends TakeCareActivity {
+public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCallback {
 
     private final static String TAG = "TakeCare/ItemInfo";
     private static final String EXTRA_ITEM_ID = "Item Id";
@@ -137,6 +155,19 @@ public class ItemInfoActivity extends TakeCareActivity {
     private TextView recyclerViewText;
     private TextView publishTimeTextView;
     private TextView timeLeftTextView;
+
+    private boolean mLocationPermissionGranted;
+    private FrameLayout minimapWrapper;
+    private GoogleMap mMap;
+    private Marker marker;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Location mLastKnownLocation;
+    private final LatLng mDefaultLocation = new LatLng(32.777751, 35.021508);
+    private double latitude = 32.777751;
+    private double longitude = 35.021508;
+    private GeoPoint location;
+
+    private String itemCategory;
 
     @Override
     protected void onStart() {
@@ -191,6 +222,7 @@ public class ItemInfoActivity extends TakeCareActivity {
         tagsBox = findViewById(R.id.item_tags_box);
         publishTimeTextView = findViewById(R.id.item_publish_time);
         timeLeftTextView = findViewById(R.id.item_time_left);
+        minimapWrapper = findViewById(R.id.minimap_wrapper);
 
         // Enable transition animations only for supported systems (API 21 and above).
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -266,10 +298,10 @@ public class ItemInfoActivity extends TakeCareActivity {
                             // Retrieve and cache the system's default "short" animation time.
                             mShortAnimationDuration = getResources().getInteger(
                                     android.R.integer.config_shortAnimTime);
-
                         } else if (document.getString("category") != null){
+                            itemCategory = document.getString("category");
                             Bitmap bitmap;
-                            switch (document.getString("category")) {
+                            switch (itemCategory) {
                                 case "Food":
                                     bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_pizza_black_big);
                                     break;
@@ -336,36 +368,54 @@ public class ItemInfoActivity extends TakeCareActivity {
                             Log.d(TAG, "Found pickup location.");
                             itemLocationView.setText(pickupLocation);
                         }
-                        GeoPoint location = document.getGeoPoint("location");
+                        location = document.getGeoPoint("location");
                         if (location != null) {
                             if (pickupLocation == null)
-                                itemLocationView.setVisibility(View.GONE);
+                                //itemLocationView.setVisibility(View.GONE);
 
-                            showOnMap.setVisibility(View.VISIBLE);
-                            showOnMap.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Log.d(TAG, "Clicked on Show on map");
-                                    // TODO: Redirect to map with given GeoPoint
-                                    boolean mLocationPermissionGranted = ContextCompat.checkSelfPermission(
-                                            ItemInfoActivity.this,
-                                            android.Manifest.permission.ACCESS_FINE_LOCATION)
-                                            == PackageManager.PERMISSION_GRANTED;
-                                    if(mLocationPermissionGranted) {
-                                        Intent intent = new Intent(ItemInfoActivity.this, TakerMenuActivity.class);
-                                        intent.putExtra("LaunchInMapMode", true);
-                                        Bundle geoPoint = new Bundle();
-                                        geoPoint.putString("Lat", "32.77656875467437");
-                                        geoPoint.putString("Lng", "35.023163482546806");
-                                        intent.putExtra("GeoPointToShow", geoPoint);
-                                        startActivity(intent);
-                                    } else{
-                                        ActivityCompat.requestPermissions(ItemInfoActivity.this,
-                                                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                                                1);
+                            if (!mLocationPermissionGranted) getLocationPermission();
+
+                            latitude = location.getLatitude();
+                            longitude = location.getLongitude();
+                            minimapWrapper.setVisibility(View.VISIBLE);
+                            try {
+                                WorkaroundMapFragment mapFragment =
+                                        (WorkaroundMapFragment) getSupportFragmentManager().findFragmentById(R.id.minimap);
+                                mapFragment.getMapAsync(ItemInfoActivity.this);
+                                ((WorkaroundMapFragment) getSupportFragmentManager().findFragmentById(R.id.minimap)).setListener(new WorkaroundMapFragment.OnTouchListener() {
+                                    @Override
+                                    public void onTouch() {
+                                        itemInfoScrollView.requestDisallowInterceptTouchEvent(true);
                                     }
-                                }
-                            });
+                                });
+                            } catch (NullPointerException e) {
+                                Log.d(TAG, "Activity destroyed");
+                            }
+                            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+//                            showOnMap.setVisibility(View.VISIBLE);
+//                            showOnMap.setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    Log.d(TAG, "Clicked on Show on map");
+//                                    boolean mLocationPermissionGranted = ContextCompat.checkSelfPermission(
+//                                            ItemInfoActivity.this,
+//                                            android.Manifest.permission.ACCESS_FINE_LOCATION)
+//                                            == PackageManager.PERMISSION_GRANTED;
+//                                    if(mLocationPermissionGranted) {
+//                                        Intent intent = new Intent(ItemInfoActivity.this, TakerMenuActivity.class);
+//                                        intent.putExtra("LaunchInMapMode", true);
+//                                        Bundle geoPoint = new Bundle();
+//                                        geoPoint.putString("Lat", "32.77656875467437");
+//                                        geoPoint.putString("Lng", "35.023163482546806");
+//                                        intent.putExtra("GeoPointToShow", geoPoint);
+//                                        startActivity(intent);
+//                                    } else{
+//                                        ActivityCompat.requestPermissions(ItemInfoActivity.this,
+//                                                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+//                                                1);
+//                                    }
+//                                }
+//                            });
                         }
                         String category = document.getString("category");
                         if (category != null) {
@@ -1294,5 +1344,123 @@ public class ItemInfoActivity extends TakeCareActivity {
             Log.d(TAG, "error setting message button: one of the fields is missing. " + e.getMessage());
         }
 
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            getLocationPermission();
+            return;
+        }
+        updateLocationUI();
+        getLocation();
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (marker != null) {
+                    marker.remove();
+                }
+                MarkerOptions selection = new MarkerOptions();
+                selection.position(latLng).draggable(true);
+                marker = mMap.addMarker(selection);
+            }
+        });
+
+        if (location != null) {
+            MarkerOptions testMarker = new MarkerOptions();
+            String category = itemCategory;
+            int iconId;
+            switch (category) {
+                case "Food":
+                    iconId = R.drawable.pizza_markernobg;
+                    break;
+                case "Study Material":
+                    iconId = R.drawable.book_marker;
+                    break;
+                case "Households":
+                    iconId = R.drawable.households_marker;
+                    break;
+                case "Lost & Found":
+                    iconId = R.drawable.lost_and_found_marker;
+                    break;
+                case "Hitchhikes":
+                    iconId = R.drawable.car_marker;
+                    break;
+                default:
+                    iconId = R.drawable.treasure_marker;
+            }
+            try {
+                BitmapDescriptor resultImage = BitmapDescriptorFactory.fromBitmap(resizeMapIcons(iconId, 170, 170));
+                testMarker.position(new LatLng(latitude, longitude))
+                        .icon(resultImage);
+            } catch (Exception exc) {
+                return;
+            }
+            mMap.addMarker(testMarker);
+        }
+    }
+
+    public Bitmap resizeMapIcons(int markerIcon, int width, int height) {
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), markerIcon);
+        return Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+    }
+
+    private void getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+        }
+    }
+
+    private void updateLocationUI() {
+        if (mMap == null) {
+            return;
+        }
+        try {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        } catch (SecurityException e) {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
+    private void getLocation() {
+        try {
+            Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+            locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                @Override
+                public void onComplete(@NonNull Task<Location> task) {
+                    if (task.isSuccessful()) {
+                        // Set the map's camera position to the current location of the device.
+                        mLastKnownLocation = task.getResult();
+                        if (mLastKnownLocation == null) {
+                            return;
+                        }
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(latitude, longitude), 15));
+                    } else {
+                        Log.d(TAG, "Current location is null. Using defaults.");
+                        Log.e(TAG, "Exception: %s", task.getException());
+                        mMap.moveCamera(CameraUpdateFactory
+                                .newLatLngZoom(mDefaultLocation, 15));
+                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                    }
+                }
+            });
+        } catch (SecurityException e) {
+            Log.e("Exception: %s", e.getMessage());
+        }
     }
 }

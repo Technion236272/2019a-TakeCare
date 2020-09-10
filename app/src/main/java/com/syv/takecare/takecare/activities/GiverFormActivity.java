@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -179,6 +181,9 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location mLastKnownLocation;
     private final LatLng mDefaultLocation = new LatLng(32.777751, 35.021508);
+
+    private Address resolvedAddress;
+    private boolean mapIsReady;
 
     enum locationButtonStateEnum {
         ENTER_LOCATION,
@@ -370,10 +375,46 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
         }
         locationButtonState = locationButtonStateEnum.ENTER_LOCATION;
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+
+        pickupLocation.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                getLocationFromAddress(s.toString());
+                if (mapIsReady) {
+                    if (resolvedAddress != null) {
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(resolvedAddress.getLatitude(),
+                                        resolvedAddress.getLongitude()), 15));
+                    }
+                }
+            }
+        });
+    }
+
+    private void getLocationFromAddress(String givenAddress) {
+        Geocoder coder = new Geocoder(this);
+        List<Address> address;
+        try {
+            address = coder.getFromLocationName(givenAddress,5);
+            if (address==null || address.isEmpty()) {
+                Log.d(TAG, "Cannot resolve address");
+                return;
+            }
+            resolvedAddress = address.get(0);
+        } catch (IOException e) {
+            Log.d(TAG, "Caught IOException converting address to GeoPoint");
+        }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        mapIsReady = true;
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

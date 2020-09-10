@@ -100,7 +100,7 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
         updateLocationUI();
         getLocation();
 
-        //mMap.setMinZoomPreference(11);
+        mMap.setMinZoomPreference(11);
         Query query = db.collection("items")
                 .whereEqualTo("displayStatus", true);
 
@@ -246,6 +246,15 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
                     if (task.isSuccessful()) {
                         // Set the map's camera position to the current location of the device.
                         mLastKnownLocation = task.getResult();
+                        if (showProvidedLocation) {
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(((TakerMenuActivity)getActivity()).getLat(),
+                                            ((TakerMenuActivity)getActivity()).getLng()), 15));
+                        } else if (mLastKnownLocation != null) {
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(mLastKnownLocation.getLatitude(),
+                                            mLastKnownLocation.getLongitude()), 15));
+                        }
                     } else {
                         Log.d(TAG, "Current location is null. Using defaults.");
                         Log.e(TAG, "Exception: %s", task.getException());
@@ -255,16 +264,6 @@ public class FeedMapFragment extends Fragment implements OnMapReadyCallback {
                     }
                 }
             });
-            if (mLastKnownLocation == null) return;
-            if (showProvidedLocation) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(((TakerMenuActivity)getActivity()).getLat(),
-                                ((TakerMenuActivity)getActivity()).getLng()), 15));
-            } else {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(mLastKnownLocation.getLatitude(),
-                                mLastKnownLocation.getLongitude()), 15));
-            }
         } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
