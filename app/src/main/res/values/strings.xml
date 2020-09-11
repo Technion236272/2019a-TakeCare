@@ -190,7 +190,7 @@
     <string name="credits_title">Credits</string>
     <string name="item_notifications">Get notified about favorite keywords</string>
     <string name="title_activity_feed_map">Map</string>
-    <string name="add_location_button_text">Choose a location</string>
+    <string name="add_location_button_text">Choose on Map</string>
 
 
     <!-- Chat Lobby elements -->

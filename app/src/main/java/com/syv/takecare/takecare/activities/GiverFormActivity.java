@@ -36,8 +36,10 @@ import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -375,24 +377,29 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
         }
         locationButtonState = locationButtonStateEnum.ENTER_LOCATION;
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-
-        pickupLocation.addTextChangedListener(new TextWatcher() {
+        pickupLocation.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                getLocationFromAddress(s.toString());
-                if (mapIsReady) {
-                    if (resolvedAddress != null) {
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(resolvedAddress.getLatitude(),
-                                        resolvedAddress.getLongitude()), 15));
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    Log.d(TAG, "Address input is ready for search");
+                    getLocationFromAddress(v.getText().toString());
+                    if (mapIsReady) {
+                        if (resolvedAddress != null) {
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(resolvedAddress.getLatitude(),
+                                            resolvedAddress.getLongitude()), 15));
+                            if (marker != null) {
+                                marker.remove();
+                            }
+                            MarkerOptions selection = new MarkerOptions();
+                            LatLng markerLatLng = new LatLng(resolvedAddress.getLatitude(), resolvedAddress.getLongitude());
+                            selection.position(markerLatLng).draggable(true);
+                            marker = mMap.addMarker(selection);
+                        }
                     }
+                    return true;
                 }
+                return false;
             }
         });
     }
@@ -432,8 +439,28 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                 MarkerOptions selection = new MarkerOptions();
                 selection.position(latLng).draggable(true);
                 marker = mMap.addMarker(selection);
+
+                updateTextAddress(latLng);
             }
         });
+    }
+
+    private void updateTextAddress(LatLng latLng) {
+        try {
+            Geocoder geoCoder = new Geocoder(this);
+            List<Address> matches = geoCoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+            resolvedAddress = (matches.isEmpty() ? null : matches.get(0));
+            String fullAddress = "";
+            for (int n = 0; n <= resolvedAddress.getMaxAddressLineIndex(); n++) {
+                fullAddress += resolvedAddress.getAddressLine(n);
+                if (n < resolvedAddress.getMaxAddressLineIndex()) {
+                    fullAddress += ", ";
+                }
+            }
+            pickupLocation.setText(fullAddress);
+        } catch (Exception e) {
+            Log.d(TAG, "Couldn't resolve given GeoPoint to address");
+        }
     }
 
     private void updateLocationUI() {
