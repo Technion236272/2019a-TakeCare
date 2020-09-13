@@ -100,6 +100,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.google.firebase.firestore.FieldValue.serverTimestamp;
@@ -277,6 +278,7 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
                         String title = document.getString("title");
                         itemTitleView.setText(title);
                         enlargedPhotoToolbarTitle.setText(title);
+                        itemCategory = document.getString("category");
 
                         if (document.getString("photo") != null) {
                             Log.d(TAG, "Found item photo. Fetched picture url: "
@@ -299,7 +301,6 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
                             mShortAnimationDuration = getResources().getInteger(
                                     android.R.integer.config_shortAnimTime);
                         } else if (document.getString("category") != null){
-                            itemCategory = document.getString("category");
                             Bitmap bitmap;
                             switch (itemCategory) {
                                 case "Food":
@@ -332,7 +333,7 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
                         if (timestamp != null) {
                             Log.d(TAG, "setting publish timestamp date");
                             SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd hh:mm");
-                            String dateText = getString(R.string.item_info_published_at) + formatter.format(timestamp);
+                            String dateText = getString(R.string.item_info_published_at) + " " + formatter.format(timestamp);
                             publishTimeTextView.setText(dateText);
                             Long airTime = document.getLong("airTime");
                             if (airTime != null) {
@@ -344,7 +345,7 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
                                 Date currentTime = Calendar.getInstance().getTime();
                                 Log.d(TAG, "current time is: " + currentTime + "\ntarget time is: " + targetTime);
                                 if (currentTime.before(targetTime)) {
-                                    String timeLeftText = getString(R.string.item_info_expires_at) +
+                                    String timeLeftText = getString(R.string.item_info_expires_at) + " " +
                                             formatter.format(targetTime);
                                     timeLeftTextView.setText(timeLeftText);
                                 }
@@ -393,30 +394,6 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
                                 Log.d(TAG, "Activity destroyed");
                             }
                             mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-//                            showOnMap.setVisibility(View.VISIBLE);
-//                            showOnMap.setOnClickListener(new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View v) {
-//                                    Log.d(TAG, "Clicked on Show on map");
-//                                    boolean mLocationPermissionGranted = ContextCompat.checkSelfPermission(
-//                                            ItemInfoActivity.this,
-//                                            android.Manifest.permission.ACCESS_FINE_LOCATION)
-//                                            == PackageManager.PERMISSION_GRANTED;
-//                                    if(mLocationPermissionGranted) {
-//                                        Intent intent = new Intent(ItemInfoActivity.this, TakerMenuActivity.class);
-//                                        intent.putExtra("LaunchInMapMode", true);
-//                                        Bundle geoPoint = new Bundle();
-//                                        geoPoint.putString("Lat", "32.77656875467437");
-//                                        geoPoint.putString("Lng", "35.023163482546806");
-//                                        intent.putExtra("GeoPointToShow", geoPoint);
-//                                        startActivity(intent);
-//                                    } else{
-//                                        ActivityCompat.requestPermissions(ItemInfoActivity.this,
-//                                                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-//                                                1);
-//                                    }
-//                                }
-//                            });
                         }
                         String category = document.getString("category");
                         if (category != null) {
@@ -792,13 +769,18 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
     }
 
     private void alertAcceptRequest(DocumentSnapshot documentSnapshot, final String uid) {
-        String strPre = "Are you sure you want to accept ";
+        Spanned alertMsg;
+        String strPre = getString(R.string.accept_request_body_pre) + " ";
         String strName = "<b><small>" + documentSnapshot.getString("name") + "</small></b>";
-        String strSuff = "\'s request?";
-        Spanned alertMsg = Html.fromHtml(strPre + strName + strSuff);
+        if (Locale.getDefault().getLanguage().equals("iw")) { // App language is Hebrew
+            alertMsg = Html.fromHtml(strPre + strName + "?");
+        } else {
+            String strSuff = getString(R.string.accept_request_body_post);
+            alertMsg = Html.fromHtml(strPre + strName + strSuff);
+        }
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(this);
-        builder.setTitle("Accept Request")
+        builder.setTitle(R.string.accept_request_title)
                 .setMessage(alertMsg)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
@@ -978,7 +960,7 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
                                                     public void onSuccess(Void aVoid) {
                                                         Log.d(TAG, "item requested successfully!");
                                                         //TODO: eliminate post from user feed, and finish the activity
-                                                        Toast.makeText(getApplicationContext(), "You've successfully requested the item!", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(getApplicationContext(), R.string.item_requested_toast, Toast.LENGTH_SHORT).show();
                                                         RelativeLayout requestButton = findViewById(R.id.request_button_layout);
                                                         requestButton.setVisibility(View.GONE);
                                                         stopLoading();
@@ -1019,8 +1001,8 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
     public void onDeletePost(View view) {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(this);
-        builder.setTitle("Delete Post")
-                .setMessage("Are you sure you want to delete this post?")
+        builder.setTitle(R.string.delete_post_title)
+                .setMessage(R.string.delete_post_body)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -1029,7 +1011,7 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Log.d(TAG, "Item successfully deleted");
-                                        Toast.makeText(getApplicationContext(), "Item successfully deleted!",
+                                        Toast.makeText(getApplicationContext(), R.string.post_deleted_toast,
                                                 Toast.LENGTH_SHORT).show();
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                             finishAfterTransition();
@@ -1380,26 +1362,27 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
 
         if (location != null) {
             MarkerOptions testMarker = new MarkerOptions();
-            String category = itemCategory;
-            int iconId;
-            switch (category) {
-                case "Food":
-                    iconId = R.drawable.pizza_markernobg;
-                    break;
-                case "Study Material":
-                    iconId = R.drawable.book_marker;
-                    break;
-                case "Households":
-                    iconId = R.drawable.households_marker;
-                    break;
-                case "Lost & Found":
-                    iconId = R.drawable.lost_and_found_marker;
-                    break;
-                case "Hitchhikes":
-                    iconId = R.drawable.car_marker;
-                    break;
-                default:
-                    iconId = R.drawable.treasure_marker;
+            int iconId = 0;
+            if (itemCategory != null) {
+                switch (itemCategory) {
+                    case "Food":
+                        iconId = R.drawable.pizza_markernobg;
+                        break;
+                    case "Study Material":
+                        iconId = R.drawable.book_marker;
+                        break;
+                    case "Households":
+                        iconId = R.drawable.households_marker;
+                        break;
+                    case "Lost & Found":
+                        iconId = R.drawable.lost_and_found_marker;
+                        break;
+                    case "Hitchhikes":
+                        iconId = R.drawable.car_marker;
+                        break;
+                    default:
+                        iconId = R.drawable.treasure_marker;
+                }
             }
             try {
                 BitmapDescriptor resultImage = BitmapDescriptorFactory.fromBitmap(resizeMapIcons(iconId, 170, 170));

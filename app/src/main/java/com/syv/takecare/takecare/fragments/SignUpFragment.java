@@ -355,8 +355,8 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
                             } catch(FirebaseAuthUserCollisionException e) {
                                 AlertDialog.Builder builder;
                                 builder = new AlertDialog.Builder(getActivity());
-                                builder.setTitle("Sign Up")
-                                        .setMessage("Entered email is already registered")
+                                builder.setTitle(R.string.sign_up)
+                                        .setMessage(R.string.duplicate_email)
                                         .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 // Dismiss the alert - do nothing
@@ -367,8 +367,8 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
                             } catch(FirebaseAuthInvalidCredentialsException e) {
                                 AlertDialog.Builder builder;
                                 builder = new AlertDialog.Builder(getActivity());
-                                builder.setTitle("Sign Up")
-                                        .setMessage("You have entered an illegal email")
+                                builder.setTitle(R.string.sign_up)
+                                        .setMessage(R.string.bad_email)
                                         .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 // Dismiss the alert - do nothing

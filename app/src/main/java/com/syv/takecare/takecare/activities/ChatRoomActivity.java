@@ -121,6 +121,9 @@ public class ChatRoomActivity extends TakeCareActivity {
         toolbarImage = findViewById(R.id.toolbar_item_picture);
 
         sendButton = findViewById(R.id.send_button);
+        if (getResources().getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+            sendButton.setRotation(180);
+        }
         userInput = findViewById(R.id.user_input_text);
         recyclerView = findViewById(R.id.chat_recycler_view);
         //TODO: bring this back later
@@ -284,8 +287,8 @@ public class ChatRoomActivity extends TakeCareActivity {
                     public void onFailure(@NonNull Exception e) {
                         // We don't want the app bar to stay empty: exit the activity
                         Log.d(TAG, "error: couldn\'t load app bar elements");
-                        Toast.makeText(ChatRoomActivity.this, "An error occurred." +
-                                " Please check your internet connection", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ChatRoomActivity.this, R.string.chat_load_fail,
+                                Toast.LENGTH_LONG).show();
                         onBackPressed();
                     }
                 });
@@ -326,8 +329,8 @@ public class ChatRoomActivity extends TakeCareActivity {
                                         @Override
                                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                                             Log.d(TAG, "error: couldn\'t load app bar\'s name");
-                                            Toast.makeText(ChatRoomActivity.this, "An error occurred." +
-                                                    " Please check your internet connection", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(ChatRoomActivity.this, R.string.chat_load_fail,
+                                                    Toast.LENGTH_LONG).show();
                                             onBackPressed();
                                             return false;
                                         }
@@ -354,8 +357,8 @@ public class ChatRoomActivity extends TakeCareActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d(TAG, "error: couldn\'t load app bar\'s photo");
-                        Toast.makeText(ChatRoomActivity.this, "An error occurred." +
-                                " Please check your internet connection", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ChatRoomActivity.this, R.string.chat_load_fail,
+                                Toast.LENGTH_LONG).show();
                         onBackPressed();
                     }
                 });

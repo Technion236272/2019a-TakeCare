@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -51,6 +52,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -80,6 +82,8 @@ public class UserFavoritesActivity extends TakeCareActivity {
     private int tagsAmount = 0;
     private String tagsCopy;
     private boolean isPopupOpen;
+    private ScrollView scrollView;
+    private View tooltipPlaceholder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +102,8 @@ public class UserFavoritesActivity extends TakeCareActivity {
         tagsBtn = findViewById(R.id.save_keywords_button);
         tagsHelpBtn = findViewById(R.id.tags_help);
         tooltipLayout = findViewById(R.id.tags_help_tooltip);
+        scrollView = findViewById(R.id.favorites_scrollview);
+        tooltipPlaceholder = findViewById(R.id.tooltip_placeholder);
 
         addAutoCompleteOptions();
         configureTagsBox();
@@ -109,7 +115,7 @@ public class UserFavoritesActivity extends TakeCareActivity {
         tagsBox.setVisibility(View.GONE);
 
         final ProgressDialog dialog = new ProgressDialog(UserFavoritesActivity.this);
-        dialog.setMessage("Loading your keywords...");
+        dialog.setMessage(getString(R.string.loading_keywords));
         dialog.show();
 
         for (char c : TERMINATORS) {
@@ -188,7 +194,7 @@ public class UserFavoritesActivity extends TakeCareActivity {
                     public void onFailure(@NonNull Exception e) {
                         Log.d(TAG, "onFailure: could not load keywords");
                         dialog.dismiss();
-                        makeHighlightedSnackbar("Connection error: couldn\'t load keywords");
+                        makeHighlightedSnackbar(getString(R.string.loading_keywords_error));
                     }
                 });
 
@@ -235,7 +241,7 @@ public class UserFavoritesActivity extends TakeCareActivity {
                     return;
 
                 final ProgressDialog dialog = new ProgressDialog(UserFavoritesActivity.this);
-                dialog.setMessage("Saving keywords...");
+                dialog.setMessage(getString(R.string.saving_keywords));
                 dialog.show();
                 tagsBox.chipifyAllUnterminatedTokens();
 
@@ -273,25 +279,25 @@ public class UserFavoritesActivity extends TakeCareActivity {
                                 tagsCopy = tagsBox.getText().toString();
                                 String extraMsg = "";
                                 if (finalRemovedDuplicateKeywords && finalRemovedLongKeywords && finalRemovedShortKeywords) {
-                                    extraMsg = "\nDuplicates, short and long words were removed";
+                                    extraMsg = "\n" + getString(R.string.saving_keywords_dup_short_long);
                                 } else if (finalRemovedDuplicateKeywords && finalRemovedLongKeywords) {
-                                    extraMsg = "\nDuplicates and long words were removed";
+                                    extraMsg = "\n" + getString(R.string.saving_keywords_dup_long);
                                 } else if (finalRemovedDuplicateKeywords && finalRemovedShortKeywords) {
-                                    extraMsg = "\nDuplicates and short words were removed";
+                                    extraMsg = "\n" + getString(R.string.saving_keywords_dup_short);
                                 } else if (finalRemovedShortKeywords && finalRemovedLongKeywords) {
-                                    extraMsg = "\nShort and long words were removed";
+                                    extraMsg = "\n" + getString(R.string.saving_keywords_short_long);
                                 } else if (finalRemovedDuplicateKeywords) {
-                                    extraMsg = "\nDuplicates were removed";
+                                    extraMsg = "\n" + getString(R.string.saving_keywords_dup);
                                 } else if (finalRemovedLongKeywords) {
-                                    extraMsg = "\nLong words were removed";
+                                    extraMsg = "\n" + getString(R.string.saving_keywords_long);
                                 } else if (finalRemovedShortKeywords) {
-                                    extraMsg = "\nShort words were removed";
+                                    extraMsg = "\n" + getString(R.string.saving_keywords_short);
                                 }
 
                                 dialog.dismiss();
                                 tagsBtn.setVisibility(View.GONE);
 
-                                String msg = "Updated keywords!";
+                                String msg = getString(R.string.updated_keywords);
                                 String fullMsg = msg + extraMsg;
 
                                 SpannableStringBuilder ssb = new SpannableStringBuilder()
@@ -308,7 +314,7 @@ public class UserFavoritesActivity extends TakeCareActivity {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Log.d(TAG, "failed to add keywords to database");
-                                makeHighlightedSnackbar("An error occurred. Please try again");
+                                makeHighlightedSnackbar(getString(R.string.updating_keywords_error));
                                 dialog.dismiss();
                             }
                         });
@@ -326,6 +332,7 @@ public class UserFavoritesActivity extends TakeCareActivity {
                 toolTipView.remove();
                 tagsHelpBtn.setAlpha(0.7f);
                 isPopupOpen = false;
+                //tooltipPlaceholder.setVisibility(View.GONE);
             }
         };
 
@@ -345,13 +352,18 @@ public class UserFavoritesActivity extends TakeCareActivity {
                 hideKeyboard(UserFavoritesActivity.this);
                 isPopupOpen = true;
                 tagsHelpBtn.setAlpha(1.0f);
+//                tooltipPlaceholder.setVisibility(View.INVISIBLE);
+//                scrollView.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        scrollView.smoothScrollTo(0, scrollView.getScrollY() + 144);
+//                    }
+//                }, 100);
                 toolTipView = tooltipLayout.showToolTipForView(tooltip, tagsHelpBtn);
                 toolTipView.setOnToolTipViewClickedListener(new ToolTipView.OnToolTipViewClickedListener() {
                     @Override
                     public void onToolTipViewClicked(ToolTipView toolTipView) {
-                        toolTipView.remove();
-                        tagsHelpBtn.setAlpha(0.7f);
-                        isPopupOpen = false;
+                        tooltipTask.run();
                     }
                 });
 
@@ -436,8 +448,8 @@ public class UserFavoritesActivity extends TakeCareActivity {
         hideKeyboard(UserFavoritesActivity.this);
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(this);
-        builder.setTitle("Unsaved Keywords")
-                .setMessage("Are you sure you don\'t want to save your keywords?")
+        builder.setTitle(R.string.unsaved_tags_title)
+                .setMessage(R.string.unsaved_tags_body)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // Discard the newly entered keywords

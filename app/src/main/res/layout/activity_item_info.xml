@@ -169,7 +169,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginRight="4dp"
                         android:layout_marginBottom="3dp"
                         android:layout_weight="1"
                         app:cardBackgroundColor="@color/colorCards"
@@ -200,7 +201,7 @@
                                 android:layout_marginRight="15dp"
                                 android:layout_toEndOf="@id/item_category_icon"
                                 android:layout_toRightOf="@id/item_category_icon"
-                                android:text="Food"
+                                android:text="@string/nav_food_title"
                                 android:textColor="@color/primary_text"
                                 android:textSize="16sp" />
 
@@ -212,7 +213,8 @@
                         android:id="@+id/item_pickup_method_card"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginLeft="4dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_marginBottom="3dp"
@@ -245,7 +247,7 @@
                                 android:layout_marginRight="15dp"
                                 android:layout_toEndOf="@id/item_pickup_method_icon"
                                 android:layout_toRightOf="@id/item_pickup_method_icon"
-                                android:text="In Person"
+                                android:text="@string/giver_pickup_in_person"
                                 android:textColor="@color/primary_text"
                                 android:textSize="16sp" />
 

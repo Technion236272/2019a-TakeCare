@@ -406,22 +406,22 @@ public class SharedItemsBaseFragment extends Fragment {
                 String str;
                 switch (model.getCategory()) {
                     case "Food":
-                        str = "This item's category is food";
+                        str = getString(R.string.taker_card_hint_food);
                         break;
                     case "Study Material":
-                        str = "This item's category is study material";
+                        str = getString(R.string.taker_card_hint_study_material);
                         break;
                     case "Households":
-                        str = "This item's category is household objects";
+                        str = getString(R.string.taker_card_hint_households);
                         break;
                     case "Lost & Found":
-                        str = "This item's category is lost&founds";
+                        str = getString(R.string.taker_card_hint_lost_and_found);
                         break;
                     case "Hitchhikes":
-                        str = "This item's category is hitchhiking";
+                        str = getString(R.string.taker_card_hint_hitchhikes);
                         break;
                     default:
-                        str = "This item is in a category of its own";
+                        str = getString(R.string.taker_card_hint_other);
                         break;
                 }
 
@@ -472,13 +472,13 @@ public class SharedItemsBaseFragment extends Fragment {
                 String str;
                 switch (model.getPickupMethod()) {
                     case "In Person":
-                        str = "This item is available for pick-up in person";
+                        str = getString(R.string.taker_card_hint_in_person);
                         break;
                     case "Giveaway":
-                        str = "This item is available in a public giveaway";
+                        str = getString(R.string.taker_card_hint_giveaway);
                         break;
                     default:
-                        str = "Race to get this item before anyone else!";
+                        str = getString(R.string.taker_card_hint_race);
                         break;
                 }
 

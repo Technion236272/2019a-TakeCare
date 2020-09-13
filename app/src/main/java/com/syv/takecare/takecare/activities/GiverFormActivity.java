@@ -116,8 +116,8 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
 
     private final static String TAG = "TakeCare/GiverForm";
     private static final int POPUP_ACTIVE_DURATION = 6000;
-    private static final String changeText = "Change";
-    private static final String hideText = "Hide";
+    private static String changeText;
+    private static String hideText;
     private static final List<Character> TERMINATORS = Arrays.asList('\n', ';', ',');
     private static final int CHIP_MAX_LENGTH = 15;
     private static final int CHIP_MIN_LENGTH = 3;
@@ -156,7 +156,8 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
     private Runnable tagsTooltipTask;
     private boolean isTagsTooltipOpen;
 
-    private View tooltipsPlaceholder;
+    private View airtimeTooltipPlaceholder;
+    private View tagsTooltipPlaceholder;
 
     private ImageView itemImageView;
     final static private int REQUEST_CAMERA = 1;
@@ -538,7 +539,6 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
         airTimeText = findViewById(R.id.air_time_text);
         airTimeToggler = findViewById(R.id.air_time_change);
         airTimePicker = findViewById(R.id.air_time_seek_bar);
-        airTimeHelpBtn = findViewById(R.id.air_time_help);
         airTimeTooltipLayout = findViewById(R.id.air_time_help_tooltip);
         airTimeHelpBtn = findViewById(R.id.air_time_help);
         tagsToggler = findViewById(R.id.add_keywords_text);
@@ -546,7 +546,8 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
         tagsBox = findViewById(R.id.keywords_tag_box);
         tagsTooltipLayout = findViewById(R.id.keywords_help_tooltip);
         formBtn = findViewById(R.id.send_form_button);
-        tooltipsPlaceholder = findViewById(R.id.placeholder);
+        airtimeTooltipPlaceholder = findViewById(R.id.airtime_tooltip_placeholder);
+        tagsTooltipPlaceholder = findViewById(R.id.tags_tooltip_placeholder);
         airTimePicker.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         airTimePicker.getThumb().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
 
@@ -558,6 +559,9 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
         int[] spinnerIcons = new int[]{R.drawable.ic_in_person, R.drawable.ic_giveaway, R.drawable.ic_race};
         IconTextAdapter ita = new IconTextAdapter(this, spinnerNames, spinnerIcons);
         pickup.setAdapter(ita);
+
+        changeText = getString(R.string.seekbar_change);
+        hideText = getString(R.string.seekbar_hide);
     }
 
 
@@ -574,7 +578,8 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                 airTimeHelpBtn.setAlpha(0.7f);
                 isAirtimeTooltipOpen = false;
                 if (!isAirtimeTooltipOpen && !isTagsTooltipOpen) {
-                    tooltipsPlaceholder.setVisibility(View.GONE);
+                    airtimeTooltipPlaceholder.setVisibility(View.GONE);
+                    tagsTooltipPlaceholder.setVisibility(View.GONE);
                 }
             }
         };
@@ -588,7 +593,8 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                 tagsHelpBtn.setAlpha(0.7f);
                 isTagsTooltipOpen = false;
                 if (!isAirtimeTooltipOpen && !isTagsTooltipOpen) {
-                    tooltipsPlaceholder.setVisibility(View.GONE);
+                    airtimeTooltipPlaceholder.setVisibility(View.GONE);
+                    tagsTooltipPlaceholder.setVisibility(View.GONE);
                 }
             }
         };
@@ -612,7 +618,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                     return;
                 isAirtimeTooltipOpen = true;
                 airTimeHelpBtn.setAlpha(1.0f);
-                tooltipsPlaceholder.setVisibility(View.INVISIBLE);
+                airtimeTooltipPlaceholder.setVisibility(View.INVISIBLE);
                 scrollView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -642,7 +648,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                     return;
                 isTagsTooltipOpen = true;
                 tagsHelpBtn.setAlpha(1.0f);
-                tooltipsPlaceholder.setVisibility(View.INVISIBLE);
+                tagsTooltipPlaceholder.setVisibility(View.INVISIBLE);
                 scrollView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -932,7 +938,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
                                                                     public void onSuccess(Void aVoid) {
                                                                         Log.d(TAG, "uploadItemAndPictureData: item added successfully ");
                                                                         stopLoading();
-                                                                        Toast.makeText(GiverFormActivity.this, "Item uploaded successfully!",
+                                                                        Toast.makeText(GiverFormActivity.this, R.string.item_uploaded,
                                                                                 Toast.LENGTH_SHORT).show();
                                                                         Intent intent = new Intent(GiverFormActivity.this, TakerMenuActivity.class);
                                                                         startActivity(intent);
@@ -1179,7 +1185,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
     private void showAlertMessage(final String msg) {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(this);
-        builder.setTitle("Upload Information")
+        builder.setTitle(R.string.upload_error_title)
                 .setMessage(msg)
                 .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -1300,30 +1306,30 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
     }
 
     private void setPostAirTimeText() {
-        String str = "Listed for ";
+        String str = getString(R.string.listed_for) + " ";
         if (airTime == 1) {
-            str += airTime;
-            str += " hour";
+            str += airTime + " ";
+            str += getString(R.string.hour);
         } else if (airTime % 24 != 0) {
-            str += airTime;
-            str += " hours";
+            str += airTime + " ";
+            str += getString(R.string.hours);
         } else if (airTime == 24) {
-            str += airTime / 24;
-            str += " day";
+            str += airTime / 24 + " ";
+            str += getString(R.string.day);
         } else if (airTime < 24 * 7 || (airTime % (24 * 7) != 0 && airTime % (24 * 30) != 0)) {
-            str += airTime / 24;
-            str += " days";
+            str += airTime / 24 + " ";
+            str += getString(R.string.days);
         } else if (airTime == 24 * 7) {
-            str += airTime / (24 * 7);
-            str += " week";
+            str += airTime / (24 * 7) + " ";
+            str += getString(R.string.week);
         } else if (airTime < 24 * 30 || airTime % (24 * 30) != 0) {
-            str += airTime / (24 * 7);
-            str += " weeks";
+            str += airTime / (24 * 7) + " ";
+            str += getString(R.string.weeks);
         } else if (airTime == 24 * 30) {
-            str += "1 month";
+            str += "1 " + getString(R.string.month);
         } else {
-            str += airTime;
-            str += " hours";
+            str += airTime + " ";
+            str += getString(R.string.hours);
         }
         airTimeText.setText(str);
     }

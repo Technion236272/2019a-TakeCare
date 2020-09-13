@@ -72,10 +72,9 @@ public class TakeCareActivity extends AppCompatActivity {
 
             AlertDialog.Builder builder;
             builder = new AlertDialog.Builder(TakeCareActivity.this);
-            builder.setTitle("An error has occurred")
+            builder.setTitle(R.string.error_title)
                     .setIcon(R.drawable.ic_alert_warning)
-                    .setMessage("Loading process takes too long!\n" +
-                            "Check your internet connection and try again.")
+                    .setMessage(R.string.error_body)
                     .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

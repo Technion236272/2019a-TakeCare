@@ -47,22 +47,31 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
         TextView snippet = view.findViewById(R.id.info_window_snippet);
         ImageView picture = view.findViewById(R.id.info_window_picture);
         title.setText(marker.getTitle());
-        snippet.setText(marker.getSnippet());
+        switch (marker.getSnippet()) {  // Used indirectly for translation
+            case "Giveaway":
+                snippet.setText(R.string.giver_pickup_giveaway); break;
+            case "Race":
+                snippet.setText(R.string.giver_pickup_race); break;
+            default: // "In Person"
+                snippet.setText(R.string.giver_pickup_in_person); break;
+        }
         DocumentSnapshot doc = (DocumentSnapshot) marker.getTag();
         String photo = (String) doc.get("photo");
-        Glide.with(context).asBitmap().load(photo).apply(new RequestOptions().centerCrop()).listener(new RequestListener<Bitmap>(){
+        if (photo != null) {
+            Glide.with(context).asBitmap().load(photo).apply(new RequestOptions().centerCrop()).listener(new RequestListener<Bitmap>() {
 
-            @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                return false;
-            }
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                    return false;
+                }
 
-            @Override
-            public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                if (!dataSource.equals(DataSource.MEMORY_CACHE)) marker.showInfoWindow();
-                return false;
-            }
-        }).into(picture);
+                @Override
+                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                    if (!dataSource.equals(DataSource.MEMORY_CACHE)) marker.showInfoWindow();
+                    return false;
+                }
+            }).into(picture);
+        }
         return view;
     }
 

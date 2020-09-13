@@ -573,7 +573,7 @@
             </androidx.cardview.widget.CardView>
 
             <View
-                android:id="@+id/placeholder"
+                android:id="@+id/airtime_tooltip_placeholder"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:visibility="gone"
@@ -591,7 +591,7 @@
                 android:textSize="14sp"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/placeholder" />
+                app:layout_constraintTop_toBottomOf="@+id/airtime_tooltip_placeholder" />
 
             <TextView
                 android:id="@+id/air_time_change"
@@ -609,7 +609,7 @@
                 android:textStyle="bold"
                 android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@id/air_time_text"
-                app:layout_constraintTop_toBottomOf="@+id/placeholder" />
+                app:layout_constraintTop_toBottomOf="@+id/airtime_tooltip_placeholder" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/air_time_help"
@@ -622,12 +622,13 @@
                 android:src="@drawable/ic_help_purple"
                 android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@+id/air_time_change"
-                app:layout_constraintTop_toBottomOf="@+id/placeholder" />
+                app:layout_constraintTop_toBottomOf="@+id/airtime_tooltip_placeholder" />
 
             <com.nhaarman.supertooltips.ToolTipRelativeLayout
                 android:id="@+id/air_time_help_tooltip"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layoutDirection="ltr"
                 app:layout_constraintBottom_toTopOf="@+id/air_time_help"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -647,12 +648,19 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/air_time_text" />
 
+            <View
+                android:id="@+id/tags_tooltip_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/air_time_seek_bar" />
+
             <TextView
                 android:id="@+id/add_keywords_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
                 android:layout_marginTop="24dp"
                 android:clickable="true"
                 android:focusable="true"
@@ -663,25 +671,25 @@
                 android:textStyle="bold"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/air_time_seek_bar" />
+                app:layout_constraintTop_toBottomOf="@+id/tags_tooltip_placeholder" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/keywords_help"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="12dp"
-                android:layout_marginLeft="12dp"
                 android:layout_marginTop="20dp"
                 android:alpha="0.7"
                 android:src="@drawable/ic_help_purple"
                 android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@+id/add_keywords_text"
-                app:layout_constraintTop_toBottomOf="@+id/air_time_seek_bar" />
+                app:layout_constraintTop_toBottomOf="@+id/tags_tooltip_placeholder" />
 
             <com.nhaarman.supertooltips.ToolTipRelativeLayout
                 android:id="@+id/keywords_help_tooltip"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layoutDirection="ltr"
                 app:layout_constraintBottom_toTopOf="@+id/keywords_help"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

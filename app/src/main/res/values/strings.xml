@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">TakeCare</string>
 
+    <!--TakeCare general activity elements-->
+    <string name="error_title">An error has occurred</string>
+    <string name="error_body">Loading process takes too long!\nCheck your internet connection and try again</string>
+
     <!--Facebook elements-->
     <string name="facebook_app_id">1213943598760666</string>
     <string name="fb_login_protocol_scheme">fb1213943598760666</string>
@@ -73,10 +77,27 @@
     <string name="filter_menu_search_hint">Enter a keyword</string>
     <string name="jump_to_top_button">Jump to top</string>
     <string name="jump_to_top_button_landscape">Scroll to start</string>
+    <string name="taker_card_hint_in_person">This item is available for pick-up in person</string>
+    <string name="taker_card_hint_giveaway">This item is available in a public giveaway</string>
+    <string name="taker_card_hint_race">Race to get this item before anyone else!</string>
+    <string name="taker_card_hint_food">This item\'s category is food</string>
+    <string name="taker_card_hint_study_material">This item\'s category is study material</string>
+    <string name="taker_card_hint_households">This item\'s category is household objects</string>
+    <string name="taker_card_hint_lost_and_found">This item\'s category is lost&amp;founds</string>
+    <string name="taker_card_hint_hitchhikes">This item\'s category is hitchhiking</string>
+    <string name="taker_card_hint_other">This item is in a category of its own</string>
 
 
     <!--Login activity elements-->
     <string name="email_signin_text">Sign up with E-mail</string>
+    <string name="auth_failed">Authentication failed</string>
+    <string name="bad_credentials">Credentials has been malformed or expired</string>
+    <string name="duplicate_user">User with same credentials already exists</string>
+    <string name="wrong_credentials">Wrong credentials. Please try again</string>
+    <string name="credentials_missing">Please fill your credentials</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="duplicate_email">Entered email is already registered</string>
+    <string name="bad_email">You have entered an illegal email</string>
 
 
     <!--Report option elements-->
@@ -115,6 +136,20 @@
     <string name="favorites_instruction_text">Type in words that interest you.\nWe\'ll make sure to notify you when a suitable item is posted!</string>
     <string name="favorites_save_changes">Save Changes</string>
     <string name="favorites_help_popup_text">3\-15 characters long.\nSeparate by comma or enter.\nNo duplicates allowed</string>
+    <string name="unsaved_tags_title">Unsaved Keywords</string>
+    <string name="unsaved_tags_body">Are you sure you don\'t want to save your keywords?</string>
+    <string name="loading_keywords">Loading your keywords…</string>
+    <string name="loading_keywords_error">Connection error: couldn\'t load keywords</string>
+    <string name="saving_keywords">Saving keywords…</string>
+    <string name="saving_keywords_dup_short_long">Duplicates, short and long words were removed</string>
+    <string name="saving_keywords_dup_short">Duplicates and short words were removed</string>
+    <string name="saving_keywords_dup_long">Duplicates and long words were removed</string>
+    <string name="saving_keywords_short_long">Short and long words were removed</string>
+    <string name="saving_keywords_dup">Duplicates were removed</string>
+    <string name="saving_keywords_long">Long words were removed</string>
+    <string name="saving_keywords_short">Short words were removed</string>
+    <string name="updated_keywords">Updated keywords!</string>
+    <string name="updating_keywords_error">An error occurred. Please try again</string>
 
     <!-- Strings related to sign up -->
     <string name="prompt_email">Email</string>
@@ -145,8 +180,15 @@
     <string name="item_default_pickup_text">Flexible</string>
     <string name="item_default_location_text">Unspecified</string>
     <string name="search_button_description">Press to search</string>
-    <string name="item_info_published_at">Published at: </string>
-    <string name="item_info_expires_at">Expires at: </string>
+    <string name="item_info_published_at">Published at:</string>
+    <string name="item_info_expires_at">Expires at:</string>
+    <string name="delete_post_title">Delete Post</string>
+    <string name="delete_post_body">Are you sure you want to delete this post?</string>
+    <string name="post_deleted_toast">Item successfully deleted!</string>
+    <string name="item_requested_toast">You\'ve successfully requested the item!</string>
+    <string name="accept_request_title">Accept Request</string>
+    <string name="accept_request_body_pre">Are you sure you want to accept</string>
+    <string name="accept_request_body_post" translatable="false">\'s request?</string>
 
 
     <!-- User Profile elements -->
@@ -208,6 +250,17 @@
     <string name="giver_error_no_category">Please select the item\'s category</string>
     <string name="item_uploaded">Item uploaded successfully!</string>
     <string name="upload_failed">Upload failed. Please check your internet connection</string>
+    <string name="listed_for">Listed for</string>
+    <string name="hour">hour</string>
+    <string name="hours">hours</string>
+    <string name="day">day</string>
+    <string name="days">days</string>
+    <string name="week">week</string>
+    <string name="weeks">weeks</string>
+    <string name="month">month</string>
+    <string name="seekbar_change">Change</string>
+    <string name="seekbar_hide">Hide</string>
+    <string name="upload_error_title">Upload Information</string>
 
 
     <!-- About page elements -->
@@ -233,6 +286,8 @@
 
     <!-- Chat Activity elements -->
     <string name="accept_button_text">Accept Request</string>
+    <string name="chat_load_fail">An error occurred. Please check your internet connection</string>
+    <string name="message_box_hint">Type a message</string>
 
     <!-- Shared Items elements -->
     <string name="shared_items_available_tab">Available</string>

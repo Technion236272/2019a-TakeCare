@@ -108,7 +108,7 @@ public class SignInFragment extends Fragment  implements View.OnClickListener {
                             } else {
                                 emailView.setError("");
                                 passwordView.setError("");
-                                Toast.makeText(getActivity(), "Wrong credentials. Please try again.",
+                                Toast.makeText(getActivity(), R.string.wrong_credentials,
                                         Toast.LENGTH_SHORT).show();
                                 Log.d(TAG, "signInWithEmail:failure");
                                 dialog.dismiss();
@@ -136,7 +136,7 @@ public class SignInFragment extends Fragment  implements View.OnClickListener {
         }
 
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-            Toast.makeText(getActivity(), "Please fill your credentials", Toast.LENGTH_SHORT)
+            Toast.makeText(getActivity(), R.string.credentials_missing, Toast.LENGTH_SHORT)
                     .show();
             valid = false;
         }

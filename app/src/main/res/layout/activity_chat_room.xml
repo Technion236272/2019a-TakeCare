@@ -43,9 +43,10 @@
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_marginBottom="8dp"
-                        android:gravity="left"
+                        android:gravity="start"
                         android:maxLines="1"
                         android:textAlignment="gravity"
+                        android:textDirection="locale"
                         android:textColor="@android:color/white"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -107,7 +108,7 @@
             app:layout_constraintBottom_toTopOf="@+id/user_input_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/request_button">
+            app:layout_constraintTop_toBottomOf="@id/chat_toolbar_wrapper">
 
         </androidx.recyclerview.widget.RecyclerView>
 
@@ -127,7 +128,8 @@
             android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/send_button"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            android:hint="@string/message_box_hint"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/send_button"

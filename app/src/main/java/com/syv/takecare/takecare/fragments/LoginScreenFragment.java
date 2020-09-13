@@ -197,7 +197,7 @@ public class LoginScreenFragment extends Fragment {
                         } else {
                             // Sign in failed
                             Log.w(TAG, "signInWithCredential: failure", task.getException());
-                            Toast.makeText(getActivity(), "Authentication failed.",
+                            Toast.makeText(getActivity(), R.string.auth_failed,
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -226,10 +226,10 @@ public class LoginScreenFragment extends Fragment {
                             try {
                                 throw task.getException();
                             } catch (FirebaseAuthInvalidCredentialsException e) {
-                                Toast.makeText(getActivity(), "Credentials has been malformed or expired",
+                                Toast.makeText(getActivity(), R.string.bad_credentials,
                                         Toast.LENGTH_SHORT).show();
                             } catch (FirebaseAuthUserCollisionException e) {
-                                Toast.makeText(getActivity(), "User with same credentials already exists",
+                                Toast.makeText(getActivity(), R.string.duplicate_user,
                                         Toast.LENGTH_SHORT).show();
                                 String email = credential.getSignInMethod();
                                 String provider = ""; List<String> providers = null;
@@ -263,7 +263,7 @@ public class LoginScreenFragment extends Fragment {
                                 auth.signOut();
                                 LoginManager.getInstance().logOut();
                             } catch (Exception e) {
-                                Toast.makeText(getActivity(), "Authentication failed",
+                                Toast.makeText(getActivity(), R.string.auth_failed,
                                         Toast.LENGTH_SHORT).show();
                             }
                             // If sign in fails, display a message to the user.

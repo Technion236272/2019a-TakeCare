@@ -26,6 +26,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
+        android:id="@+id/favorites_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -69,6 +70,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tags_title" />
 
+            <View
+                android:id="@+id/tooltip_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tags_description" />
+
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/tags_help"
                 android:layout_width="24dp"
@@ -83,14 +92,16 @@
                 android:src="@drawable/ic_help_purple"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tags_description" />
+                app:layout_constraintTop_toBottomOf="@+id/tooltip_placeholder" />
 
             <com.nhaarman.supertooltips.ToolTipRelativeLayout
                 android:id="@+id/tags_help_tooltip"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layoutDirection="ltr"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tags_help"/>
 
             <com.hootsuite.nachos.NachoTextView
                 android:id="@+id/favorites_tag_box"

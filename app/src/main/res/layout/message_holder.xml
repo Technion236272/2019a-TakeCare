@@ -11,7 +11,7 @@
         android:id="@+id/time_user_wrapper1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right">
+        android:layout_gravity="end">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/message_holder_user"
@@ -57,7 +57,7 @@
         android:id="@+id/time_user_wrapper2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left">
+        android:layout_gravity="start">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/message_holder_other"
