@@ -415,12 +415,16 @@ public class UserProfileActivity extends TakeCareActivity {
         if (isImageFullscreen) {
             Log.d(TAG, "onOptionsItemSelected: fake toolbar clicked");
             if (!minimizeFullscreenImage()) {
-                startActivity(new Intent(this, TakerMenuActivity.class));
+                Intent intent = new Intent(this, TakerMenuActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
                 //super.onBackPressed();
             }
         } else {
             Log.d(TAG, "onOptionsItemSelected: real toolbar clicked");
-            startActivity(new Intent(this, TakerMenuActivity.class));
+            Intent intent = new Intent(this, TakerMenuActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
             //super.onBackPressed();
         }
         return super.onOptionsItemSelected(item);
@@ -443,13 +447,17 @@ public class UserProfileActivity extends TakeCareActivity {
             if (isImageFullscreen) {
                 Log.d(TAG, "onBackPressed: closing fullscreen image");
                 if (!minimizeFullscreenImage()) {
-                    startActivity(new Intent(this, TakerMenuActivity.class));
-                    //super.onBackPressed();
+                    Intent intent = new Intent(this, TakerMenuActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+//                    super.onBackPressed();
                 }
             } else {
                 Log.d(TAG, "onBackPressed: finishing activity");
-                startActivity(new Intent(this, TakerMenuActivity.class));
-               // super.onBackPressed();
+                Intent intent = new Intent(this, TakerMenuActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+//                  super.onBackPressed();
             }
         }
     }
