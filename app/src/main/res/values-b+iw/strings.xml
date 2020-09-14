@@ -213,6 +213,8 @@
     <string name="profile_page_error">אירעה שגיאה. אנא בדקו את החיבור שלכם לאינטרנט</string>
     <string name="profile_logout_title">התנתקות</string>
     <string name="profile_logout_body">האם את/ה בטוח/ה שברצונך להתנתק?</string>
+    <string name="loading_profile">טוען פרופיל…</string>
+    <string name="select_language">שפה:</string>
 
     <!-- GiverForm elements -->
     <string name="giver_form_title_input_hint">הוסף כותרת</string>
@@ -258,6 +260,8 @@
     <string name="seekbar_change">שנה</string>
     <string name="seekbar_hide">הסתר</string>
     <string name="upload_error_title">פרסום פריט</string>
+    <string name="hitchhike_from">מ:</string>
+    <string name="hitchhike_to">אל:</string>
 
     <!-- About page elements-->
     <string name="my_link"><a href="http://somesite.com/">Click me!</a></string>
@@ -315,6 +319,11 @@
     <!--MISC-->
     <string name="error_timeout_message">\"Loading process takes too long!\\nCheck your internet connection and try again.\"</string>
     <string name="chat_card_timestamp_title_text">עדכון אחרון ב:</string>
+    <string-array name="languages_array">
+        <item>שפת מערכת</item>
+        <item>English</item>
+        <item>עברית</item>
+    </string-array>
 
 
     <!---->

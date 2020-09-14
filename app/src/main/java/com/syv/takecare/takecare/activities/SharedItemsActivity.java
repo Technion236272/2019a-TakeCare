@@ -15,12 +15,11 @@ import com.syv.takecare.takecare.fragments.MyTakenItemsFragment;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.adapters.SectionsPageAdapter;
 
+import java.util.Locale;
+
 public class SharedItemsActivity extends TakeCareActivity {
 
     private static final String TAG = "TakeCare/Login";
-
-    private SectionsPageAdapter sectionsPageAdapter;
-    private CustomViewPager viewPager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,9 +27,7 @@ public class SharedItemsActivity extends TakeCareActivity {
         setContentView(R.layout.activity_shared_items);
         Log.d(TAG, "onCreate: Starting.");
 
-        sectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
-
-        viewPager = findViewById(R.id.shared_items_container);
+        CustomViewPager viewPager = findViewById(R.id.shared_items_container);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
             viewPager.setPagingEnabled(false);
         setupViewPager(viewPager);
@@ -51,14 +48,25 @@ public class SharedItemsActivity extends TakeCareActivity {
                 SharedItemsActivity.super.onBackPressed();
             }
         });
+
+        setTitle(R.string.shared_items_menu_title);
     }
 
     private void setupViewPager(ViewPager viewPager) {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
 //        adapter.addFragment(new MyRequestedItemsFragment(), "Requested"); <- this is scrapped
-        adapter.addFragment(new MyAvailableItemsFragment(), getString(R.string.shared_items_available_tab));
-        adapter.addFragment(new MyTakenItemsFragment(), getString(R.string.shared_items_taken_tab));
-        adapter.addFragment(new MyExpiredItemsFragment(), getString(R.string.shared_items_expired_tab));
-        viewPager.setAdapter(adapter);
+        if (!getResources().getConfiguration().locale.getLanguage().equals("iw")) {
+            Log.d(TAG, "Locale default: " + Locale.getDefault().getLanguage());
+            adapter.addFragment(new MyAvailableItemsFragment(), getString(R.string.shared_items_available_tab));
+            adapter.addFragment(new MyTakenItemsFragment(), getString(R.string.shared_items_taken_tab));
+            adapter.addFragment(new MyExpiredItemsFragment(), getString(R.string.shared_items_expired_tab));
+            viewPager.setAdapter(adapter);
+        } else {
+            adapter.addFragment(new MyExpiredItemsFragment(), getString(R.string.shared_items_expired_tab));
+            adapter.addFragment(new MyTakenItemsFragment(), getString(R.string.shared_items_taken_tab));
+            adapter.addFragment(new MyAvailableItemsFragment(), getString(R.string.shared_items_available_tab));
+            viewPager.setAdapter(adapter);
+            viewPager.setCurrentItem(2);
+        }
     }
 }

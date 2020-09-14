@@ -109,9 +109,7 @@
                     android:maxLines="1"
                     android:text=""
                     android:textSize="14sp"
-                    android:textDirection="locale"
-                    android:textAlignment="gravity"
-                    android:layout_gravity="start"
+                    android:textAlignment="viewStart"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/item_publisher_frame"
                     app:layout_constraintTop_toBottomOf="@+id/item_photo" />

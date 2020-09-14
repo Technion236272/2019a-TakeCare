@@ -13,6 +13,8 @@ import com.syv.takecare.takecare.customViews.CustomViewPager;
 import com.syv.takecare.takecare.fragments.GiverMessagesFragment;
 import com.syv.takecare.takecare.fragments.TakerMessagesFragment;
 
+import java.util.Locale;
+
 public class ChatLobbyActivity extends TakeCareActivity {
 
     private static final String TAG = "TakeCare/ChatLobby";
@@ -32,6 +34,7 @@ public class ChatLobbyActivity extends TakeCareActivity {
         TabLayout tabLayout = findViewById(R.id.chat_tabs);
         tabLayout.setupWithViewPager(viewPager);
 
+        setTitle(R.string.chat_lobby_title);
     }
 
     @Override
@@ -45,9 +48,16 @@ public class ChatLobbyActivity extends TakeCareActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new GiverMessagesFragment(), getString(R.string.chat_lobby_my_items_tab));
-        adapter.addFragment(new TakerMessagesFragment(), getString(R.string.chat_lobby_requested_items_tab));
-        viewPager.setAdapter(adapter);
+        if (!getResources().getConfiguration().locale.getLanguage().equals("iw")) {
+            adapter.addFragment(new GiverMessagesFragment(), getString(R.string.chat_lobby_my_items_tab));
+            adapter.addFragment(new TakerMessagesFragment(), getString(R.string.chat_lobby_requested_items_tab));
+            viewPager.setAdapter(adapter);
+        } else {
+            adapter.addFragment(new TakerMessagesFragment(), getString(R.string.chat_lobby_requested_items_tab));
+            adapter.addFragment(new GiverMessagesFragment(), getString(R.string.chat_lobby_my_items_tab));
+            viewPager.setAdapter(adapter);
+            viewPager.setCurrentItem(1);
+        }
     }
 
     private void setToolbar(Toolbar toolbar) {

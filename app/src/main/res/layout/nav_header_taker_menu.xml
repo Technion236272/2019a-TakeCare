@@ -30,11 +30,10 @@
         android:id="@+id/nav_user_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="gravity"
+        android:textAlignment="viewStart"
         android:gravity="start"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        tools:ignore="RtlHardcoded" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
         android:id="@+id/textView"

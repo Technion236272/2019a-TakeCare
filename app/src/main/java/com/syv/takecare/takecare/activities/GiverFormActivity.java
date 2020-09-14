@@ -1029,7 +1029,7 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
             if (category.equals("Hitchhikes")) {
                 try {
                     String to = ((TextInputEditText) (findViewById(R.id.item_location_to))).getText().toString();
-                    itemInfo.put("pickupLocation", "From: " + pickupLocation.getText().toString() + "\nTo: " + to);
+                    itemInfo.put("pickupLocation", pickupLocation.getText().toString() + "\n" + to);
                 } catch (NullPointerException e) {
                     Log.d(TAG, "formStatus: Hitchhike getText from to");
                 }

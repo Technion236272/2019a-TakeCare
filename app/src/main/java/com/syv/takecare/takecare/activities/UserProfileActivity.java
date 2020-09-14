@@ -6,18 +6,24 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RotateDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.firebase.ui.auth.data.model.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.core.app.ActivityCompat;
@@ -35,6 +41,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -42,6 +50,7 @@ import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,6 +85,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class UserProfileActivity extends TakeCareActivity {
@@ -135,7 +145,7 @@ public class UserProfileActivity extends TakeCareActivity {
         setContentView(R.layout.activity_user_profile);
 
         // This page has a maximum of 8.5 seconds dedicated to loading
-        startLoading("Loading your profile...", 8500);
+        startLoading(getString(R.string.loading_profile), 8500);
 
         initWidgets();
         setToolbar(toolbar);
@@ -281,10 +291,20 @@ public class UserProfileActivity extends TakeCareActivity {
         pendingRequestsButton = findViewById(R.id.pending_requests);
         logOutButton = findViewById(R.id.logout);
 
-        myFavoritesButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_black_24dp), null);
-        myItemsButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_black_24dp), null);
-        pendingRequestsButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_black_24dp), null);
-        logOutButton.setCompoundDrawablesWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_logout), null);
+        Drawable arrow = AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward_black_24dp);
+        Drawable arrowRTL = AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_arrow_back_black);
+        Drawable logoutIcon = AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_logout);
+        if (getResources().getConfiguration().locale.getLanguage().equals("iw")) {
+            myFavoritesButton.setCompoundDrawablesWithIntrinsicBounds(arrowRTL, null, null, null);
+            myItemsButton.setCompoundDrawablesWithIntrinsicBounds(arrowRTL, null, null, null);
+            pendingRequestsButton.setCompoundDrawablesWithIntrinsicBounds(arrowRTL, null, null, null);
+            logOutButton.setCompoundDrawablesWithIntrinsicBounds(logoutIcon, null, null, null);
+        } else {
+            myFavoritesButton.setCompoundDrawablesWithIntrinsicBounds(null, null, arrow, null);
+            myItemsButton.setCompoundDrawablesWithIntrinsicBounds(null, null, arrow, null);
+            pendingRequestsButton.setCompoundDrawablesWithIntrinsicBounds(null, null, arrow, null);
+            logOutButton.setCompoundDrawablesWithIntrinsicBounds(null, null, logoutIcon, null);
+        }
 
         myItemsButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -304,6 +324,39 @@ public class UserProfileActivity extends TakeCareActivity {
                 onLogOutClick(v);
             }
         });
+
+        Spinner langSpinner = findViewById(R.id.language_spinner);
+        ArrayAdapter<CharSequence> langAdapter = ArrayAdapter.createFromResource(this,
+                R.array.languages_array, android.R.layout.simple_spinner_item);
+        langAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        langSpinner.setAdapter(langAdapter);
+
+        final String currentLanguage = getLocaleCode();
+        if (getLocaleCode().equals("iw")) {
+            langSpinner.setSelection(2);
+        } else if (getLocaleCode().equals("en")) {
+            langSpinner.setSelection(1);
+        }
+        langSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0 && !currentLanguage.equals("system")) {
+                    setDefaultDeviceLocale();
+                    startActivity(new Intent(UserProfileActivity.this, UserProfileActivity.class));
+                } else if (position == 1 && !currentLanguage.equals("en")) {
+                    setLocale("en");
+                    startActivity(new Intent(UserProfileActivity.this, UserProfileActivity.class));
+                } else if (position == 2 && !currentLanguage.equals("iw")) {
+                    setLocale("iw");
+                    startActivity(new Intent(UserProfileActivity.this, UserProfileActivity.class));
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
+
+        setTitle(R.string.user_profile_menu_title);
     }
 
     private void initWidgets() {
@@ -362,11 +415,13 @@ public class UserProfileActivity extends TakeCareActivity {
         if (isImageFullscreen) {
             Log.d(TAG, "onOptionsItemSelected: fake toolbar clicked");
             if (!minimizeFullscreenImage()) {
-                super.onBackPressed();
+                startActivity(new Intent(this, TakerMenuActivity.class));
+                //super.onBackPressed();
             }
         } else {
             Log.d(TAG, "onOptionsItemSelected: real toolbar clicked");
-            super.onBackPressed();
+            startActivity(new Intent(this, TakerMenuActivity.class));
+            //super.onBackPressed();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -376,7 +431,8 @@ public class UserProfileActivity extends TakeCareActivity {
     public void onBackPressed() {
         View focusView = getCurrentFocus();
         if (focusView == null) {
-            super.onBackPressed();
+            startActivity(new Intent(this, TakerMenuActivity.class));
+            //super.onBackPressed();
         } else if (focusView.equals(userDescriptionView) &&
                 !userDescriptionView.getText().toString().equals(currentDescription)) {
             userDescriptionView.clearFocus(); // Invokes the focus change listener
@@ -387,11 +443,13 @@ public class UserProfileActivity extends TakeCareActivity {
             if (isImageFullscreen) {
                 Log.d(TAG, "onBackPressed: closing fullscreen image");
                 if (!minimizeFullscreenImage()) {
-                    super.onBackPressed();
+                    startActivity(new Intent(this, TakerMenuActivity.class));
+                    //super.onBackPressed();
                 }
             } else {
                 Log.d(TAG, "onBackPressed: finishing activity");
-                super.onBackPressed();
+                startActivity(new Intent(this, TakerMenuActivity.class));
+               // super.onBackPressed();
             }
         }
     }

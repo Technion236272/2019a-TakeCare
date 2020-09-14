@@ -24,7 +24,8 @@
             android:id="@+id/requested_items_tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:tabGravity="fill">
+            app:tabGravity="fill"
+            android:layoutDirection="ltr">
         </com.google.android.material.tabs.TabLayout>
 
     </com.google.android.material.appbar.AppBarLayout>

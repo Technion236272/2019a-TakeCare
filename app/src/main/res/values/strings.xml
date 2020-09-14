@@ -216,6 +216,8 @@
     <string name="profile_page_error">An error has occurred. Please check your internet connection</string>
     <string name="profile_logout_title">Log Out</string>
     <string name="profile_logout_body">Are you sure you want to log out?</string>
+    <string name="loading_profile">Loading your profile…</string>
+    <string name="select_language">Language:</string>
 
     <!-- GiverForm elements -->
     <string name="giver_form_title_input_hint">Add a title</string>
@@ -261,6 +263,8 @@
     <string name="seekbar_change">Change</string>
     <string name="seekbar_hide">Hide</string>
     <string name="upload_error_title">Upload Information</string>
+    <string name="hitchhike_from">From:</string>
+    <string name="hitchhike_to">To:</string>
 
 
     <!-- About page elements -->
@@ -319,6 +323,12 @@
     <!--MISC-->
     <string name="error_timeout_message">\"Loading process takes too long!\\nCheck your internet connection and try again.\"</string>
     <string name="chat_card_timestamp_title_text">Last update at:</string>
+    <string-array name="languages_array">
+        <item>System Language</item>
+        <item>English</item>
+        <item>עברית</item>
+    </string-array>
+
 
 
     <!---->

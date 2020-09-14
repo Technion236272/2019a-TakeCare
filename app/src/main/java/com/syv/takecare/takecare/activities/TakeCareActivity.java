@@ -3,8 +3,11 @@ package com.syv.takecare.takecare.activities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,6 +36,8 @@ import com.google.firebase.storage.StorageReference;
 import com.syv.takecare.takecare.POJOs.ActivityCode;
 import com.syv.takecare.takecare.R;
 
+import java.util.Locale;
+
 /**
  * Base class that represents an activity of the app.
  * This activity is abstract - it does not contain an xml layout.
@@ -60,6 +65,10 @@ public class TakeCareActivity extends AppCompatActivity {
 
     private ProgressDialog progress;
     private Handler progressHandler;
+
+    //AppSettings app;
+    private SharedPreferences prefs;
+    static final String APP_LANGUAGE = "app_language";
 
     // A task that's executed when a time-out occurs with a loading process
     final Runnable loadTimeoutTask = new Runnable() {
@@ -98,6 +107,7 @@ public class TakeCareActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initialize();
+        configureLocale();
         tryRedirectToLogin();
         tryRedirectActivity(getIntent());
     }
@@ -127,6 +137,42 @@ public class TakeCareActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
+
+        prefs = getSharedPreferences(APP_LANGUAGE, Context.MODE_PRIVATE);
+    }
+
+    private void configureLocale() {
+        Locale currentLocale = new Locale(getLocaleCode());
+        if (currentLocale.getLanguage().equals("system")) return;
+        Configuration config = getResources().getConfiguration();
+        if (!config.locale.equals(currentLocale)) {
+//            Locale.setDefault(currentLocale);
+            config.setLocale(currentLocale);
+            getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+        }
+    }
+
+    public void setLocale(String langCode) {
+        Locale locale;
+        locale = new Locale(langCode);
+        Configuration config = new Configuration(getResources().getConfiguration());
+//        Locale.setDefault(locale);
+        config.setLocale(locale);
+        getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+
+        prefs.edit().putString(APP_LANGUAGE, langCode).apply();
+    }
+
+    public void setDefaultDeviceLocale() {
+        Configuration config = new Configuration(getResources().getConfiguration());
+        config.setLocale(Locale.getDefault());
+        getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+
+        prefs.edit().putString(APP_LANGUAGE, "system").apply();
+    }
+
+    String getLocaleCode() {
+        return prefs.getString(APP_LANGUAGE, "en");
     }
 
     /**

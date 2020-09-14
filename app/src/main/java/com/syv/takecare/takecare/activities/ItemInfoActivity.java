@@ -368,7 +368,19 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
                         String pickupLocation = document.getString("pickupLocation");
                         if (pickupLocation != null) {
                             Log.d(TAG, "Found pickup location.");
-                            itemLocationView.setText(pickupLocation);
+                            if (itemCategory.equals("Hitchhikes")) {
+                                int separatorIndex = pickupLocation.indexOf('\n');
+                                try {
+                                    String fromTo = getString(R.string.hitchhike_from) + " " + pickupLocation.substring(0, separatorIndex + 1) +
+                                            getString(R.string.hitchhike_to) + " " + pickupLocation.substring(separatorIndex + 1);
+                                    itemLocationView.setText(fromTo);
+                                } catch (Exception e) {
+                                    Log.d(TAG, "Failed to parse hitchhike location text");
+                                    itemLocationView.setText(pickupLocation);
+                                }
+                            } else {
+                                itemLocationView.setText(pickupLocation);
+                            }
                         }
                         location = document.getGeoPoint("location");
                         if (location != null) {
@@ -491,6 +503,7 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
             });
         }
 
+        setTitle(R.string.item_info_title);
         Log.d(TAG, "onCreate: finished");
     }
 

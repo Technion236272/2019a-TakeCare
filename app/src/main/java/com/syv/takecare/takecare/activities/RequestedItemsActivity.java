@@ -14,6 +14,8 @@ import com.syv.takecare.takecare.customViews.CustomViewPager;
 import com.syv.takecare.takecare.fragments.AcceptedRequestsFragment;
 import com.syv.takecare.takecare.fragments.PendingRequestsFragment;
 
+import java.util.Locale;
+
 public class RequestedItemsActivity extends TakeCareActivity {
 
     private static final String TAG = "TakeCare/RequestedItems";
@@ -50,14 +52,23 @@ public class RequestedItemsActivity extends TakeCareActivity {
                 RequestedItemsActivity.super.onBackPressed();
             }
         });
+
+        setTitle(R.string.requested_items_menu_title);
     }
 
     private void setupViewPager(ViewPager viewPager) {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new PendingRequestsFragment(), getString(R.string.requested_items_pending_tab));
-        adapter.addFragment(new AcceptedRequestsFragment(), getString(R.string.requested_items_accepted_tab));
-        // This is scrapped:
+        if (!getResources().getConfiguration().locale.getLanguage().equals("iw")) {
+            adapter.addFragment(new PendingRequestsFragment(), getString(R.string.requested_items_pending_tab));
+            adapter.addFragment(new AcceptedRequestsFragment(), getString(R.string.requested_items_accepted_tab));
+            // This is scrapped:
 //        adapter.addFragment(new RejectedRequestsFragment(), "Rejected");
-        viewPager.setAdapter(adapter);
+            viewPager.setAdapter(adapter);
+        } else {
+            adapter.addFragment(new AcceptedRequestsFragment(), getString(R.string.requested_items_accepted_tab));
+            adapter.addFragment(new PendingRequestsFragment(), getString(R.string.requested_items_pending_tab));
+            viewPager.setAdapter(adapter);
+            viewPager.setCurrentItem(1);
+        }
     }
 }

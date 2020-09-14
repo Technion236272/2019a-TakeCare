@@ -49,10 +49,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/placeholder_invisible_block"
-                android:layout_alignLeft="@+id/placeholder_invisible_block"
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="56dp"
-                android:layout_marginLeft="56dp"
                 android:layout_marginTop="248dp"
                 app:srcCompat="@drawable/ic_camera_purple" />
 
@@ -107,7 +105,6 @@
                 android:layout_below="@id/rating_layout"
                 android:layout_marginTop="8dp"
                 android:layout_toStartOf="@id/placeholder_invisible_block"
-                android:layout_toLeftOf="@id/placeholder_invisible_block"
                 android:onClick="onAcceptName"
                 android:visibility="gone"
                 app:backgroundTint="@android:color/holo_green_light"
@@ -127,7 +124,6 @@
                 android:layout_below="@id/rating_layout"
                 android:layout_marginTop="8dp"
                 android:layout_toEndOf="@id/placeholder_invisible_block"
-                android:layout_toRightOf="@id/placeholder_invisible_block"
                 android:onClick="onDeclineName"
                 android:visibility="gone"
                 app:backgroundTint="@android:color/holo_red_light"
@@ -278,11 +274,32 @@
                 android:text="@string/get_favorites_notifications"
                 android:visibility="gone"/>
 
+            <TextView
+                android:id="@+id/select_app_language_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/mute_favorites"
+                android:textSize="16sp"
+                android:textColor="@color/primary_text"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="24dp"
+                android:text="@string/select_language"/>
+
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/language_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/mute_favorites"
+                android:layout_toEndOf="@id/select_app_language_text"
+                android:layout_marginStart="24dp"
+                android:layout_alignTop="@id/select_app_language_text" />
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/mute_favorites"
+                android:layout_below="@id/select_app_language_text"
                 android:layout_alignParentBottom="true"
                 android:layout_marginTop="50dp"
                 android:background="@android:color/holo_red_dark"

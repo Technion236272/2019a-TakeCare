@@ -23,6 +23,8 @@ public class AboutActivity extends TakeCareActivity {
 
         TextView termsOfUse = findViewById(R.id.icon_credits_text);
         termsOfUse.setMovementMethod(LinkMovementMethod.getInstance());
+
+        setTitle(R.string.about_title);
     }
 
     @Override

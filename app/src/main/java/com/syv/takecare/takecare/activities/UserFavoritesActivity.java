@@ -109,6 +109,8 @@ public class UserFavoritesActivity extends TakeCareActivity {
         configureTagsBox();
         configureTagsButton();
         configureTagsHelpButton();
+
+        setTitle(R.string.nav_favorites);
     }
 
     private void configureTagsBox() {
