@@ -368,23 +368,23 @@ exports.scheduledPostRemoval = functions.pubsub.schedule('every 60 minutes').onR
 		.collection('items')
 		.get()
 		.then(itemSnaps => {
-			const deletionTasks = [];
+			const updateTasks = [];
 			itemSnaps.forEach(itemSnap => {
 				// item was taken already
-				if (itemSnap.data().status !== 2) {
+				if (itemSnap.data().status === 0 || itemSnap.data().status === 1) {
 					const itemExpirationDate = itemSnap.data().timestamp
 						.toDate()
 						.addHours(itemSnap.data().airTime);
 					if (currentTime > itemExpirationDate) {
-						const deletePostTask = admin.firestore()
+						const updatePostTask = admin.firestore()
 							.collection('items')
 							.doc(itemSnap.id)
-							.delete();
-						deletionTasks.push(deletePostTask);
+							.update({status: 3});
+						updateTasks.push(updatePostTask);
 					}
 				}
 			});
-			return Promise.all(deletionTasks);
+			return Promise.all(updateTasks);
 		}).catch(error => {
 		console.log("Posts clean-up failed. Error message: ", error)
 	});
