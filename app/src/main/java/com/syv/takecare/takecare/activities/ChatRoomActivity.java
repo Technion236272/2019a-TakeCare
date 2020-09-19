@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -16,6 +17,9 @@ import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.os.Bundle;
 
@@ -194,7 +198,7 @@ public class ChatRoomActivity extends TakeCareActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "chat: " + chatId);
-                Log.d(TAG, "other\'s ID " + otherId);
+                Log.d(TAG, "other's ID " + otherId);
                 Log.d(TAG, "onClick: mode " + chatMode);
                 String messageToSend = userInput.getText().toString();
                 if (messageToSend.replace(" ", "")
@@ -270,13 +274,40 @@ public class ChatRoomActivity extends TakeCareActivity {
     private void loadToolbarElements() {
         toolbar.setTitle("");
         setToolbar(toolbar);
-        db.collection("users").document(otherId)
+//        db.collection("users").document(otherId)
+//                .get()
+//                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                        Log.d(TAG, "loading app bar's name");
+//                        String name = documentSnapshot.getString("name");
+//                        if (name != null) {
+//                            toolbarName.setText(name);
+//                        }
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        // We don't want the app bar to stay empty: exit the activity
+//                        Log.d(TAG, "error: couldn\'t load app bar elements");
+//                        Toast.makeText(ChatRoomActivity.this, R.string.chat_load_fail,
+//                                Toast.LENGTH_LONG).show();
+//                        onBackPressed();
+//                    }
+//                });
+        db.collection("chats").document(chatId)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         Log.d(TAG, "loading app bar's name");
-                        String name = documentSnapshot.getString("name");
+                        String name;
+                        if ("taker".equals(chatMode)) {
+                            name = documentSnapshot.getString("giverName");
+                        } else { // giver
+                            name = documentSnapshot.getString("takerName");
+                        }
                         if (name != null) {
                             toolbarName.setText(name);
                         }
@@ -286,21 +317,31 @@ public class ChatRoomActivity extends TakeCareActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         // We don't want the app bar to stay empty: exit the activity
-                        Log.d(TAG, "error: couldn\'t load app bar elements");
+                        Log.d(TAG, "error: couldn't load app bar elements");
                         Toast.makeText(ChatRoomActivity.this, R.string.chat_load_fail,
                                 Toast.LENGTH_LONG).show();
                         onBackPressed();
                     }
-                });
+              });
 
-        db.collection("items").document(itemId)
+//        db.collection("items").document(itemId)
+//                .get()
+//                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                        Log.d(TAG, "onSuccess: ");
+//
+//                        itemPhotoURL = documentSnapshot.getString("photo");
+//                        itemTitle = documentSnapshot.getString("title");
+//                        enlargedPhotoToolbarTitle.setText(itemTitle);
+
+        db.collection("chats").document(chatId)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         Log.d(TAG, "onSuccess: ");
-
-                        itemPhotoURL = documentSnapshot.getString("photo");
+                        itemPhotoURL = documentSnapshot.getString("itemPhoto");
                         itemTitle = documentSnapshot.getString("title");
                         enlargedPhotoToolbarTitle.setText(itemTitle);
 
@@ -322,46 +363,91 @@ public class ChatRoomActivity extends TakeCareActivity {
                         */
 
                         if (itemPhotoURL != null) {
-                            Glide.with(getApplicationContext())
-                                    .load(itemPhotoURL)
-                                    .apply(RequestOptions.circleCropTransform())
-                                    .listener(new RequestListener<Drawable>() {
+                            Log.d(TAG, "Found item photo");
+                            loadToolbarImage(itemPhotoURL);
+                        } else {
+                            Log.d(TAG, "Didn't find item photo");
+                            db.collection("items").document(itemId)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
-                                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                            Log.d(TAG, "error: couldn\'t load app bar\'s name");
-                                            Toast.makeText(ChatRoomActivity.this, R.string.chat_load_fail,
-                                                    Toast.LENGTH_LONG).show();
-                                            onBackPressed();
-                                            return false;
-                                        }
-
-                                        @Override
-                                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                            toolbarImage.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    zoomImageFromThumb(toolbarImage);
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            Bitmap bitmap;
+                                            try {
+                                                switch (documentSnapshot.getString("category")) {
+                                                    case "Food":
+                                                        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_pizza_black_big);
+                                                        break;
+                                                    case "Study Material":
+                                                        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_book_black_big);
+                                                        break;
+                                                    case "Households":
+                                                        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_lamp_black_big);
+                                                        break;
+                                                    case "Lost & Found":
+                                                        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_lost_and_found_black_big);
+                                                        break;
+                                                    case "Hitchhikes":
+                                                        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_car_black_big);
+                                                        break;
+                                                    default:
+                                                        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_treasure_black_big);
+                                                        break;
                                                 }
-                                            });
-                                            return false;
+                                                loadToolbarImage(bitmap);
+                                            } catch (Exception e) {
+                                                Log.d(TAG, "Couldn't find item's category");
+                                            }
                                         }
-                                    })
-                                    .into(toolbarImage);
-                            // Retrieve and cache the system's default "short" animation time.
-                            mShortAnimationDuration = getResources().getInteger(
-                                    android.R.integer.config_shortAnimTime);
+                                    });
                         }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "error: couldn\'t load app bar\'s photo");
+                        Log.d(TAG, "error: couldn't load app bar's photo");
                         Toast.makeText(ChatRoomActivity.this, R.string.chat_load_fail,
                                 Toast.LENGTH_LONG).show();
                         onBackPressed();
                     }
                 });
+    }
+
+    private void loadToolbarImage(String uri) {
+        loadToolbarImage(Glide.with(getApplicationContext()).load(uri));
+    }
+    private void loadToolbarImage(Bitmap bitmap) {
+        loadToolbarImage(Glide.with(getApplicationContext()).load(bitmap));
+    }
+
+    private void loadToolbarImage(RequestBuilder<Drawable> builder) {
+        builder.apply(RequestOptions.circleCropTransform())
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        Log.d(TAG, "error: couldn't load app bar's name");
+                        Toast.makeText(ChatRoomActivity.this, R.string.chat_load_fail,
+                                Toast.LENGTH_LONG).show();
+                        onBackPressed();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        toolbarImage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                zoomImageFromThumb(toolbarImage);
+                            }
+                        });
+                        return false;
+                    }
+                })
+                .into(toolbarImage);
+        // Retrieve and cache the system's default "short" animation time.
+        mShortAnimationDuration = getResources().getInteger(
+                android.R.integer.config_shortAnimTime);
     }
 
     @Override
