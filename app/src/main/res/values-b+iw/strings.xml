@@ -325,6 +325,21 @@
         <item>עברית</item>
     </string-array>
 
+    <!-- First Tutorial elements -->
+    <string name="tut_intro_title">ברוכים הבאים ל-TakeCare!</string>
+    <string name="tut_intro">בואו נעשה מעבר קצר על האפשרויות המדהימות שלנו!</string>
+    <string name="tut_feed">כאן יופיעו כל הפרסומים הזמינים.\nניתן ללחוץ על כל פרסום על מנת לצפות במידע מפורט עליו וליצור קשר עם המפרסם.</string>
+    <string name="tut_fab">כאן ניתן להוסיף פרסום משלכם ולשתף פריט מגניב עם כולם!</string>
+    <string name="tut_map">כאן ניתן לפתוח מפה שעליה יופיעו כל הפריטים עם מיקום זמין</string>
+    <string name="tut_filter">כאן ניתן לסנן את הפריטים בעזרת אפשרויות שונות.\nבואו נכיר אותן!</string>
+    <string name="tut_keywords">כל פריט ניתן לפרסם עם מילות מפתח שאותן ניתן להגדיר ידנית.\nכאן תוכלו לסנן את הפריטים בעזרת אותן מילות המפתח.</string>
+    <string name="tut_pickup_methods">קיימים שלושה אופני איסוף: אישי, פומבי ומירוץ (\"כל הקודם זוכה\").\nניתן גם לראות את כל אופני האיסוף בו-זמנית.</string>
+    <string name="tut_drawer_toggle">בלחיצה על הכפתור הזה ניתן לסייר באפליקציה.\nבואו נראה מה נמצא כאן!</string>
+    <string name="tut_drawer_header">כאן מוצגים השם ותמונת הפרופיל שלכם. ניתן לשנות אותם בהגדרות הפרופיל שלכם בכל עת על-ידי לחיצה על התמונה.</string>
+    <string name="tut_drawer_content">כאן ניתן לבחור הצגה של פריטים מתוך קטגוריה מסוימת</string>
+    <string name="tut_drawer_content_2">בנוסף, ניתן לגשת מכאן לצ\'אטים הפעילים שלכם, לרשימת הפריטים שביקשתם ופריטים ששיתפתם, ולמילות המפתח המועדפות עליכם.\nעבור על פריט שיפורסם עם מילת מפתח מועדפת עליכם, תקבלו מיד התראה על כך כדי שלא תפספסו אותו!</string>
+    <string name="tut_drawer_content_3">הנכם מוזמנים לנסות בעצמכם את האפשרויות השונות שלנו.\nשיתוף נעים!</string>
+    <string name="tut_button_next">הבא</string>
+    <string name="tut_button_done">סיים</string>
 
-    <!---->
 </resources>

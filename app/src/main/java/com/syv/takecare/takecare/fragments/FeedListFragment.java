@@ -70,7 +70,7 @@ public class FeedListFragment extends Fragment {
     private static final String EXTRA_ITEM_ID = "Item Id";
 
     private ReentrantLock iconLock = new ReentrantLock();
-    private RecyclerView recyclerView;
+    public RecyclerView recyclerView;
     private View emptyFeedView;
 
     private AppCompatButton jumpButton;
@@ -361,6 +361,8 @@ public class FeedListFragment extends Fragment {
                 holder.card.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if (getActivity() != null)
+                            if (((TakerMenuActivity)(getActivity())).isTutorialOn) return;
                         Intent intent = new Intent(getActivity().getApplicationContext(), ItemInfoActivity.class);
                         intent.putExtra(EXTRA_ITEM_ID, itemId);
                         intent.putExtra(Intent.EXTRA_UID, model.getPublisher());

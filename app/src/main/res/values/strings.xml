@@ -329,7 +329,21 @@
         <item>עברית</item>
     </string-array>
 
+    <!-- First Tutorial elements -->
+    <string name="tut_intro_title">Welcome to TakeCare!</string>
+    <string name="tut_intro">Let\'s have a quick tour over our amazing features!</string>
+    <string name="tut_feed">Here all available posts will be displayed.\nYou can tap on each post to reveal detailed information and contact the poster</string>
+    <string name="tut_fab">Here you can add your own post and share a cool item with everyone!</string>
+    <string name="tut_map">Here you can switch to a map to view all posts with available location pinned on it</string>
+    <string name="tut_filter">Here you can filter the posts using different options.\nLet\'s check them out!</string>
+    <string name="tut_keywords">Every post can be uploaded with custom keywords.\nHere you can filter them by those keywords.</string>
+    <string name="tut_pickup_methods">There are three pickup methods: In Person, Giveaway or Race (\"First come first claims\").\nYou can also choose to see all methods at once.</string>
+    <string name="tut_drawer_toggle">Tapping here we can navigate through our app. Let\'s see what\'s inside!</string>
+    <string name="tut_drawer_header">Here your profile picture and name are displayed. You can tap the picture and change them in your profile settings anytime.</string>
+    <string name="tut_drawer_content">Here you can choose to see items of only a certain category\n</string>
+    <string name="tut_drawer_content_2">You can also access your active chats through here, items you requested and items you shared, and your favorite keywords.\nFor every item posted with one of your favorite keywords, you will be notified immediately, so you won\'t miss it!</string>
+    <string name="tut_drawer_content_3">You are welcome to explore our many options.\nHappy sharing!</string>
+    <string name="tut_button_next">Next</string>
+    <string name="tut_button_done">Done</string>
 
-
-    <!---->
 </resources>

@@ -1,15 +1,31 @@
 package com.syv.takecare.takecare.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
+import com.cleveroad.blur_tutorial.BlurTutorial;
+import com.cleveroad.blur_tutorial.TutorialBuilder;
+import com.cleveroad.blur_tutorial.listener.SimpleTutorialListener;
+import com.cleveroad.blur_tutorial.listener.TutorialListener;
+import com.cleveroad.blur_tutorial.state.tutorial.MenuState;
+import com.cleveroad.blur_tutorial.state.tutorial.PathState;
+import com.cleveroad.blur_tutorial.state.tutorial.RecyclerItemState;
+import com.cleveroad.blur_tutorial.state.tutorial.TutorialState;
+import com.cleveroad.blur_tutorial.state.tutorial.ViewState;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.util.Pair;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
@@ -17,16 +33,22 @@ import androidx.core.widget.ImageViewCompat;
 import androidx.appcompat.widget.AppCompatImageButton;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -51,6 +73,8 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.syv.takecare.takecare.fragments.FeedListFragment;
 import com.syv.takecare.takecare.fragments.FeedMapFragment;
 import com.syv.takecare.takecare.R;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,6 +121,32 @@ public class TakerMenuActivity extends TakeCareActivity
         }
     };
 
+    private FloatingActionButton fab;
+    private NavigationView navigationView;
+    private DrawerLayout drawer;
+
+    public boolean isTutorialOn = false;
+    private String currentLanguage;
+    private BlurTutorial tutorial = null;
+    private SimpleTutorialListener tutorialListener;
+    private int originalOrientation;
+    SharedPreferences prefs;
+    private final String FIRST_LAUNCH = "first_launch";
+    private final int TUT_STARTUP_DELAY = 1000;
+    private final int TUT_RESTART_DELAY = 500;
+    private final int TUT_INTRO = 0;
+    private final int TUT_FEED = 1;
+    private final int TUT_FAB = 2;
+    private final int TUT_TOOLBAR_MAP = 3;
+    private final int TUT_TOOLBAR_FILTER = 4;
+    private final int TUT_FILTER_KEYWORDS = 5;
+    private final int TUT_FILTER_METHOD = 6;
+    private final int TUT_NAV_DRAWER_TOGGLE = 7;
+    private final int TUT_NAV_DRAWER_HEADER = 8;
+    private final int TUT_NAV_DRAWER_CONTENT = 9;
+    private final int TUT_NAV_DRAWER_CONTENT_2 = 10;
+    private final int TUT_NAV_DRAWER_CONTENT_3 = 11;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,10 +172,11 @@ public class TakerMenuActivity extends TakeCareActivity
                 });
 
         //Set up the onClick listener for the giver form button
-        FloatingActionButton fab = findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (isTutorialOn) return;
                 Intent intent = new Intent(TakerMenuActivity.this, GiverFormActivity.class);
                 startActivity(intent);
             }
@@ -134,13 +185,13 @@ public class TakerMenuActivity extends TakeCareActivity
         rootLayout = findViewById(R.id.taker_root_layout);
 
         //Set up the navigation drawer
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         currentDrawerChecked = navigationView.getMenu().findItem(R.id.nav_show_all);
         currentDrawerChecked.setEnabled(true);
@@ -227,12 +278,289 @@ public class TakerMenuActivity extends TakeCareActivity
             Log.d(TAG, "Search bar is null");
         }
 
+        prefs = getSharedPreferences(FIRST_LAUNCH, MODE_PRIVATE);
+        if (prefs.getBoolean(FIRST_LAUNCH, true)) {
+            currentLanguage = getLocaleCode();
+            originalOrientation = getRequestedOrientation();
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            new Handler().postDelayed(new Runnable() {
+                @SuppressLint("ClickableViewAccessibility")
+                @Override
+                public void run() {
+                    isTutorialOn = true;
+                    showTutorial();
+                }
+            }, TUT_STARTUP_DELAY);
+        }
+    }
+
+    private void showTutorial() {
+        configureTutorialListener();
+        tutorial = new TutorialBuilder()
+                .withParent(rootLayout)
+                .withPopupLayout(R.layout.popup_window)
+                .withPopupCornerRadius(30)
+                .withBlurRadius(10)
+                .withOverlayColor(R.color.colorAccentLite)
+                .withListener(tutorialListener)
+                .build();
+
+        configureStatesPart1();
+    }
+
+    private void configureStatesPart1() {
+        Path feedHighlight = new Path();
+        RelativeLayout feedContainer = findViewById(R.id.fragment_container);
+        feedHighlight.addRoundRect(
+                0,
+                0,
+                feedContainer.getWidth(),
+                feedContainer.getHeight() * 2/3,
+                10,
+                10,
+                Path.Direction.CW);
+
+        Path emptyPath = new Path();
+        emptyPath.addRect(0, 0, rootLayout.getWidth(), 0, Path.Direction.CW);
+
+        // Intro with fade animation
+        tutorial.addState(new PathState(TUT_INTRO, emptyPath, null, rootLayout));
+        tutorial.configure()
+                .withPopupAppearAnimation(R.anim.tutorial_fade_in)
+                .withPopupDisappearAnimation(R.anim.tutorial_fade_out);
+        tutorial.start();
+
+        List<TutorialState> states = new ArrayList<>();
+        states.add(new PathState(TUT_FEED, feedHighlight, null, rootLayout));
+        states.add(new ViewState(TUT_FAB, fab, null));
+        states.add(new MenuState(TUT_TOOLBAR_MAP, toolbar, R.id.action_change_display, null));
+        states.add(new MenuState(TUT_TOOLBAR_FILTER, toolbar, R.id.action_filter, null));
+
+        tutorial.addAllStates(states);
+    }
+
+    private void configureStatesPart2() {
+        Path searchKeywordHighlight = new Path();
+        ConstraintLayout searchKeywordLayout = findViewById(R.id.searchKeywordLayout);
+        searchKeywordHighlight.addRect(
+                0,
+                0,
+                searchKeywordLayout.getWidth(),
+                searchKeywordLayout.getHeight(),
+                Path.Direction.CW
+        );
+
+        Path filterMethodHighlight = new Path();
+        ConstraintLayout pickupMethodLayout = findViewById(R.id.pickupMethodLayout);
+        filterMethodHighlight.addRect(
+                0,
+                searchKeywordLayout.getHeight(),
+                pickupMethodLayout.getWidth(),
+                searchKeywordLayout.getHeight() + pickupMethodLayout.getHeight(),
+                Path.Direction.CW
+        );
+
+        List<TutorialState> states = new ArrayList<>();
+        states.add(new PathState(TUT_FILTER_KEYWORDS, searchKeywordHighlight, null, rootLayout));
+        states.add(new PathState(TUT_FILTER_METHOD, filterMethodHighlight, null, rootLayout));
+
+        tutorial.clearStates();
+        tutorial.addAllStates(states);
+    }
+
+    private void configureStatesPart3() {
+        Path drawerToggleHighlight = new Path();
+        float highlightOffset = 75f;
+        if (currentLanguage.equals("iw")) {
+            highlightOffset = toolbar.getWidth() - 75f;
+        }
+        drawerToggleHighlight.addCircle(
+                highlightOffset,
+                toolbar.getHeight()/2,
+                toolbar.getHeight()/2,
+                Path.Direction.CW
+        );
+
+        tutorial.addState(new PathState(TUT_NAV_DRAWER_TOGGLE, drawerToggleHighlight, null, toolbar));
+    }
+
+    private void configureStatesPart4() {
+        View navHeader = navigationView.getHeaderView(0);
+        Path drawerContentHighlight = new Path();
+        float drawerLeftBorder = 0, drawerRightBorder = navigationView.getWidth();
+        if (currentLanguage.equals("iw")) {
+            drawerLeftBorder = rootLayout.getWidth() - navigationView.getWidth();
+            drawerRightBorder = rootLayout.getWidth();
+        }
+        drawerContentHighlight.addRect(
+                drawerLeftBorder,
+                navHeader.getHeight(),
+                drawerRightBorder,
+                navigationView.getHeight(),
+                Path.Direction.CW
+        );
+
+        List<TutorialState> states = new ArrayList<>();
+        states.add(new ViewState(TUT_NAV_DRAWER_HEADER, navigationView.getHeaderView(0), null));
+        states.add(new PathState(TUT_NAV_DRAWER_CONTENT, drawerContentHighlight, null, drawer));
+        states.add(new PathState(TUT_NAV_DRAWER_CONTENT_2, drawerContentHighlight, null, drawer));
+        states.add(new PathState(TUT_NAV_DRAWER_CONTENT_3, drawerContentHighlight, null, drawer));
+        tutorial.addAllStates(states);
+    }
+
+    private void configureTutorialListener() {
+        tutorialListener = new SimpleTutorialListener() {
+            @Override
+            public void onPopupViewInflated(@NotNull final TutorialState state, @NotNull final View popupView) {
+                final Button nextButton = popupView.findViewById(R.id.tutorialNextButton);
+                setTutorialText(state.getId(), popupView);
+
+                nextButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "popupView clicked");
+                        nextButton.setClickable(false); // To prevent multiple clicks before the popup is closed
+                        updateTutorialState(state.getId());
+                        tutorial.next();
+                    }
+                });
+            }
+        };
+    }
+
+    private void setTutorialText(int stateId, View popupView) {
+        final TextView description = popupView.findViewById(R.id.tutorialDescription);
+        final Button nextButton = popupView.findViewById(R.id.tutorialNextButton);
+
+        switch (stateId) {
+            case TUT_INTRO:
+                description.setText(R.string.tut_intro);
+                RelativeLayout feedContainer = findViewById(R.id.fragment_container);
+                popupView.setLayoutParams(new ViewGroup.LayoutParams(feedContainer.getWidth(), feedContainer.getHeight()/3));
+                TextView title = popupView.findViewById(R.id.tutorialTitle);
+                title.setVisibility(VISIBLE);
+                title.setText(R.string.tut_intro_title);
+                description.setTextSize(20);
+                break;
+            case TUT_FEED:
+                description.setText(R.string.tut_feed);
+                break;
+            case TUT_FAB:
+                description.setText(R.string.tut_fab);
+                break;
+            case TUT_TOOLBAR_MAP:
+                description.setText(R.string.tut_map);
+                break;
+            case TUT_TOOLBAR_FILTER:
+                description.setText(R.string.tut_filter);
+                break;
+            case TUT_FILTER_KEYWORDS:
+                description.setText(R.string.tut_keywords);
+                break;
+            case TUT_FILTER_METHOD:
+                description.setText(R.string.tut_pickup_methods);
+                break;
+            case TUT_NAV_DRAWER_TOGGLE:
+                description.setText(R.string.tut_drawer_toggle);
+                break;
+            case TUT_NAV_DRAWER_HEADER:
+                description.setText(R.string.tut_drawer_header);
+                break;
+            case TUT_NAV_DRAWER_CONTENT:
+                description.setText(R.string.tut_drawer_content);
+                break;
+            case TUT_NAV_DRAWER_CONTENT_2:
+                description.setText(R.string.tut_drawer_content_2);
+                break;
+            case TUT_NAV_DRAWER_CONTENT_3:
+                description.setText(R.string.tut_drawer_content_3);
+                nextButton.setText(R.string.tut_button_done);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void updateTutorialState(int stateId) {
+        switch (stateId) {
+            case TUT_FEED:
+                tutorial.configure()
+                        .withPopupAppearAnimation(R.anim.slide_in_left)
+                        .withPopupDisappearAnimation(R.anim.slide_out_left);
+                break;
+
+            case TUT_FAB:
+                tutorial.configure()
+                        .withPopupDisappearAnimation(R.anim.slide_out_right);
+                break;
+
+            case TUT_TOOLBAR_FILTER:
+                tutorial.clearStates();
+                tutorial.configure()
+                        .withPopupAppearAnimation(R.anim.tutorial_fade_in);
+                filterPopupMenu.setVisibility(VISIBLE);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        configureStatesPart2();
+                        tutorial.start();
+                    }
+                }, TUT_RESTART_DELAY);
+                break;
+
+            case TUT_FILTER_KEYWORDS:
+                tutorial.configure()
+                        .withPopupDisappearAnimation(R.anim.tutorial_fade_out);
+                break;
+
+            case TUT_FILTER_METHOD:
+                filterPopupMenu.setVisibility(View.GONE);
+                tutorial.clearStates();
+                tutorial.configure()
+                        .withPopupAppearAnimation(R.anim.slide_in_right)
+                        .withPopupDisappearAnimation(R.anim.slide_out_right);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        configureStatesPart3();
+                        tutorial.start();
+                    }
+                }, TUT_RESTART_DELAY);
+                break;
+
+            case TUT_NAV_DRAWER_TOGGLE:
+                drawer.openDrawer(GravityCompat.START, true);
+                tutorial.clearStates();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        configureStatesPart4();
+                        tutorial.start();
+                    }
+                }, TUT_RESTART_DELAY);
+                break;
+
+            case TUT_NAV_DRAWER_HEADER:
+                tutorial.configure()
+                        .withPopupAppearAnimation(R.anim.tutorial_fade_in)
+                        .withPopupDisappearAnimation(R.anim.tutorial_fade_out);
+                break;
+
+            case TUT_NAV_DRAWER_CONTENT_3:
+                drawer.closeDrawer(GravityCompat.START, true);
+                tutorial.clearStates();
+                prefs.edit().putBoolean(FIRST_LAUNCH, false).apply();
+                setRequestedOrientation(originalOrientation);
+                isTutorialOn = false;
+
+            default:
+                break;
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START))
             drawer.closeDrawer(GravityCompat.START);
     }
@@ -263,7 +591,7 @@ public class TakerMenuActivity extends TakeCareActivity
             return;
         }
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         MenuItem item;
         switch (queryCategoriesFilter) {
             case "Food":
@@ -288,6 +616,7 @@ public class TakerMenuActivity extends TakeCareActivity
                 item = navigationView.getMenu().findItem(R.id.nav_show_all);
                 break;
         }
+
         onNavigationItemSelected(item);
     }
 
@@ -357,10 +686,9 @@ public class TakerMenuActivity extends TakeCareActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer.isDrawerOpen(GravityCompat.START) && !isTutorialOn) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (filterPopupMenu.getVisibility() == VISIBLE) {
+        } else if (filterPopupMenu.getVisibility() == VISIBLE && !isTutorialOn) {
             Log.d(TAG, "onBackPressed: Search bar is focused");
             filterPopupMenu.setVisibility(View.GONE);
         } else {
@@ -383,6 +711,7 @@ public class TakerMenuActivity extends TakeCareActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (isTutorialOn) return true;
         switch (item.getItemId()) {
             case R.id.action_filter:
                 toggleFilterMenu();
@@ -459,6 +788,7 @@ public class TakerMenuActivity extends TakeCareActivity
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if (isTutorialOn) return false;
         int id = item.getItemId();
         Log.d(TAG, "onNavigationItemSelected: selected item id: " + id);
         Intent intent;
@@ -531,7 +861,6 @@ public class TakerMenuActivity extends TakeCareActivity
                 //TODO: add favorites filter in the future. For now we ignore this
             }
             changeFragment();
-            DrawerLayout drawer = findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
             Log.d(TAG, "onNavigationItemSelected: here");
         }

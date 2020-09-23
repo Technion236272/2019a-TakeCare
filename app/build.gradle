@@ -1,10 +1,11 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.syv.takecare.takecare"
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 6
         versionName "1.0.5"
@@ -69,6 +70,10 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     androidTestImplementation 'androidx.test:rules:1.1.1'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'com.cleveroad.blur_tutorial:blur_tutorial:1.0.1'
 
 }
 

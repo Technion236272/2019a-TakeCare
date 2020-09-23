@@ -332,9 +332,9 @@ public class UserProfileActivity extends TakeCareActivity {
         langSpinner.setAdapter(langAdapter);
 
         final String currentLanguage = getLocaleCode();
-        if (getLocaleCode().equals("iw")) {
+        if (currentLanguage.equals("iw")) {
             langSpinner.setSelection(2);
-        } else if (getLocaleCode().equals("en")) {
+        } else if (currentLanguage.equals("en")) {
             langSpinner.setSelection(1);
         }
         langSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

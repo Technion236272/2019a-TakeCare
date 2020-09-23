@@ -24,150 +24,165 @@
             android:layout_height="150dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
-            <AutoCompleteTextView
-                android:id="@+id/search_bar"
-                android:layout_width="0dp"
-                android:layout_height="52dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="60dp"
-                android:layout_marginRight="60dp"
-                android:layout_marginBottom="8dp"
-                android:singleLine="true"
-                android:hint="@string/filter_menu_search_hint"
-                android:imeActionLabel="Search"
-                android:imeOptions="actionSearch"
-                android:inputType="text"
-                android:completionThreshold="1"
-                android:dropDownHeight="120dp"
-                app:layout_constraintBottom_toTopOf="@+id/hint_button_in_person"
-                app:layout_constraintEnd_toEndOf="parent"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/searchKeywordLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent">
 
-            <ImageButton
-                android:id="@+id/search_button"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:background="@android:color/transparent"
-                app:layout_constraintBottom_toBottomOf="@+id/search_bar"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.875"
-                app:layout_constraintStart_toEndOf="@+id/search_bar"
-                app:layout_constraintTop_toTopOf="@+id/search_bar"
-                app:srcCompat="@drawable/ic_search"
-                android:contentDescription="@string/search_button_description"/>
+                <AutoCompleteTextView
+                    android:id="@+id/search_bar"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="60dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:singleLine="true"
+                    android:hint="@string/filter_menu_search_hint"
+                    android:imeActionLabel="Search"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:completionThreshold="1"
+                    android:dropDownHeight="120dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/filter_menu_pickup_method_text"
-                style="@style/SecondaryText"
-                android:layout_width="wrap_content"
+                <ImageButton
+                    android:id="@+id/search_button"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@android:color/transparent"
+                    app:layout_constraintBottom_toBottomOf="@+id/search_bar"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.875"
+                    app:layout_constraintStart_toEndOf="@+id/search_bar"
+                    app:layout_constraintTop_toTopOf="@+id/search_bar"
+                    app:srcCompat="@drawable/ic_search"
+                    android:contentDescription="@string/search_button_description"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/pickupMethodLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginBottom="20dp"
-                android:text="@string/filter_menu_pickup_method_text"
+                app:layout_constraintTop_toBottomOf="@id/searchKeywordLayout"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent">
 
-            <TextView
-                android:id="@+id/hint_button_any"
-                style="@style/SecondaryTextHint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_menu_pickup_any"
-                app:layout_constraintBottom_toTopOf="@+id/pickup_any_button"
-                app:layout_constraintEnd_toEndOf="@+id/pickup_any_button"
-                app:layout_constraintStart_toStartOf="@+id/pickup_any_button" />
+                <TextView
+                    android:id="@+id/filter_menu_pickup_method_text"
+                    style="@style/SecondaryText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="@string/filter_menu_pickup_method_text"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/pickup_any_button"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginBottom="8dp"
-                android:tint="@color/icons"
-                app:backgroundTint="@color/colorPrimary"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/filter_menu_pickup_method_text"
-                app:srcCompat="@drawable/ic_world" />
+                <TextView
+                    android:id="@+id/hint_button_any"
+                    style="@style/SecondaryTextHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_menu_pickup_any"
+                    app:layout_constraintBottom_toTopOf="@+id/pickup_any_button"
+                    app:layout_constraintEnd_toEndOf="@+id/pickup_any_button"
+                    app:layout_constraintStart_toStartOf="@+id/pickup_any_button" />
 
-            <TextView
-                android:id="@+id/hint_button_in_person"
-                style="@style/SecondaryTextHint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_menu_pickup_in_person"
-                app:layout_constraintBottom_toTopOf="@+id/pickup_in_person_button"
-                app:layout_constraintEnd_toEndOf="@+id/pickup_in_person_button"
-                app:layout_constraintStart_toStartOf="@+id/pickup_in_person_button" />
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/pickup_any_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:tint="@color/icons"
+                    app:backgroundTint="@color/colorPrimary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/filter_menu_pickup_method_text"
+                    app:srcCompat="@drawable/ic_world" />
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/pickup_in_person_button"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginBottom="8dp"
-                android:tint="@color/secondary_text"
-                app:backgroundTint="@color/divider"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/pickup_any_button"
-                app:srcCompat="@drawable/ic_in_person" />
+                <TextView
+                    android:id="@+id/hint_button_in_person"
+                    style="@style/SecondaryTextHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_menu_pickup_in_person"
+                    app:layout_constraintBottom_toTopOf="@+id/pickup_in_person_button"
+                    app:layout_constraintEnd_toEndOf="@+id/pickup_in_person_button"
+                    app:layout_constraintStart_toStartOf="@+id/pickup_in_person_button" />
 
-            <TextView
-                android:id="@+id/hint_button_giveaway"
-                style="@style/SecondaryTextHint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_menu_pickup_giveaway"
-                app:layout_constraintBottom_toTopOf="@+id/pickup_giveaway_button"
-                app:layout_constraintEnd_toEndOf="@+id/pickup_giveaway_button"
-                app:layout_constraintStart_toStartOf="@+id/pickup_giveaway_button" />
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/pickup_in_person_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:tint="@color/secondary_text"
+                    app:backgroundTint="@color/divider"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/pickup_any_button"
+                    app:srcCompat="@drawable/ic_in_person" />
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/pickup_giveaway_button"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginBottom="8dp"
-                android:tint="@color/secondary_text"
-                app:backgroundTint="@color/divider"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/pickup_in_person_button"
-                app:srcCompat="@drawable/ic_giveaway" />
+                <TextView
+                    android:id="@+id/hint_button_giveaway"
+                    style="@style/SecondaryTextHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_menu_pickup_giveaway"
+                    app:layout_constraintBottom_toTopOf="@+id/pickup_giveaway_button"
+                    app:layout_constraintEnd_toEndOf="@+id/pickup_giveaway_button"
+                    app:layout_constraintStart_toStartOf="@+id/pickup_giveaway_button" />
 
-            <TextView
-                android:id="@+id/hint_button_race"
-                style="@style/SecondaryTextHint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_menu_pickup_race"
-                app:layout_constraintBottom_toTopOf="@+id/pickup_race_button"
-                app:layout_constraintEnd_toEndOf="@+id/pickup_race_button"
-                app:layout_constraintStart_toStartOf="@+id/pickup_race_button" />
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/pickup_giveaway_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:tint="@color/secondary_text"
+                    app:backgroundTint="@color/divider"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/pickup_in_person_button"
+                    app:srcCompat="@drawable/ic_giveaway" />
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/pickup_race_button"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginBottom="8dp"
-                android:tint="@color/secondary_text"
-                app:backgroundTint="@color/divider"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/pickup_giveaway_button"
-                app:srcCompat="@drawable/ic_race" />
+                <TextView
+                    android:id="@+id/hint_button_race"
+                    style="@style/SecondaryTextHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_menu_pickup_race"
+                    app:layout_constraintBottom_toTopOf="@+id/pickup_race_button"
+                    app:layout_constraintEnd_toEndOf="@+id/pickup_race_button"
+                    app:layout_constraintStart_toStartOf="@+id/pickup_race_button" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/pickup_race_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:tint="@color/secondary_text"
+                    app:backgroundTint="@color/divider"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/pickup_giveaway_button"
+                    app:srcCompat="@drawable/ic_race" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
                 android:layout_width="match_parent"
