@@ -435,7 +435,9 @@ public class UserProfileActivity extends TakeCareActivity {
     public void onBackPressed() {
         View focusView = getCurrentFocus();
         if (focusView == null) {
-            startActivity(new Intent(this, TakerMenuActivity.class));
+            Intent intent = new Intent(this, TakerMenuActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
             //super.onBackPressed();
         } else if (focusView.equals(userDescriptionView) &&
                 !userDescriptionView.getText().toString().equals(currentDescription)) {
