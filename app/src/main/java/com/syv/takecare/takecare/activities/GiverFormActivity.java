@@ -838,12 +838,30 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
             case PICTURE_MISSING:
                 assert user != null;
                 uploadItemDataNoPicture(itemInfo);
+                updateSharedItemsCount();
                 break;
             case PICTURE_UPLOADED:
                 assert user != null;
                 uploadItemDataWithPicture(itemInfo, user);
+                updateSharedItemsCount();
                 break;
         }
+    }
+
+    private void updateSharedItemsCount() {
+        final String countField;
+        switch (pickupMethod) {
+            case "Giveaway":
+                countField = "giveawayCount"; break;
+            case "Race":
+                countField = "raceCount"; break;
+            default:    // In Person
+                countField = "inPersonCount"; break;
+        }
+        String userID = user.getUid();
+        DocumentReference userDoc = db.collection("users")
+                .document(userID);
+        userDoc.update(countField, FieldValue.increment(1));
     }
 
     private void uploadItemDataNoPicture(final Map<String, Object> itemInfo) {

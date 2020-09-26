@@ -5,6 +5,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,6 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RotateDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +28,8 @@ import androidx.annotation.Nullable;
 import com.firebase.ui.auth.data.model.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -34,10 +38,13 @@ import android.os.Bundle;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+
 import android.text.method.KeyListener;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -68,6 +75,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.ortiz.touchview.TouchImageView;
 import com.syv.takecare.takecare.R;
+import com.syv.takecare.takecare.fragments.AchievementsFragment;
+import com.syv.takecare.takecare.fragments.UserProfileFragment;
 import com.syv.takecare.takecare.utilities.RotateBitmap;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -87,6 +96,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForCategorySharesBadgeEligibility;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForLikesBadgeEligibility;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForSharesBadgeEligibility;
 
 public class UserProfileActivity extends TakeCareActivity {
 
@@ -139,6 +152,7 @@ public class UserProfileActivity extends TakeCareActivity {
 
     private View.OnClickListener minimizer = null;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -261,7 +275,26 @@ public class UserProfileActivity extends TakeCareActivity {
                             }
                             if (document.getLong("likes") != null) {
                                 Log.d(TAG, "Found user's likes");
-                                userLikesView.setText(String.valueOf(document.getLong("likes")));
+                                Long likes = document.getLong("likes");
+                                userLikesView.setText(String.valueOf(likes));
+                                checkForLikesBadgeEligibility((ImageView)findViewById(R.id.likes_badge), likes);
+                            }
+
+                            Long totalGivenItems = document.getLong("totalGivenItems");
+                            Long inPersonCount = document.getLong("inPersonCount");
+                            Long giveawayCount = document.getLong("giveawayCount");
+                            Long raceCount = document.getLong("raceCount");
+                            if (totalGivenItems != null) {
+                                checkForSharesBadgeEligibility((ImageView)findViewById(R.id.shares_badge), totalGivenItems);
+                            }
+                            if (inPersonCount != null) {
+                                checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.in_person_badge), "In Person", inPersonCount);
+                            }
+                            if (giveawayCount != null) {
+                                checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount);
+                            }
+                            if (raceCount != null) {
+                                checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.race_badge), "Race", raceCount);
                             }
 
                             profilePictureView.setOnClickListener(new View.OnClickListener() {
@@ -357,6 +390,22 @@ public class UserProfileActivity extends TakeCareActivity {
         });
 
         setTitle(R.string.user_profile_menu_title);
+
+        final ConstraintLayout badgesLayout = findViewById(R.id.badges_layout);
+        final float originalElevation = badgesLayout.getElevation();
+        badgesLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) badgesLayout.setElevation(0);
+                else {
+                    badgesLayout.setElevation(originalElevation);
+                    FragmentManager fm = getSupportFragmentManager();
+                    AchievementsFragment dialogFragment = new AchievementsFragment();
+                    dialogFragment.show(fm, null);
+                }
+                return true;
+            }
+        });
     }
 
     private void initWidgets() {

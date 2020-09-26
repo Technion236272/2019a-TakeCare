@@ -342,4 +342,39 @@
     <string name="tut_button_next">הבא</string>
     <string name="tut_button_done">סיים</string>
 
+    <!-- Achievements elements -->
+    <string name="achievements_fragment_title">הישגים</string>
+
+    <string-array name="achievements_titles">
+        <item name="good_neighbor_title">שכן טוב</item>
+        <item name="altruist_title">אלטרואיסט</item>
+        <item name="philanthropist_title">פילנטרופ</item>
+        <item name="hero_title">גיבור הקהילה</item>
+        <item name="audience_favorite_title">חביב הקהל</item>
+        <item name="celebrity_title">סלב מקומי</item>
+        <item name="legendary_title">נדבן אגדי</item>
+        <item name="personal_touch_title">מגע אישי</item>
+        <item name="one_for_all_title">אחד בשביל כולם!</item>
+        <item name="time_flies_title">הזמן אינו ממתין!</item>
+    </string-array>
+
+    <string-array name="achievements_descriptions">
+        <item name="good_neighbor_description">הנך עושה עבודה מעולה במתן עזרה לשכניך הזקוקים לה. יישר כוח!</item>
+        <item name="altruist_description">עזרה לזולת היא חלק בלתי נפרד ממך. הנך עושה את הקהילה שלנו טובה יותר!</item>
+        <item name="philanthropist_description">חלקת חלק ניכר מדבריך על הקהילה. נדיבותך לא תחמוק מעיניהם של הסובבים אותך!</item>
+        <item name="hero_description">הרבה מאוד דברים ניצלו מבזבוז וסייעו לאנשים רבים, תודות לך. הנך גיבור/ה אמיתי/ת!</item>
+        <item name="audience_favorite_description">הנך מתחיל/ה לצבור שם טוב בקרב הסובבים אותך. כל הכבוד!</item>
+        <item name="celebrity_description">אם להיות מפורסם על-ידי עזרה לזולת ולסביבה זה החלום שלך, נראה שרדיפה אחר חלומות היא הצד החזק שלך!</item>
+        <item name="legendary_description">שמך לעד יהיה חרוט בהיכל התהילה של הקהילה שלך בזכות העזרה הכבירה שנתת לה!</item>
+        <item name="personal_touch_description">הנך אוהב/ת להסיף מגע אישי לדברים שהנך חולק/ת. מגניב!</item>
+        <item name="one_for_all_description">לכל אחד מגיע לקבל עוגיה מתוך המצבור הענקי ההוא שמצאת. חלוקה הוגנת!</item>
+        <item name="time_flies_description">וגם את/ה. כדאי שהדברים האלה ימצאו את הבעלים החדשים שלהם מהר!</item>
+    </string-array>
+
+    <string name="given_items_requirement">פריטים שנמסרו</string>
+    <string name="likes_requirement">לייקים</string>
+    <string name="in_person_requirement">פריטים נמסרו באופן אישי</string>
+    <string name="giveaway_requirement">פריטים נמסרו באופן פומבי</string>
+    <string name="race_requirement">פריטים נמסרו באופן מרוץ</string>
+
 </resources>

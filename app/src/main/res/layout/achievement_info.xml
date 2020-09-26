@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@android:color/transparent"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingVertical="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dialog_fragment_background"
+        android:padding="8dp">
+
+       <ImageView
+            android:id="@+id/badge_icon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_margin="4dp"
+            tools:src="@drawable/ic_achievement" />
+
+        <TextView
+            android:id="@+id/badge_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@id/badge_icon"
+            app:layout_constraintTop_toTopOf="@id/badge_icon"
+            tools:text="A Cool Badge" />
+
+        <TextView
+            android:id="@+id/badge_requirement"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/badge_name"
+            app:layout_constraintStart_toStartOf="@id/badge_name"
+            android:textSize="16sp"
+            android:textColor="@color/secondary_text"
+            tools:text="100 Muffins" />
+
+        <TextView
+            android:id="@+id/badge_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/badge_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:padding="8dp"
+            android:textSize="16sp"
+            android:textColor="@color/primary_text"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:text="You earned this cool badge for sharing 100 muffins. Well done!" />`
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

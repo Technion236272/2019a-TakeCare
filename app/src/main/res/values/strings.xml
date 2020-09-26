@@ -269,7 +269,7 @@
 
     <!-- About page elements -->
     <string name="my_link"><a href="http://somesite.com/">Click me!</a></string>
-    <string name="icon_credits">Icon made by <a href="https://www.flaticon.com/authors/freepik/">Freepik</a> from <a href="https://www.flaticon.com/">www.flaticon.com</a></string>
+    <string name="icon_credits">Icons made by <a href="https://www.flaticon.com/authors/freepik/">Freepik</a> from <a href="https://www.flaticon.com/">www.flaticon.com</a>\nIcons made by <a href="https://www.flaticon.com/authors/eucalyp" title="Eucalyp">Eucalyp</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>\nIcons made by <a href="https://www.flaticon.com/authors/flat-icons" title="Flat Icons">Flat Icons</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>\nIcons made by <a href="https://www.flaticon.com/authors/photo3idea-studio" title="photo3idea_studio">photo3idea_studio</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a></string>
     <string name="about_title">About</string>
     <string name="nav_about">About</string>
     <string name="about_text"><![CDATA[TakeCare is a social Android app written in Java and developed on Android Studio, suitable for all audiences over the age of 13.\nIn the app, you choose the role of either a giver or a taker at any given time. A giver shares a thing that they own but are not interested in, whereas a taker can browse such things and choose one to schedule a pickup.\n\nAmong the things you can share with others (or express your interest in):\n\u2022 Food\n\u2022 Furniture\n\u2022 Study material\n\u2022 Hitchhikes\n\u2022 Lost & Founds\n\u2022 Just about anything you see fit!\n\nJoin the sharing revolution: help brighten someone\'s day, and also help the world by not excessively throwing away like in most modern families!]]></string>
@@ -345,5 +345,40 @@
     <string name="tut_drawer_content_3">You are welcome to explore our many options.\nHappy sharing!</string>
     <string name="tut_button_next">Next</string>
     <string name="tut_button_done">Done</string>
+
+    <!-- Achievements elements -->
+    <string name="achievements_fragment_title">Achievements</string>
+
+    <string-array name="achievements_titles">
+        <item name="good_neighbor_title">Good Neighbor</item>
+        <item name="altruist_title">Altruist</item>
+        <item name="philanthropist_title">Philanthropist</item>
+        <item name="hero_title">Community Hero</item>
+        <item name="audience_favorite_title">Audience Favorite</item>
+        <item name="celebrity_title">Local Celebrity</item>
+        <item name="legendary_title">Legendary Sharer</item>
+        <item name="personal_touch_title">Personal Touch</item>
+        <item name="one_for_all_title">One for All!</item>
+        <item name="time_flies_title">Time Waits for No One!</item>
+    </string-array>
+
+    <string-array name="achievements_descriptions">
+        <item name="good_neighbor_description">You are doing a great job helping your neighbors in need. Keep it up!</item>
+        <item name="altruist_description">Helping people is a great part of you. You are making our community a better place!</item>
+        <item name="philanthropist_description">You have shared a great deal of things with your community. Your generosity won\'t go unnoticed!</item>
+        <item name="hero_description">A great deal of things were saved from wasting and helped a lot of people, thanks to you. You are truly a hero!</item>
+        <item name="audience_favorite_description">You are starting to earn a good reputation among people. Good job!</item>
+        <item name="celebrity_description">If getting famous for helping people and environment is your dream, then it seems you\'re good at chasing dreams!</item>
+        <item name="legendary_description">Your name will forever be engraved in the hall of fame of the community for all the help you gave it!</item>
+        <item name="personal_touch_description">You like to add a personal touch to the things you share. Neat!</item>
+        <item name="one_for_all_description">Every person deserves a cookie out of that great stock you found. Sharing fair!</item>
+        <item name="time_flies_description">And neither do you. Those things better find their new owners quick!</item>
+    </string-array>
+
+    <string name="given_items_requirement">Shared Items</string>
+    <string name="likes_requirement">Likes</string>
+    <string name="in_person_requirement">In-Person Items Published</string>
+    <string name="giveaway_requirement">Giveaway Items Published</string>
+    <string name="race_requirement">Race Items Published</string>
 
 </resources>

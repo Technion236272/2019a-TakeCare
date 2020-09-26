@@ -418,7 +418,6 @@ public class TakerMenuActivity extends TakeCareActivity
                 nextButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.d(TAG, "popupView clicked");
                         nextButton.setClickable(false); // To prevent multiple clicks before the popup is closed
                         updateTutorialState(state.getId());
                         tutorial.next();

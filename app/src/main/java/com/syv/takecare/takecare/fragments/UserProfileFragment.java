@@ -1,5 +1,7 @@
 package com.syv.takecare.takecare.fragments;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,6 +29,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.syv.takecare.takecare.R;
+
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForCategorySharesBadgeEligibility;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForLikesBadgeEligibility;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForSharesBadgeEligibility;
 
 public class UserProfileFragment extends DialogFragment {
 
@@ -67,6 +74,8 @@ public class UserProfileFragment extends DialogFragment {
 
         // We want the dialog to be dismissed when the user clicks outside of inflatedView
         getDialog().setCanceledOnTouchOutside(true);
+        getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         initWidgets();
         descriptionView.setMovementMethod(new ScrollingMovementMethod());
@@ -81,6 +90,10 @@ public class UserProfileFragment extends DialogFragment {
                         String name = document.getString("name");
                         String description = document.getString("description");
                         Long likes = document.getLong("likes");
+                        Long totalGivenItems = document.getLong("totalGivenItems");
+                        Long inPersonCount = document.getLong("inPersonCount");
+                        Long giveawayCount = document.getLong("giveawayCount");
+                        Long raceCount = document.getLong("raceCount");
 
                         if (profilePicture != null && getActivity() != null) {
                             Glide.with(getActivity().getApplicationContext())
@@ -119,8 +132,22 @@ public class UserProfileFragment extends DialogFragment {
 
                         if (likes != null) {
                             ratingView.setText(String.valueOf(likes));
+                            checkForLikesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.likes_badge), likes);
                         } else {
                             ratingView.setText("0");
+                        }
+
+                        if (totalGivenItems != null) {
+                            checkForSharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.shares_badge), totalGivenItems);
+                        }
+                        if (inPersonCount != null) {
+                            checkForCategorySharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.in_person_badge), "In Person", inPersonCount);
+                        }
+                        if (giveawayCount != null) {
+                            checkForCategorySharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount);
+                        }
+                        if (raceCount != null) {
+                            checkForCategorySharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.race_badge), "Race", raceCount);
                         }
                     }
                 })

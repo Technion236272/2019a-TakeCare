@@ -351,12 +351,82 @@
                         app:layout_constraintStart_toStartOf="@+id/publisher_profile_pic"
                         app:layout_constraintTop_toTopOf="@+id/publisher_profile_pic" />
 
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/badges_layout"
+                        app:layout_constraintStart_toStartOf="@id/publisher_profile_pic"
+                        app:layout_constraintEnd_toEndOf="@id/publisher_profile_pic"
+                        app:layout_constraintTop_toBottomOf="@id/publisher_profile_pic"
+                        android:padding="8dp">
+
+                        <ImageView
+                            android:id="@+id/shares_badge"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible"
+                            tools:src="@drawable/ic_good_neighbor" />
+
+                        <ImageView
+                            android:id="@+id/likes_badge"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/shares_badge"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible"
+                            tools:src="@drawable/ic_celebrity" />
+
+                        <ImageView
+                            android:id="@+id/in_person_badge"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/likes_badge"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible"
+                            tools:src="@drawable/ic_personal_touch_silver" />
+
+                        <ImageView
+                            android:id="@+id/giveaway_badge"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/in_person_badge"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible"
+                            tools:src="@drawable/ic_one_for_all_bronze" />
+
+                        <ImageView
+                            android:id="@+id/race_badge"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/giveaway_badge"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible"
+                            tools:src="@drawable/ic_time_files_gold" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                     <TextView
                         android:id="@+id/item_giver_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
-                        android:layout_marginTop="8dp"
                         android:gravity="center_horizontal"
                         android:maxLines="2"
                         android:paddingLeft="48dp"
@@ -364,9 +434,10 @@
                         android:textAlignment="gravity"
                         android:textColor="@color/primary_text"
                         android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/publisher_profile_pic" />
+                        app:layout_constraintTop_toBottomOf="@+id/badges_layout" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

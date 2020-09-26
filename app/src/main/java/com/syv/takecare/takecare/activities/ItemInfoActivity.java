@@ -21,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AlertDialog;
 import android.os.Bundle;
@@ -84,8 +83,6 @@ import com.hootsuite.nachos.NachoTextView;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.ortiz.touchview.TouchImageView;
-import com.syv.takecare.takecare.customViews.CustomInfoWindow;
-import com.syv.takecare.takecare.fragments.FeedMapFragment;
 import com.syv.takecare.takecare.fragments.UserProfileFragment;
 import com.syv.takecare.takecare.customViews.FeedRecyclerView;
 import com.syv.takecare.takecare.R;
@@ -104,6 +101,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.google.firebase.firestore.FieldValue.serverTimestamp;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForCategorySharesBadgeEligibility;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForLikesBadgeEligibility;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForSharesBadgeEligibility;
 
 public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCallback {
 
@@ -169,6 +169,7 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
     private GeoPoint location;
 
     private String itemCategory;
+    private String itemPickupMethod;
 
     @Override
     protected void onStart() {
@@ -332,7 +333,7 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
                         Date timestamp = document.getDate("timestamp");
                         if (timestamp != null) {
                             Log.d(TAG, "setting publish timestamp date");
-                            SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd hh:mm");
+                            SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm");
                             String dateText = getString(R.string.item_info_published_at) + " " + formatter.format(timestamp);
                             publishTimeTextView.setText(dateText);
                             Long airTime = document.getLong("airTime");
@@ -412,11 +413,11 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
                             Log.d(TAG, "Found category: " + category);
                             setCategory(category);
                         }
-                        String pickupMethod = document.getString("pickupMethod");
-                        if (pickupMethod != null) {
+                        itemPickupMethod = document.getString("pickupMethod");
+                        if (itemPickupMethod != null) {
                             Log.d(TAG, "Found pickup method.");
-                            setPickupMethod(pickupMethod);
-                            if (pickupMethod.equals("In Person") && !isPublisher) {
+                            setPickupMethod(itemPickupMethod);
+                            if (itemPickupMethod.equals("In Person") && !isPublisher) {
                                 tryShowRequestButton();
                             }
                         }
@@ -820,6 +821,8 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
                                                 .setBackgroundColor(getResources().getColor(R.color.colorPrimaryLite));
                                     }
                                 });
+                        DocumentReference publisherDoc = db.collection("users").document(publisherID);
+                        publisherDoc.update("totalGivenItems", FieldValue.increment(1));
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -845,9 +848,28 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
                         Log.d(TAG, "Publisher Document Snapshot Data: " + document.getData());
                         uploaderNameView.setText(document.getString("name"));
 
+                        Long totalGivenItems = document.getLong("totalGivenItems");
+                        Long inPersonCount = document.getLong("inPersonCount");
+                        Long giveawayCount = document.getLong("giveawayCount");
+                        Long raceCount = document.getLong("raceCount");
+                        if (totalGivenItems != null) {
+                            checkForSharesBadgeEligibility((ImageView)findViewById(R.id.shares_badge), totalGivenItems);
+                        }
+                        if (inPersonCount != null) {
+                            checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.in_person_badge), "In Person", inPersonCount);
+                        }
+                        if (giveawayCount != null) {
+                            checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount);
+                        }
+                        if (raceCount != null) {
+                            checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.race_badge), "Race", raceCount);
+                        }
+
                         if (document.get("likes") != null) {
                             Log.d(TAG, "Found likes counter");
-                            String likesText = String.valueOf(document.getLong("likes"));
+                            Long likesCount = document.getLong("likes");
+                            checkForLikesBadgeEligibility((ImageView)findViewById(R.id.likes_badge), likesCount);
+                            String likesText = String.valueOf(likesCount);
                             likesCounterView.setText(likesText);
                         } else {
                             likesCounterView.setText("0");
