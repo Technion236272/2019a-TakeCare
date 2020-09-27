@@ -132,23 +132,15 @@ public class UserProfileFragment extends DialogFragment {
 
                         if (likes != null) {
                             ratingView.setText(String.valueOf(likes));
-                            checkForLikesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.likes_badge), likes);
                         } else {
                             ratingView.setText("0");
                         }
 
-                        if (totalGivenItems != null) {
-                            checkForSharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.shares_badge), totalGivenItems);
-                        }
-                        if (inPersonCount != null) {
-                            checkForCategorySharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.in_person_badge), "In Person", inPersonCount);
-                        }
-                        if (giveawayCount != null) {
-                            checkForCategorySharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount);
-                        }
-                        if (raceCount != null) {
-                            checkForCategorySharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.race_badge), "Race", raceCount);
-                        }
+                        checkForLikesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.likes_badge), likes);
+                        checkForSharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.shares_badge), totalGivenItems);
+                        checkForCategorySharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.in_person_badge), "In Person", inPersonCount);
+                        checkForCategorySharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount);
+                        checkForCategorySharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.race_badge), "Race", raceCount);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -156,7 +148,7 @@ public class UserProfileFragment extends DialogFragment {
                     public void onFailure(@NonNull Exception e) {
                         if (getActivity() != null) {
                             Toast.makeText(getActivity().getApplicationContext(),
-                                    "Error loading user\'s profile", Toast.LENGTH_LONG).show();
+                                    "Error loading user's profile", Toast.LENGTH_LONG).show();
                         }
                         picturePB.setVisibility(View.GONE);
                         dismiss();

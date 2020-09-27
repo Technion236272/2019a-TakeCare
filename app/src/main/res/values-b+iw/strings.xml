@@ -358,16 +358,16 @@
         <item name="legendary_title">נדבן אגדי</item>
         <item name="personal_touch_title">מגע אישי</item>
         <item name="one_for_all_title">אחד בשביל כולם!</item>
-        <item name="time_flies_title">הזמן אינו ממתין!</item>
+        <item name="time_flies_title">הזמן לא מחכה!</item>
     </string-array>
 
     <string-array name="achievements_descriptions">
         <item name="good_neighbor_description">הנך עושה עבודה מעולה במתן עזרה לשכניך הזקוקים לה. יישר כוח!</item>
-        <item name="altruist_description">עזרה לזולת היא חלק בלתי נפרד ממך. הנך עושה את הקהילה שלנו טובה יותר!</item>
+        <item name="altruist_description">עזרה לזולת היא חלק בלתי נפרד ממך. את/ה עושה את הקהילה שלנו טובה יותר!</item>
         <item name="philanthropist_description">חלקת חלק ניכר מדבריך על הקהילה. נדיבותך לא תחמוק מעיניהם של הסובבים אותך!</item>
         <item name="hero_description">הרבה מאוד דברים ניצלו מבזבוז וסייעו לאנשים רבים, תודות לך. הנך גיבור/ה אמיתי/ת!</item>
         <item name="audience_favorite_description">הנך מתחיל/ה לצבור שם טוב בקרב הסובבים אותך. כל הכבוד!</item>
-        <item name="celebrity_description">אם להיות מפורסם על-ידי עזרה לזולת ולסביבה זה החלום שלך, נראה שרדיפה אחר חלומות היא הצד החזק שלך!</item>
+        <item name="celebrity_description">אם להיות מפורסם דרך עזרה לזולת ולסביבה זה החלום שלך, נראה שאת/ה יודע/ת לרדוף אחרי חלומות!</item>
         <item name="legendary_description">שמך לעד יהיה חרוט בהיכל התהילה של הקהילה שלך בזכות העזרה הכבירה שנתת לה!</item>
         <item name="personal_touch_description">הנך אוהב/ת להסיף מגע אישי לדברים שהנך חולק/ת. מגניב!</item>
         <item name="one_for_all_description">לכל אחד מגיע לקבל עוגיה מתוך המצבור הענקי ההוא שמצאת. חלוקה הוגנת!</item>

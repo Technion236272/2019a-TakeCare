@@ -18,6 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class AchievementsFragment extends DialogFragment {
+    private Bundle achievementsStatsBundle;
+
+    public static AchievementsFragment newInstance(Bundle bundle) {
+        AchievementsFragment f = new AchievementsFragment();
+        f.achievementsStatsBundle = bundle;
+        return f;
+    }
 
     @Nullable
     @Override
@@ -32,7 +39,7 @@ public class AchievementsFragment extends DialogFragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        recyclerView.setAdapter(new AchievementsAdapter(view));
+        recyclerView.setAdapter(new AchievementsAdapter(view, achievementsStatsBundle));
 
         return view;
     }

@@ -3,6 +3,7 @@ package com.syv.takecare.takecare.adapters;
 import android.content.res.Resources;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,15 +24,10 @@ import static com.syv.takecare.takecare.utilities.AchievementsFunctions.CATEGORY
 import static com.syv.takecare.takecare.utilities.AchievementsFunctions.CATEGORY_GOLD_BADGE_BAR;
 import static com.syv.takecare.takecare.utilities.AchievementsFunctions.CATEGORY_SILVER_BADGE_BAR;
 import static com.syv.takecare.takecare.utilities.AchievementsFunctions.COMMUNITY_HERO_BADGE_BAR;
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.GIVEAWAY_BADGE;
 import static com.syv.takecare.takecare.utilities.AchievementsFunctions.GOOD_NEIGHBOUR_BADGE_BAR;
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.IN_PERSON_BADGE;
 import static com.syv.takecare.takecare.utilities.AchievementsFunctions.LEGENDARY_SHARER;
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.LIKES_BADGE;
 import static com.syv.takecare.takecare.utilities.AchievementsFunctions.LOCAL_CELEBRITY_BADGE_BAR;
 import static com.syv.takecare.takecare.utilities.AchievementsFunctions.PHILANTHROPIST_BADGE_BAR;
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.RACE_BADGE;
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.SHARING_BADGE;
 
 public class AchievementsAdapter extends RecyclerView.Adapter<AchievementsAdapter.AchievementsViewHolder> {
     private static final int SHARING_BADGES = 4;
@@ -63,7 +59,7 @@ public class AchievementsAdapter extends RecyclerView.Adapter<AchievementsAdapte
         }
     }
 
-    public AchievementsAdapter(View view) {
+    public AchievementsAdapter(View view, Bundle badgesBundle) {
         res = view.getResources();
         achievementsIconsResources = new int[] {
                 R.drawable.ic_good_neighbor,
@@ -94,8 +90,17 @@ public class AchievementsAdapter extends RecyclerView.Adapter<AchievementsAdapte
         achievementsDescriptions = view.getResources().getStringArray(R.array.achievements_descriptions);
         openDescriptions = new boolean[getItemCount()];
         activeAchievements = new boolean[getItemCount()];
-        if (SHARING_BADGE >= 0) activeAchievements[SHARING_BADGE] = true;
-        if (LIKES_BADGE >= 0) activeAchievements[SHARING_BADGES + LIKES_BADGE] = true;
+
+        int SHARING_BADGE = badgesBundle.getInt("SHARES_BADGE");
+        int LIKES_BADGE = badgesBundle.getInt("LIKES_BADGE");
+        boolean IN_PERSON_BADGE = badgesBundle.getBoolean("IN_PERSON_BADGE");
+        boolean GIVEAWAY_BADGE = badgesBundle.getBoolean("GIVEAWAY_BADGE");
+        boolean RACE_BADGE = badgesBundle.getBoolean("RACE_BADGE");
+
+        for (int i = 0; i <= SHARING_BADGE; i++)
+            activeAchievements[i] = true;
+        for (int i = 0; i <= LIKES_BADGE; i++)
+            activeAchievements[SHARING_BADGES + i] = true;
         activeAchievements[SHARING_BADGES + LIKES_BADGES] = IN_PERSON_BADGE;
         activeAchievements[SHARING_BADGES + LIKES_BADGES + 1] = GIVEAWAY_BADGE;
         activeAchievements[SHARING_BADGES + LIKES_BADGES + 2] = RACE_BADGE;

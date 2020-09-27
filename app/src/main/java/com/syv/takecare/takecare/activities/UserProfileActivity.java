@@ -150,6 +150,8 @@ public class UserProfileActivity extends TakeCareActivity {
     private int mShortAnimationDuration;
     private boolean isImageFullscreen;
 
+    private Bundle achievementsStatsBundle;
+
     private View.OnClickListener minimizer = null;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -273,29 +275,23 @@ public class UserProfileActivity extends TakeCareActivity {
                                 currentDescription = document.getString("description");
                                 userDescriptionRef.setText(currentDescription);
                             }
-                            if (document.getLong("likes") != null) {
+                            Long likes = document.getLong("likes");
+                            if (likes != null) {
                                 Log.d(TAG, "Found user's likes");
-                                Long likes = document.getLong("likes");
                                 userLikesView.setText(String.valueOf(likes));
-                                checkForLikesBadgeEligibility((ImageView)findViewById(R.id.likes_badge), likes);
                             }
 
                             Long totalGivenItems = document.getLong("totalGivenItems");
                             Long inPersonCount = document.getLong("inPersonCount");
                             Long giveawayCount = document.getLong("giveawayCount");
                             Long raceCount = document.getLong("raceCount");
-                            if (totalGivenItems != null) {
-                                checkForSharesBadgeEligibility((ImageView)findViewById(R.id.shares_badge), totalGivenItems);
-                            }
-                            if (inPersonCount != null) {
-                                checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.in_person_badge), "In Person", inPersonCount);
-                            }
-                            if (giveawayCount != null) {
-                                checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount);
-                            }
-                            if (raceCount != null) {
-                                checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.race_badge), "Race", raceCount);
-                            }
+
+                            achievementsStatsBundle = new Bundle();
+                            achievementsStatsBundle.putInt("LIKES_BADGE", checkForLikesBadgeEligibility((ImageView)findViewById(R.id.likes_badge), likes));
+                            achievementsStatsBundle.putInt("SHARES_BADGE", checkForSharesBadgeEligibility((ImageView)findViewById(R.id.shares_badge), totalGivenItems));
+                            achievementsStatsBundle.putBoolean("IN_PERSON_BADGE", checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.in_person_badge), "In Person", inPersonCount));
+                            achievementsStatsBundle.putBoolean("GIVEAWAY_BADGE", checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount));
+                            achievementsStatsBundle.putBoolean("RACE_BADGE", checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.race_badge), "Race", raceCount));
 
                             profilePictureView.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -400,7 +396,7 @@ public class UserProfileActivity extends TakeCareActivity {
                 else {
                     badgesLayout.setElevation(originalElevation);
                     FragmentManager fm = getSupportFragmentManager();
-                    AchievementsFragment dialogFragment = new AchievementsFragment();
+                    AchievementsFragment dialogFragment = AchievementsFragment.newInstance(achievementsStatsBundle);
                     dialogFragment.show(fm, null);
                 }
                 return true;

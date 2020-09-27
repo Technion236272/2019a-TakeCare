@@ -19,13 +19,11 @@ public abstract class AchievementsFunctions {
     public static final int CATEGORY_SILVER_BADGE_BAR = 25;
     public static final int CATEGORY_GOLD_BADGE_BAR = 50;
 
-    public static int SHARING_BADGE = -1;
-    public static int LIKES_BADGE = -1;
-    public static boolean IN_PERSON_BADGE = false;
-    public static boolean GIVEAWAY_BADGE = false;
-    public static boolean RACE_BADGE = false;
-
-    public static void checkForSharesBadgeEligibility(ImageView badge, long totalGivenItems) {
+    public static int checkForSharesBadgeEligibility(ImageView badge, Long totalGivenItems) {
+        if (totalGivenItems == null) {
+            return -1;
+        }
+        int SHARING_BADGE = -1;
         badge.setVisibility(View.VISIBLE);
         if (totalGivenItems >= COMMUNITY_HERO_BADGE_BAR) {
             badge.setImageResource(R.drawable.ic_superhero);
@@ -42,9 +40,14 @@ public abstract class AchievementsFunctions {
         } else {
             badge.setVisibility(View.GONE);
         }
+        return SHARING_BADGE;
     }
 
-    public static void checkForLikesBadgeEligibility(ImageView badge, long likesCount) {
+    public static int checkForLikesBadgeEligibility(ImageView badge, Long likesCount) {
+        if (likesCount == null) {
+            return -1;
+        }
+        int LIKES_BADGE = -1;
         badge.setVisibility(View.VISIBLE);
         if (likesCount >= LEGENDARY_SHARER) {
             badge.setImageResource(R.drawable.ic_legendary);
@@ -58,57 +61,51 @@ public abstract class AchievementsFunctions {
         } else {
             badge.setVisibility(View.GONE);
         }
+        return LIKES_BADGE;
     }
 
-    public static void checkForCategorySharesBadgeEligibility(ImageView badge, String category, long shares) {
+    public static boolean checkForCategorySharesBadgeEligibility(ImageView badge, String category, Long shares) {
+        if (shares == null || shares < CATEGORY_BRONZE_BADGE_BAR) {
+            return false;
+        }
         badge.setVisibility(View.VISIBLE);
         if (shares >= CATEGORY_GOLD_BADGE_BAR) {
             switch(category) {
                 case "In Person":
                     badge.setImageResource(R.drawable.ic_personal_touch_gold);
-                    IN_PERSON_BADGE = true;
-                    break;
+                    return true;
                 case "Giveaway":
                     badge.setImageResource(R.drawable.ic_one_for_all_gold);
-                    GIVEAWAY_BADGE = true;
-                    break;
+                    return true;
                 case "Race":
                     badge.setImageResource(R.drawable.ic_time_files_gold);
-                    RACE_BADGE = true;
-                    break;
+                    return true;
             }
         } else if (shares >= CATEGORY_SILVER_BADGE_BAR) {
             switch(category) {
                 case "In Person":
                     badge.setImageResource(R.drawable.ic_personal_touch_silver);
-                    IN_PERSON_BADGE = true;
-                    break;
+                    return true;
                 case "Giveaway":
                     badge.setImageResource(R.drawable.ic_one_for_all_silver);
-                    GIVEAWAY_BADGE = true;
-                    break;
+                    return true;
                 case "Race":
                     badge.setImageResource(R.drawable.ic_time_files_silver);
-                    RACE_BADGE = true;
-                    break;
+                    return true;
             }
-        } else if (shares >= CATEGORY_BRONZE_BADGE_BAR) {
+        } else { // shares >= CATEGORY_BRONZE_BADGE_BAR
             switch(category) {
                 case "In Person":
                     badge.setImageResource(R.drawable.ic_personal_touch_bronze);
-                    IN_PERSON_BADGE = true;
-                    break;
+                    return true;
                 case "Giveaway":
                     badge.setImageResource(R.drawable.ic_one_for_all_bronze);
-                    GIVEAWAY_BADGE = true;
-                    break;
+                    return true;
                 case "Race":
                     badge.setImageResource(R.drawable.ic_time_files_bronze);
-                    RACE_BADGE = true;
-                    break;
+                    return true;
             }
-        } else {
-            badge.setVisibility(View.GONE);
         }
+        return false;   // Should be unreachable given proper input
     }
 }
