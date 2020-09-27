@@ -141,11 +141,14 @@ public class TakerMenuActivity extends TakeCareActivity
     private final int TUT_TOOLBAR_FILTER = 4;
     private final int TUT_FILTER_KEYWORDS = 5;
     private final int TUT_FILTER_METHOD = 6;
-    private final int TUT_NAV_DRAWER_TOGGLE = 7;
-    private final int TUT_NAV_DRAWER_HEADER = 8;
-    private final int TUT_NAV_DRAWER_CONTENT = 9;
-    private final int TUT_NAV_DRAWER_CONTENT_2 = 10;
-    private final int TUT_NAV_DRAWER_CONTENT_3 = 11;
+    private final int TUT_FILTER_IN_PERSON = 7;
+    private final int TUT_FILTER_GIVEAWAY = 8;
+    private final int TUT_FILTER_RACE = 9;
+    private final int TUT_NAV_DRAWER_TOGGLE = 10;
+    private final int TUT_NAV_DRAWER_HEADER = 11;
+    private final int TUT_NAV_DRAWER_CONTENT = 12;
+    private final int TUT_NAV_DRAWER_CONTENT_2 = 13;
+    private final int TUT_NAV_DRAWER_CONTENT_3 = 14;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -363,6 +366,9 @@ public class TakerMenuActivity extends TakeCareActivity
         List<TutorialState> states = new ArrayList<>();
         states.add(new PathState(TUT_FILTER_KEYWORDS, searchKeywordHighlight, null, rootLayout));
         states.add(new PathState(TUT_FILTER_METHOD, filterMethodHighlight, null, rootLayout));
+        states.add(new ViewState(TUT_FILTER_IN_PERSON, findViewById(R.id.pickup_in_person_button), null));
+        states.add(new ViewState(TUT_FILTER_GIVEAWAY, findViewById(R.id.pickup_giveaway_button), null));
+        states.add(new ViewState(TUT_FILTER_RACE, findViewById(R.id.pickup_race_button), null));
 
         tutorial.clearStates();
         tutorial.addAllStates(states);
@@ -459,6 +465,15 @@ public class TakerMenuActivity extends TakeCareActivity
             case TUT_FILTER_METHOD:
                 description.setText(R.string.tut_pickup_methods);
                 break;
+            case TUT_FILTER_IN_PERSON:
+                description.setText(R.string.tut_filter_in_person);
+                break;
+            case TUT_FILTER_GIVEAWAY:
+                description.setText(R.string.tut_filter_giveaway);
+                break;
+            case TUT_FILTER_RACE:
+                description.setText(R.string.tut_filter_race);
+                break;
             case TUT_NAV_DRAWER_TOGGLE:
                 description.setText(R.string.tut_drawer_toggle);
                 break;
@@ -513,6 +528,12 @@ public class TakerMenuActivity extends TakeCareActivity
                 break;
 
             case TUT_FILTER_METHOD:
+                tutorial.configure()
+                        .withPopupAppearAnimation(R.anim.slide_in_left)
+                        .withPopupDisappearAnimation(R.anim.slide_out_right);
+                break;
+
+            case TUT_FILTER_RACE:
                 filterPopupMenu.setVisibility(View.GONE);
                 tutorial.clearStates();
                 tutorial.configure()

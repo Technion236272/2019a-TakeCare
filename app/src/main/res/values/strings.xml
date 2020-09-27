@@ -332,15 +332,18 @@
     <!-- First Tutorial elements -->
     <string name="tut_intro_title">Welcome to TakeCare!</string>
     <string name="tut_intro">Let\'s have a quick tour over our amazing features!</string>
-    <string name="tut_feed">Here all available posts will be displayed.\nYou can tap on each post to reveal detailed information and contact the poster</string>
-    <string name="tut_fab">Here you can add your own post and share a cool item with everyone!</string>
-    <string name="tut_map">Here you can switch to a map to view all posts with available location pinned on it</string>
+    <string name="tut_feed">Here all available posts will be displayed.\nYou can tap on each post to reveal detailed information and contact the poster.\nAlso, by tapping on the poster\'s profile picture you can view their profile.</string>
+    <string name="tut_fab">Here you can add your own post and share a cool item with everyone!\nFor different achievements in sharing through the app, you will be awarded with some cool badges!</string>
+    <string name="tut_map">Here you can switch to a map to view all posts with available location pinned on it. You can tap on each marker on the map to view information about the item shared there.</string>
     <string name="tut_filter">Here you can filter the posts using different options.\nLet\'s check them out!</string>
     <string name="tut_keywords">Every post can be uploaded with custom keywords.\nHere you can filter them by those keywords.</string>
-    <string name="tut_pickup_methods">There are three pickup methods: In Person, Giveaway or Race (\"First come first claims\").\nYou can also choose to see all methods at once.</string>
-    <string name="tut_drawer_toggle">Tapping here we can navigate through our app. Let\'s see what\'s inside!</string>
-    <string name="tut_drawer_header">Here your profile picture and name are displayed. You can tap the picture and change them in your profile settings anytime.</string>
-    <string name="tut_drawer_content">Here you can choose to see items of only a certain category\n</string>
+    <string name="tut_pickup_methods">Before sharing an item, you must specify its method of pickup.\nHere you can filter all posts by their pickup method, or you can choose to view them all at once.\nLet\'s explain those methods.</string>
+    <string name="tut_filter_in_person">In Person:\nIf you want to share your item with one specific person, that\'s the option.\nThe requesting person will have a special button in your post to notify you they are interested. You also will have to accept their request manually.</string>
+    <string name="tut_filter_giveaway">Giveaway:\nThe items with this method are a public giveaway, so no specific requests - everyone\'s invited.\nThe users viewing your giveaway post will still be able to message you privately.</string>
+    <string name="tut_filter_race">Race:\nFor the moments you\'re in a hurry and would like to grant the item to someone as fast as possible.\nNo sharing agreement in advance, the post must be deleted when the lucky person came first to claim.\n\"First Come, First Claimed!\"</string>
+    <string name="tut_drawer_toggle">Now we\'ll check out the navigation through the app.\nTapping here we can open our \"Navigation Drawer\". Let\'s see what\'s inside!</string>
+    <string name="tut_drawer_header">Here your profile picture and name are displayed. You can tap the picture and change them in your profile settings anytime.\nYou can also view here your awards for achievements.</string>
+    <string name="tut_drawer_content">Every item has a certain category. Here you can choose to see items of only one, or all categories.\n</string>
     <string name="tut_drawer_content_2">You can also access your active chats through here, items you requested and items you shared, and your favorite keywords.\nFor every item posted with one of your favorite keywords, you will be notified immediately, so you won\'t miss it!</string>
     <string name="tut_drawer_content_3">You are welcome to explore our many options.\nHappy sharing!</string>
     <string name="tut_button_next">Next</string>
