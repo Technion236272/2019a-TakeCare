@@ -306,15 +306,15 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        pickupMethod = getString(R.string.giver_pickup_in_person);
+                        pickupMethod = "In Person";
                         pickupDescription.setVisibility(View.VISIBLE);
                         break;
                     case 1:
-                        pickupMethod = getString(R.string.giver_pickup_giveaway);
+                        pickupMethod = "Giveaway";
                         pickupDescription.setVisibility(View.VISIBLE);
                         break;
                     case 2:
-                        pickupMethod = getString(R.string.giver_pickup_race);
+                        pickupMethod = "Race";
                         pickupDescription.setVisibility(View.GONE);
                         break;
                     default:
@@ -851,12 +851,15 @@ public class GiverFormActivity extends TakeCareActivity implements OnMapReadyCal
     private void updateSharedItemsCount() {
         final String countField;
         switch (pickupMethod) {
+            case "In Person":
+                countField = "inPersonCount"; break;
             case "Giveaway":
                 countField = "giveawayCount"; break;
             case "Race":
                 countField = "raceCount"; break;
-            default:    // In Person
-                countField = "inPersonCount"; break;
+            default:
+                Log.d(TAG, "The case is: " + pickupMethod);
+                return;
         }
         String userID = user.getUid();
         DocumentReference userDoc = db.collection("users")

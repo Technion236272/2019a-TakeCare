@@ -101,9 +101,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.google.firebase.firestore.FieldValue.serverTimestamp;
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForCategorySharesBadgeEligibility;
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForLikesBadgeEligibility;
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForSharesBadgeEligibility;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.addCategoryBadge;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.addLikesBadge;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.addSharesBadge;
 
 public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCallback {
 
@@ -853,22 +853,22 @@ public class ItemInfoActivity extends TakeCareActivity implements OnMapReadyCall
                         Long giveawayCount = document.getLong("giveawayCount");
                         Long raceCount = document.getLong("raceCount");
                         if (totalGivenItems != null) {
-                            checkForSharesBadgeEligibility((ImageView)findViewById(R.id.shares_badge), totalGivenItems);
+                            addSharesBadge((ImageView)findViewById(R.id.shares_badge), totalGivenItems);
                         }
                         if (inPersonCount != null) {
-                            checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.in_person_badge), "In Person", inPersonCount);
+                            addCategoryBadge((ImageView)findViewById(R.id.in_person_badge), "In Person", inPersonCount);
                         }
                         if (giveawayCount != null) {
-                            checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount);
+                            addCategoryBadge((ImageView)findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount);
                         }
                         if (raceCount != null) {
-                            checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.race_badge), "Race", raceCount);
+                            addCategoryBadge((ImageView)findViewById(R.id.race_badge), "Race", raceCount);
                         }
 
                         if (document.get("likes") != null) {
                             Log.d(TAG, "Found likes counter");
                             Long likesCount = document.getLong("likes");
-                            checkForLikesBadgeEligibility((ImageView)findViewById(R.id.likes_badge), likesCount);
+                            addLikesBadge((ImageView)findViewById(R.id.likes_badge), likesCount);
                             String likesText = String.valueOf(likesCount);
                             likesCounterView.setText(likesText);
                         } else {

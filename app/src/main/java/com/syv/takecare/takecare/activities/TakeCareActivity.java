@@ -8,7 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +20,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
+
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,18 +29,39 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.syv.takecare.takecare.POJOs.ActivityCode;
 import com.syv.takecare.takecare.R;
 
 import java.util.Locale;
+
+import static com.syv.takecare.takecare.adapters.AchievementsAdapter.TOTAL_LIKES_BADGES;
+import static com.syv.takecare.takecare.adapters.AchievementsAdapter.TOTAL_PICKUP_METHOD_BADGES;
+import static com.syv.takecare.takecare.adapters.AchievementsAdapter.TOTAL_SHARING_BADGES;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.ALTRUIST_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.AUDIENCE_FAVORITE_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.CATEGORY_BRONZE_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.CATEGORY_GOLD_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.CATEGORY_SILVER_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.COMMUNITY_HERO_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.GOOD_NEIGHBOUR_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.LEGENDARY_SHARER;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.LOCAL_CELEBRITY_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.PHILANTHROPIST_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForCategoryBadgeEligibility;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForLikesBadgeEligibility;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForSharesBadgeEligibility;
 
 /**
  * Base class that represents an activity of the app.
@@ -51,6 +76,7 @@ public class TakeCareActivity extends AppCompatActivity {
     public static final String EXTRA_CHANGE_ACTIVITY = "EXTRA_CHANGE_ACTIVITY";
 
     private static final int LOAD_TIMEOUT = 5000;
+    private static final String TAG = "TakeCareActivity";
 
     // This field indicates whether the activity is running or not
     protected static boolean isActivityRunning = false;
@@ -67,7 +93,7 @@ public class TakeCareActivity extends AppCompatActivity {
     private Handler progressHandler;
 
     //AppSettings app;
-    private SharedPreferences prefs;
+    private static SharedPreferences prefs;
     static final String APP_LANGUAGE = "app_language";
 
     // A task that's executed when a time-out occurs with a loading process
@@ -101,6 +127,12 @@ public class TakeCareActivity extends AppCompatActivity {
             neutralButton.setLayoutParams(buttonLayoutParams);
         }
     };
+
+    private static final String SHARES_BADGE = "SHARES_BADGE";
+    private static final String LIKES_BADGE = "LIKES_BADGE";
+    private static final String IN_PERSON_BADGE = "IN_PERSON_BADGE";
+    private static final String GIVEAWAY_BADGE = "GIVEAWAY_BADGE";
+    private static final String RACE_BADGE = "RACE_BADGE";
 
 
     @Override
@@ -364,5 +396,140 @@ public class TakeCareActivity extends AppCompatActivity {
                 return ActivityCode.ActivityUserProfile;
         }
         return ActivityCode.NA;
+    }
+
+    static void checkAchievementsUpdates(final DocumentSnapshot snapshot, final Activity context) {
+        final int sharesBadge = prefs.getInt(SHARES_BADGE, -1);
+        final int likesBadge = prefs.getInt(LIKES_BADGE, -1);
+        final int inPersonBadge = prefs.getInt(IN_PERSON_BADGE, -1);
+        final int giveawayBadge = prefs.getInt(GIVEAWAY_BADGE, -1);
+        final int raceBadge = prefs.getInt(RACE_BADGE, -1);
+
+        Log.d(TAG, "likes badge: " + likesBadge);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                int newSharesBadge = checkForSharesBadgeEligibility(snapshot.getLong("totalGivenItems"));
+                if (newSharesBadge != sharesBadge) {
+                    alertNewAchievement(SHARES_BADGE, newSharesBadge, context);
+                    prefs.edit().putInt(SHARES_BADGE, newSharesBadge).apply();
+                }
+                int newLikesBadge = checkForLikesBadgeEligibility(snapshot.getLong("likes"));
+                if (newLikesBadge != likesBadge) {
+                    Log.d(TAG, "update likes badge");
+                    alertNewAchievement(LIKES_BADGE, newLikesBadge, context);
+                    prefs.edit().putInt(LIKES_BADGE, newLikesBadge).apply();
+                }
+                int newInPersonBadge = checkForCategoryBadgeEligibility(snapshot.getLong("inPersonCount"));
+                if (newInPersonBadge != inPersonBadge) {
+                    alertNewAchievement(IN_PERSON_BADGE, newInPersonBadge, context);
+                    prefs.edit().putInt(IN_PERSON_BADGE, newInPersonBadge).apply();
+                }
+                int newGiveawayBadge = checkForCategoryBadgeEligibility(snapshot.getLong("giveawayCount"));
+                if (newGiveawayBadge != giveawayBadge) {
+                    alertNewAchievement(GIVEAWAY_BADGE, newGiveawayBadge, context);
+                    prefs.edit().putInt(GIVEAWAY_BADGE, newGiveawayBadge).apply();
+                }
+                int newRaceBadge = checkForCategoryBadgeEligibility(snapshot.getLong("raceCount"));
+                if (newRaceBadge != raceBadge) {
+                    alertNewAchievement(RACE_BADGE, newRaceBadge, context);
+                    prefs.edit().putInt(RACE_BADGE, newRaceBadge).apply();
+                }
+            }
+        }, 3000);
+    }
+
+    private static void alertNewAchievement(String badgeType, int rank, Activity context) {
+        if (rank == -1) return;
+        Log.d(TAG, "New achievement detected");
+        int totalRank = rank;
+        String requirementString = context.getString(R.string.given_items_requirement);
+        switch (badgeType) {
+            case LIKES_BADGE:
+                totalRank += TOTAL_SHARING_BADGES;
+                requirementString = context.getString(R.string.likes_requirement);
+                break;
+            case IN_PERSON_BADGE:
+                totalRank += TOTAL_SHARING_BADGES + TOTAL_LIKES_BADGES;
+                requirementString = context.getString(R.string.in_person_requirement);
+                break;
+            case GIVEAWAY_BADGE:
+                totalRank += TOTAL_SHARING_BADGES + TOTAL_LIKES_BADGES + TOTAL_PICKUP_METHOD_BADGES;
+                requirementString = context.getString(R.string.giveaway_requirement);
+                break;
+            case RACE_BADGE:
+                totalRank += TOTAL_SHARING_BADGES + TOTAL_LIKES_BADGES + 2 * TOTAL_PICKUP_METHOD_BADGES;
+                requirementString = context.getString(R.string.race_requirement);
+                break;
+        }
+
+        String[] badgesNames = context.getResources().getStringArray(R.array.achievements_explicit_titles);
+        String[] badgesDescriptions = context.getResources().getStringArray(R.array.achievements_explicit_descriptions);
+        int[] achievementsIconsResources = new int[] {
+                R.drawable.ic_good_neighbor,
+                R.drawable.ic_altruism,
+                R.drawable.ic_philanthropist,
+                R.drawable.ic_superhero,
+                R.drawable.ic_audience_favorite,
+                R.drawable.ic_celebrity,
+                R.drawable.ic_legendary,
+                R.drawable.ic_personal_touch_bronze,
+                R.drawable.ic_personal_touch_silver,
+                R.drawable.ic_personal_touch_gold,
+                R.drawable.ic_one_for_all_bronze,
+                R.drawable.ic_one_for_all_silver,
+                R.drawable.ic_one_for_all_gold,
+                R.drawable.ic_time_files_bronze,
+                R.drawable.ic_time_files_silver,
+                R.drawable.ic_time_files_gold
+        };
+        int[] requirements = new int[] {
+                GOOD_NEIGHBOUR_BADGE_BAR,
+                ALTRUIST_BADGE_BAR,
+                PHILANTHROPIST_BADGE_BAR,
+                COMMUNITY_HERO_BADGE_BAR,
+                AUDIENCE_FAVORITE_BADGE_BAR,
+                LOCAL_CELEBRITY_BADGE_BAR,
+                LEGENDARY_SHARER,
+                CATEGORY_BRONZE_BADGE_BAR,
+                CATEGORY_SILVER_BADGE_BAR,
+                CATEGORY_GOLD_BADGE_BAR,
+                CATEGORY_BRONZE_BADGE_BAR,
+                CATEGORY_SILVER_BADGE_BAR,
+                CATEGORY_GOLD_BADGE_BAR,
+                CATEGORY_BRONZE_BADGE_BAR,
+                CATEGORY_SILVER_BADGE_BAR,
+                CATEGORY_GOLD_BADGE_BAR
+        };
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        View view = context.getLayoutInflater().inflate(R.layout.new_achievement_alert, null);
+        Resources res = view.getResources();
+        ((ImageView)view.findViewById(R.id.new_badge_icon))
+                .setImageDrawable(ResourcesCompat.getDrawable(res, achievementsIconsResources[totalRank], null));
+        ((TextView)view.findViewById(R.id.badge_name))
+                .setText(badgesNames[totalRank]);
+        ((TextView)view.findViewById(R.id.badge_description))
+                .setText(badgesDescriptions[totalRank]);
+        String requirementFullString = "" + requirements[totalRank] + " " + requirementString;
+        ((TextView)view.findViewById(R.id.new_badge_requirement))
+                .setText(String.valueOf(requirementFullString));
+
+        dialogBuilder.setView(view);
+        final AlertDialog dialog;
+        if (!context.isFinishing()) {
+            dialog = dialogBuilder.show();
+            dialog.setCanceledOnTouchOutside(true);
+            dialog.setCancelable(true);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().findViewById(R.id.new_achievement_window)
+                    .setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+        }
     }
 }

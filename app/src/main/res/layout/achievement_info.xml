@@ -61,7 +61,7 @@
             android:textColor="@color/primary_text"
             android:visibility="gone"
             tools:visibility="visible"
-            tools:text="You earned this cool badge for sharing 100 muffins. Well done!" />`
+            tools:text="You earned this cool badge for sharing 100 muffins. Well done!" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

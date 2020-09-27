@@ -361,6 +361,25 @@
         <item name="time_flies_title">הזמן לא מחכה!</item>
     </string-array>
 
+    <string-array name="achievements_explicit_titles">
+        <item name="good_neighbor_title">שכן טוב</item>
+        <item name="altruist_title">אלטרואיסט</item>
+        <item name="philanthropist_title">פילנטרופ</item>
+        <item name="hero_title">גיבור הקהילה</item>
+        <item name="audience_favorite_title">חביב הקהל</item>
+        <item name="celebrity_title">סלב מקומי</item>
+        <item name="legendary_title">נדבן אגדי</item>
+        <item name="personal_touch_title">מגע אישי - ארד</item>
+        <item name="personal_touch_title">מגע אישי - כסף</item>
+        <item name="personal_touch_title">מגע אישי - זהב</item>
+        <item name="one_for_all_title">אחד בשביל כולם! - ארד</item>
+        <item name="one_for_all_title">אחד בשביל כולם! - כסף</item>
+        <item name="one_for_all_title">אחד בשביל כולם! - זהב</item>
+        <item name="time_flies_title">הזמן לא מחכה! - ארד</item>
+        <item name="time_flies_title">הזמן לא מחכה! - כסף</item>
+        <item name="time_flies_title">הזמן לא מחכה! - זהב</item>
+    </string-array>
+
     <string-array name="achievements_descriptions">
         <item name="good_neighbor_description">הנך עושה עבודה מעולה במתן עזרה לשכניך הזקוקים לה. יישר כוח!</item>
         <item name="altruist_description">עזרה לזולת היא חלק בלתי נפרד ממך. את/ה עושה את הקהילה שלנו טובה יותר!</item>
@@ -374,10 +393,31 @@
         <item name="time_flies_description">וגם את/ה. כדאי שהדברים האלה ימצאו את הבעלים החדשים שלהם מהר!</item>
     </string-array>
 
+    <string-array name="achievements_explicit_descriptions">
+        <item name="good_neighbor_description">הנך עושה עבודה מעולה במתן עזרה לשכניך הזקוקים לה. יישר כוח!</item>
+        <item name="altruist_description">עזרה לזולת היא חלק בלתי נפרד ממך. את/ה עושה את הקהילה שלנו טובה יותר!</item>
+        <item name="philanthropist_description">חלקת חלק ניכר מדבריך על הקהילה. נדיבותך לא תחמוק מעיניהם של הסובבים אותך!</item>
+        <item name="hero_description">הרבה מאוד דברים ניצלו מבזבוז וסייעו לאנשים רבים, תודות לך. הנך גיבור/ה אמיתי/ת!</item>
+        <item name="audience_favorite_description">הנך מתחיל/ה לצבור שם טוב בקרב הסובבים אותך. כל הכבוד!</item>
+        <item name="celebrity_description">אם להיות מפורסם דרך עזרה לזולת ולסביבה זה החלום שלך, נראה שאת/ה יודע/ת לרדוף אחרי חלומות!</item>
+        <item name="legendary_description">שמך לעד יהיה חרוט בהיכל התהילה של הקהילה שלך בזכות העזרה הכבירה שנתת לה!</item>
+        <item name="personal_touch_description">הנך אוהב/ת להסיף מגע אישי לדברים שהנך חולק/ת. מגניב!</item>
+        <item name="personal_touch_description">הנך אוהב/ת להסיף מגע אישי לדברים שהנך חולק/ת. מגניב!</item>
+        <item name="personal_touch_description">הנך אוהב/ת להסיף מגע אישי לדברים שהנך חולק/ת. מגניב!</item>
+        <item name="one_for_all_description">לכל אחד מגיע לקבל עוגיה מתוך המצבור הענקי ההוא שמצאת. חלוקה הוגנת!</item>
+        <item name="one_for_all_description">לכל אחד מגיע לקבל עוגיה מתוך המצבור הענקי ההוא שמצאת. חלוקה הוגנת!</item>
+        <item name="one_for_all_description">לכל אחד מגיע לקבל עוגיה מתוך המצבור הענקי ההוא שמצאת. חלוקה הוגנת!</item>
+        <item name="time_flies_description">וגם את/ה. כדאי שהדברים האלה ימצאו את הבעלים החדשים שלהם מהר!</item>
+        <item name="time_flies_description">וגם את/ה. כדאי שהדברים האלה ימצאו את הבעלים החדשים שלהם מהר!</item>
+        <item name="time_flies_description">וגם את/ה. כדאי שהדברים האלה ימצאו את הבעלים החדשים שלהם מהר!</item>
+    </string-array>
+
     <string name="given_items_requirement">פריטים שנמסרו</string>
     <string name="likes_requirement">לייקים</string>
     <string name="in_person_requirement">פריטים נמסרו באופן אישי</string>
     <string name="giveaway_requirement">פריטים נמסרו באופן פומבי</string>
     <string name="race_requirement">פריטים נמסרו באופן מרוץ</string>
+
+    <string name="achievement_unlocked">הישג חדש!</string>
 
 </resources>

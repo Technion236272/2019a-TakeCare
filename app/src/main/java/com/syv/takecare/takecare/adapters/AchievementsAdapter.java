@@ -4,7 +4,6 @@ import android.content.res.Resources;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,9 +29,9 @@ import static com.syv.takecare.takecare.utilities.AchievementsFunctions.LOCAL_CE
 import static com.syv.takecare.takecare.utilities.AchievementsFunctions.PHILANTHROPIST_BADGE_BAR;
 
 public class AchievementsAdapter extends RecyclerView.Adapter<AchievementsAdapter.AchievementsViewHolder> {
-    private static final int SHARING_BADGES = 4;
-    private static final int LIKES_BADGES = 3;
-    private static final int PICKUP_METHOD_BADGES = 3;
+    public static final int TOTAL_SHARING_BADGES = 4;
+    public static final int TOTAL_LIKES_BADGES = 3;
+    public static final int TOTAL_PICKUP_METHOD_BADGES = 3;
 
     Resources res;
     int[] achievementsIconsResources;
@@ -93,17 +92,17 @@ public class AchievementsAdapter extends RecyclerView.Adapter<AchievementsAdapte
 
         int SHARING_BADGE = badgesBundle.getInt("SHARES_BADGE");
         int LIKES_BADGE = badgesBundle.getInt("LIKES_BADGE");
-        boolean IN_PERSON_BADGE = badgesBundle.getBoolean("IN_PERSON_BADGE");
-        boolean GIVEAWAY_BADGE = badgesBundle.getBoolean("GIVEAWAY_BADGE");
-        boolean RACE_BADGE = badgesBundle.getBoolean("RACE_BADGE");
+        boolean IN_PERSON_BADGE = badgesBundle.getInt("IN_PERSON_BADGE") >= 0;
+        boolean GIVEAWAY_BADGE = badgesBundle.getInt("GIVEAWAY_BADGE") >= 0;
+        boolean RACE_BADGE = badgesBundle.getInt("RACE_BADGE") >= 0;
 
         for (int i = 0; i <= SHARING_BADGE; i++)
             activeAchievements[i] = true;
         for (int i = 0; i <= LIKES_BADGE; i++)
-            activeAchievements[SHARING_BADGES + i] = true;
-        activeAchievements[SHARING_BADGES + LIKES_BADGES] = IN_PERSON_BADGE;
-        activeAchievements[SHARING_BADGES + LIKES_BADGES + 1] = GIVEAWAY_BADGE;
-        activeAchievements[SHARING_BADGES + LIKES_BADGES + 2] = RACE_BADGE;
+            activeAchievements[TOTAL_SHARING_BADGES + i] = true;
+        activeAchievements[TOTAL_SHARING_BADGES + TOTAL_LIKES_BADGES] = IN_PERSON_BADGE;
+        activeAchievements[TOTAL_SHARING_BADGES + TOTAL_LIKES_BADGES + 1] = GIVEAWAY_BADGE;
+        activeAchievements[TOTAL_SHARING_BADGES + TOTAL_LIKES_BADGES + 2] = RACE_BADGE;
     }
 
     @NonNull

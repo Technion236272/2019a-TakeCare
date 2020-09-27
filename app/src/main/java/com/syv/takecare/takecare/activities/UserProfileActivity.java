@@ -10,22 +10,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RotateDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.firebase.ui.auth.data.model.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -76,7 +71,6 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.ortiz.touchview.TouchImageView;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.fragments.AchievementsFragment;
-import com.syv.takecare.takecare.fragments.UserProfileFragment;
 import com.syv.takecare.takecare.utilities.RotateBitmap;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -94,16 +88,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForCategorySharesBadgeEligibility;
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForLikesBadgeEligibility;
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForSharesBadgeEligibility;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.addCategoryBadge;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.addLikesBadge;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.addSharesBadge;
 
 public class UserProfileActivity extends TakeCareActivity {
 
     private final static String TAG = "TakeCare/UserProfile";
+    private static final String LANGUAGE_CHANGED = "LANGUAGE_CHANGED";
 
     private String profileOwner = null;
 
@@ -151,6 +145,7 @@ public class UserProfileActivity extends TakeCareActivity {
     private boolean isImageFullscreen;
 
     private Bundle achievementsStatsBundle;
+    private boolean isLanguageChanged;
 
     private View.OnClickListener minimizer = null;
 
@@ -286,12 +281,24 @@ public class UserProfileActivity extends TakeCareActivity {
                             Long giveawayCount = document.getLong("giveawayCount");
                             Long raceCount = document.getLong("raceCount");
 
+                            int likesBadge = addLikesBadge((ImageView)findViewById(R.id.likes_badge), likes);
+                            int sharesBadge = addSharesBadge((ImageView)findViewById(R.id.shares_badge), totalGivenItems);
+                            int inPersonBadge = addCategoryBadge((ImageView)findViewById(R.id.in_person_badge), "In Person", inPersonCount);
+                            int giveawayBadge = addCategoryBadge((ImageView)findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount);
+                            int raceBadge = addCategoryBadge((ImageView)findViewById(R.id.race_badge), "Race", raceCount);
+
                             achievementsStatsBundle = new Bundle();
-                            achievementsStatsBundle.putInt("LIKES_BADGE", checkForLikesBadgeEligibility((ImageView)findViewById(R.id.likes_badge), likes));
-                            achievementsStatsBundle.putInt("SHARES_BADGE", checkForSharesBadgeEligibility((ImageView)findViewById(R.id.shares_badge), totalGivenItems));
-                            achievementsStatsBundle.putBoolean("IN_PERSON_BADGE", checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.in_person_badge), "In Person", inPersonCount));
-                            achievementsStatsBundle.putBoolean("GIVEAWAY_BADGE", checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount));
-                            achievementsStatsBundle.putBoolean("RACE_BADGE", checkForCategorySharesBadgeEligibility((ImageView)findViewById(R.id.race_badge), "Race", raceCount));
+                            achievementsStatsBundle.putInt("LIKES_BADGE", likesBadge);
+                            achievementsStatsBundle.putInt("SHARES_BADGE", sharesBadge);
+                            achievementsStatsBundle.putInt("IN_PERSON_BADGE", inPersonBadge);
+                            achievementsStatsBundle.putInt("GIVEAWAY_BADGE", giveawayBadge);
+                            achievementsStatsBundle.putInt("RACE_BADGE", raceBadge);
+
+                            getPreferences(Context.MODE_PRIVATE).edit().putInt("LIKES_BADGE", likesBadge).apply();
+                            getPreferences(Context.MODE_PRIVATE).edit().putInt("SHARES_BADGE", sharesBadge).apply();
+                            getPreferences(Context.MODE_PRIVATE).edit().putInt("IN_PERSON_BADGE", inPersonBadge).apply();
+                            getPreferences(Context.MODE_PRIVATE).edit().putInt("GIVEAWAY_BADGE", giveawayBadge).apply();
+                            getPreferences(Context.MODE_PRIVATE).edit().putInt("RACE_BADGE", raceBadge).apply();
 
                             profilePictureView.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -371,13 +378,22 @@ public class UserProfileActivity extends TakeCareActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0 && !currentLanguage.equals("system")) {
                     setDefaultDeviceLocale();
-                    startActivity(new Intent(UserProfileActivity.this, UserProfileActivity.class));
+                    Intent intent = new Intent(UserProfileActivity.this, UserProfileActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra(LANGUAGE_CHANGED, true);
+                    startActivity(intent);
                 } else if (position == 1 && !currentLanguage.equals("en")) {
                     setLocale("en");
-                    startActivity(new Intent(UserProfileActivity.this, UserProfileActivity.class));
+                    Intent intent = new Intent(UserProfileActivity.this, UserProfileActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra(LANGUAGE_CHANGED, true);
+                    startActivity(intent);
                 } else if (position == 2 && !currentLanguage.equals("iw")) {
                     setLocale("iw");
-                    startActivity(new Intent(UserProfileActivity.this, UserProfileActivity.class));
+                    Intent intent = new Intent(UserProfileActivity.this, UserProfileActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra(LANGUAGE_CHANGED, true);
+                    startActivity(intent);
                 }
             }
 
@@ -402,6 +418,7 @@ public class UserProfileActivity extends TakeCareActivity {
                 return true;
             }
         });
+        isLanguageChanged = getIntent().getBooleanExtra(LANGUAGE_CHANGED, false);
     }
 
     private void initWidgets() {
@@ -460,17 +477,23 @@ public class UserProfileActivity extends TakeCareActivity {
         if (isImageFullscreen) {
             Log.d(TAG, "onOptionsItemSelected: fake toolbar clicked");
             if (!minimizeFullscreenImage()) {
-                Intent intent = new Intent(this, TakerMenuActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                //super.onBackPressed();
+                if (isLanguageChanged) {
+                    Intent intent = new Intent(this, TakerMenuActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                } else {
+                    super.onBackPressed();
+                }
             }
         } else {
             Log.d(TAG, "onOptionsItemSelected: real toolbar clicked");
-            Intent intent = new Intent(this, TakerMenuActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            //super.onBackPressed();
+            if (isLanguageChanged) {
+                Intent intent = new Intent(this, TakerMenuActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            } else {
+                super.onBackPressed();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -480,10 +503,13 @@ public class UserProfileActivity extends TakeCareActivity {
     public void onBackPressed() {
         View focusView = getCurrentFocus();
         if (focusView == null) {
-            Intent intent = new Intent(this, TakerMenuActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            //super.onBackPressed();
+            if (isLanguageChanged) {
+                Intent intent = new Intent(this, TakerMenuActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            } else {
+                super.onBackPressed();
+            }
         } else if (focusView.equals(userDescriptionView) &&
                 !userDescriptionView.getText().toString().equals(currentDescription)) {
             userDescriptionView.clearFocus(); // Invokes the focus change listener
@@ -494,17 +520,23 @@ public class UserProfileActivity extends TakeCareActivity {
             if (isImageFullscreen) {
                 Log.d(TAG, "onBackPressed: closing fullscreen image");
                 if (!minimizeFullscreenImage()) {
-                    Intent intent = new Intent(this, TakerMenuActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-//                    super.onBackPressed();
+                    if (isLanguageChanged) {
+                        Intent intent = new Intent(this, TakerMenuActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    } else {
+                        super.onBackPressed();
+                    }
                 }
             } else {
                 Log.d(TAG, "onBackPressed: finishing activity");
-                Intent intent = new Intent(this, TakerMenuActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-//                  super.onBackPressed();
+                if (isLanguageChanged) {
+                    Intent intent = new Intent(this, TakerMenuActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                } else {
+                    super.onBackPressed();
+                }
             }
         }
     }

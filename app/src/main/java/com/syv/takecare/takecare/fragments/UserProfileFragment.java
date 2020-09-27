@@ -30,9 +30,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.syv.takecare.takecare.R;
 
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForCategorySharesBadgeEligibility;
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForLikesBadgeEligibility;
-import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForSharesBadgeEligibility;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.addCategoryBadge;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.addLikesBadge;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.addSharesBadge;
 
 public class UserProfileFragment extends DialogFragment {
 
@@ -136,11 +136,11 @@ public class UserProfileFragment extends DialogFragment {
                             ratingView.setText("0");
                         }
 
-                        checkForLikesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.likes_badge), likes);
-                        checkForSharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.shares_badge), totalGivenItems);
-                        checkForCategorySharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.in_person_badge), "In Person", inPersonCount);
-                        checkForCategorySharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount);
-                        checkForCategorySharesBadgeEligibility((ImageView)inflatedView.findViewById(R.id.race_badge), "Race", raceCount);
+                        addLikesBadge((ImageView)inflatedView.findViewById(R.id.likes_badge), likes);
+                        addSharesBadge((ImageView)inflatedView.findViewById(R.id.shares_badge), totalGivenItems);
+                        addCategoryBadge((ImageView)inflatedView.findViewById(R.id.in_person_badge), "In Person", inPersonCount);
+                        addCategoryBadge((ImageView)inflatedView.findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount);
+                        addCategoryBadge((ImageView)inflatedView.findViewById(R.id.race_badge), "Race", raceCount);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

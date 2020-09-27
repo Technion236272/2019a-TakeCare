@@ -2,30 +2,33 @@ package com.syv.takecare.takecare.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Path;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.cleveroad.blur_tutorial.BlurTutorial;
 import com.cleveroad.blur_tutorial.TutorialBuilder;
 import com.cleveroad.blur_tutorial.listener.SimpleTutorialListener;
-import com.cleveroad.blur_tutorial.listener.TutorialListener;
 import com.cleveroad.blur_tutorial.state.tutorial.MenuState;
 import com.cleveroad.blur_tutorial.state.tutorial.PathState;
-import com.cleveroad.blur_tutorial.state.tutorial.RecyclerItemState;
 import com.cleveroad.blur_tutorial.state.tutorial.TutorialState;
 import com.cleveroad.blur_tutorial.state.tutorial.ViewState;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import androidx.core.app.ActivityCompat;
-import androidx.core.util.Pair;
-import androidx.core.view.MenuItemCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
@@ -33,18 +36,16 @@ import androidx.core.widget.ImageViewCompat;
 import androidx.appcompat.widget.AppCompatImageButton;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -60,6 +61,9 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -82,6 +86,22 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import static android.view.View.VISIBLE;
+import static com.syv.takecare.takecare.adapters.AchievementsAdapter.TOTAL_LIKES_BADGES;
+import static com.syv.takecare.takecare.adapters.AchievementsAdapter.TOTAL_PICKUP_METHOD_BADGES;
+import static com.syv.takecare.takecare.adapters.AchievementsAdapter.TOTAL_SHARING_BADGES;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.ALTRUIST_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.AUDIENCE_FAVORITE_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.CATEGORY_BRONZE_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.CATEGORY_GOLD_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.CATEGORY_SILVER_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.COMMUNITY_HERO_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.GOOD_NEIGHBOUR_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.LEGENDARY_SHARER;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.LOCAL_CELEBRITY_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.PHILANTHROPIST_BADGE_BAR;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForCategoryBadgeEligibility;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForLikesBadgeEligibility;
+import static com.syv.takecare.takecare.utilities.AchievementsFunctions.checkForSharesBadgeEligibility;
 
 public class TakerMenuActivity extends TakeCareActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -295,6 +315,17 @@ public class TakerMenuActivity extends TakeCareActivity
                 }
             }, TUT_STARTUP_DELAY);
         }
+        db.collection("users").document(user.getUid())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@androidx.annotation.Nullable final DocumentSnapshot value, @androidx.annotation.Nullable FirebaseFirestoreException error) {
+                        if (value == null || error != null) {
+                            Log.w(TAG, "Listen failed.", error);
+                            return;
+                        }
+                        checkAchievementsUpdates(value, TakerMenuActivity.this);
+                    }
+                });
     }
 
     private void showTutorial() {
