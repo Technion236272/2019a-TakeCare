@@ -32,6 +32,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
             android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputLayout
@@ -170,7 +171,7 @@
         android:id="@+id/sign_up_back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="36dp"
+        android:layout_marginStart="36dp"
         android:layout_marginTop="36dp"
         android:background="@android:color/transparent"
         android:scaleX="1.5"

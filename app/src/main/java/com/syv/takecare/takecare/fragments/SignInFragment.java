@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.syv.takecare.takecare.activities.TakerMenuActivity;
 import com.syv.takecare.takecare.customViews.CustomEditText;
@@ -72,8 +73,12 @@ public class SignInFragment extends Fragment  implements View.OnClickListener {
             }
         });
 
-        passwordView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_mail_outline_black_24dp), null, null, null);
-        emailView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_lock_outline_black_24dp), null, null, null);
+        passwordView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_lock_outline_black_24dp), null, null, null);
+        emailView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_mail_outline_black_24dp), null, null, null);
+
+        if (getResources().getConfiguration().locale.getLanguage().equals("iw")) {
+            view.findViewById(R.id.sign_in_back_button).setRotation(180);
+        }
         return view;
     }
 
@@ -97,14 +102,22 @@ public class SignInFragment extends Fragment  implements View.OnClickListener {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                assert auth.getCurrentUser() != null;
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "signInWithEmail:success");
-                                Intent intent = new Intent(getActivity(), TakerMenuActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                intent.putExtra(Intent.EXTRA_TEXT, true);
-                                dialog.dismiss();
-                                startActivity(intent);
+                                FirebaseUser user = auth.getCurrentUser();
+                                assert user != null;
+                                if (user.isEmailVerified()) {
+                                    // Sign in success, update UI with the signed-in user's information
+                                    Log.d(TAG, "signInWithEmail:success");
+                                    Intent intent = new Intent(getActivity(), TakerMenuActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    intent.putExtra(Intent.EXTRA_TEXT, true);
+                                    dialog.dismiss();
+                                    startActivity(intent);
+                                } else {
+                                    Toast.makeText(getActivity(), R.string.email_verification_failed, Toast.LENGTH_LONG)
+                                            .show();
+                                    auth.signOut();
+                                    dialog.hide();
+                                }
                             } else {
                                 emailView.setError("");
                                 passwordView.setError("");

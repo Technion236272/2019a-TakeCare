@@ -97,6 +97,11 @@
     <string name="sign_up">הרשמה</string>
     <string name="duplicate_email">כתובת הדוא\"ל שהוזנה כבר רשומה</string>
     <string name="bad_email">הזנת כתובת דוא\"ל לא חוקית</string>
+    <string name="verification_email_sent">מייל אימות נשלח לכתובת האימייל שלך. נא לאמת ולהיכנס למשתמש</string>
+    <string name="verification_email_error">שגיאת חיבור. אנא נסו שוב</string>
+    <string name="email_verification_failed">אימות האימייל נכשל. אנא נסו שוב</string>
+    <string name="already_have_an_account">כבר יש לך משתמש?</string>
+    <string name="enter_credentials_sign_in">הכניסו שם משתמש וסיסמה:</string>
 
 
     <!-- Report option elements -->

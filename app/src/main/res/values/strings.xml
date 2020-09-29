@@ -98,6 +98,11 @@
     <string name="sign_up">Sign Up</string>
     <string name="duplicate_email">Entered email is already registered</string>
     <string name="bad_email">You have entered an illegal email</string>
+    <string name="verification_email_sent">Verification mail was sent to your email. Please verify and log in</string>
+    <string name="verification_email_error">Connection error. Please try again</string>
+    <string name="email_verification_failed">Email verification failed. Please try again.</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="enter_credentials_sign_in">Enter your Email and Password:</string>
 
 
     <!--Report option elements-->

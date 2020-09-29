@@ -38,6 +38,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -116,18 +117,22 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
         //mLoginFormView = view.findViewById(R.id.login_form);
         mProgressView = view.findViewById(R.id.sign_up_progress_bar);
 
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if(currentUser!=null) {
-            Intent intent = new Intent(getActivity(), TakerMenuActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-        }
+//        FirebaseUser currentUser = auth.getCurrentUser();
+//        if(currentUser!=null ) {
+//            Intent intent = new Intent(getActivity(), TakerMenuActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//            startActivity(intent);
+//        }
 
 
         mNameView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_person_outline_black_24dp), null, null, null);
         mEmailView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_mail_outline_black_24dp), null, null, null);
         mPasswordView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_lock_outline_black_24dp), null, null, null);
         mRePasswordView.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_lock_outline_black_24dp), null, null, null);
+
+        if (getResources().getConfiguration().locale.getLanguage().equals("iw")) {
+            view.findViewById(R.id.sign_up_back_button).setRotation(180);
+        }
         return view;
     }
 
@@ -334,20 +339,37 @@ public class SignUpFragment extends Fragment implements LoaderManager.LoaderCall
         final ProgressDialog dialog = new ProgressDialog(getActivity());
         dialog.setMessage("Signing up...");
         dialog.show();
+        auth.useAppLanguage();
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
-                            assert auth.getCurrentUser()!=null;
-                            setUserInfo(auth.getCurrentUser(), name, email, password);
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "createUserWithEmail:success");
-                            Intent intent = new Intent(getActivity(), TakerMenuActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            intent.putExtra(Intent.EXTRA_TEXT, true);
-                            dialog.dismiss();
-                            startActivity(intent);
+                            final FirebaseUser user = auth.getCurrentUser();
+                            assert user !=null;
+                            user.sendEmailVerification()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                setUserInfo(user, name, email, password);
+                                                // Sign in success, update UI with the signed-in user's information
+                                                Log.d(TAG, "createUserWithEmail:success");
+                                                Toast.makeText(getActivity(), R.string.verification_email_sent, Toast.LENGTH_LONG)
+                                                        .show();
+                                                dialog.hide();
+                                                getActivity().onBackPressed();
+//                                                Intent intent = new Intent(getActivity(), TakerMenuActivity.class);
+//                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                                                intent.putExtra(Intent.EXTRA_TEXT, true);
+//                                                dialog.dismiss();
+//                                                startActivity(intent);
+                                            } else {
+                                                Toast.makeText(getActivity(), R.string.verification_email_error, Toast.LENGTH_LONG)
+                                                        .show();
+                                            }
+                                        }
+                                    });
                         } else {
                             dialog.dismiss();
                             try {

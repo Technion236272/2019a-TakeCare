@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:layout_marginTop="8dp"
-        android:text="Enter your Email and Password:"
+        android:text="@string/enter_credentials_sign_in"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/sign_in_email_input_layout"
