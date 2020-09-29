@@ -287,6 +287,9 @@ public class UserProfileActivity extends TakeCareActivity {
                             int giveawayBadge = addCategoryBadge((ImageView)findViewById(R.id.giveaway_badge),"Giveaway", giveawayCount);
                             int raceBadge = addCategoryBadge((ImageView)findViewById(R.id.race_badge), "Race", raceCount);
 
+                            if (likesBadge >= 0 && sharesBadge >= 0 && inPersonBadge >= 0 && giveawayBadge >= 0 && raceBadge >= 0)
+                                findViewById(R.id.empty_achievements).setVisibility(View.GONE);
+
                             achievementsStatsBundle = new Bundle();
                             achievementsStatsBundle.putInt("LIKES_BADGE", likesBadge);
                             achievementsStatsBundle.putInt("SHARES_BADGE", sharesBadge);

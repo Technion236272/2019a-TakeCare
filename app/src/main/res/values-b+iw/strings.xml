@@ -419,5 +419,6 @@
     <string name="race_requirement">פריטים נמסרו באופן מרוץ</string>
 
     <string name="achievement_unlocked">הישג חדש!</string>
+    <string name="empty_achievements">ההישגים שלכם יוצגו כאן.\nלחצו כאן כדי ללמוד עליהם</string>
 
 </resources>

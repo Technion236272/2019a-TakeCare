@@ -423,5 +423,6 @@
     <string name="race_requirement">Race Items Published</string>
 
     <string name="achievement_unlocked">Achievement Unlocked!</string>
+    <string name="empty_achievements">Your achievements will\nbe displayed here.\nTap here to learn about them</string>
 
 </resources>
