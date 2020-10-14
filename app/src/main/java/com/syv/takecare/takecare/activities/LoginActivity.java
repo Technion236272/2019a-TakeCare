@@ -11,12 +11,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.syv.takecare.takecare.fragments.LoginScreenFragment;
 import com.syv.takecare.takecare.R;
 import com.syv.takecare.takecare.fragments.SignInFragment;
 import com.syv.takecare.takecare.fragments.SignUpFragment;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -35,12 +43,22 @@ public class LoginActivity extends AppCompatActivity {
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
         FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser != null && currentUser.isEmailVerified()) {
+        if (currentUser != null && isUserVerified(currentUser)) {
             Intent intent = new Intent(this, TakerMenuActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
 
+    }
+
+    private boolean isUserVerified(FirebaseUser user) {
+        List<String> providers = Arrays.asList(EmailAuthProvider.PROVIDER_ID, FirebaseAuthProvider.PROVIDER_ID);
+        for (UserInfo userInfo : user.getProviderData()) {
+            if (providers.contains(userInfo.getProviderId())) {
+                return true;
+            }
+        }
+        return user.isEmailVerified();
     }
 
     public void changeFragment(View view) {
