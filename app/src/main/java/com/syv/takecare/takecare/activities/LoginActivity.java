@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
         FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser != null && isUserVerified(currentUser)) {
+        if ((currentUser != null) && isUserVerified(currentUser)) {
             Intent intent = new Intent(this, TakerMenuActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

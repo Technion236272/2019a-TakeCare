@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.NonNull;
@@ -24,6 +25,7 @@ import com.cleveroad.blur_tutorial.state.tutorial.MenuState;
 import com.cleveroad.blur_tutorial.state.tutorial.PathState;
 import com.cleveroad.blur_tutorial.state.tutorial.TutorialState;
 import com.cleveroad.blur_tutorial.state.tutorial.ViewState;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -50,9 +52,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,11 +74,14 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.robinhood.ticker.TickerUtils;
+import com.robinhood.ticker.TickerView;
 import com.syv.takecare.takecare.fragments.FeedListFragment;
 import com.syv.takecare.takecare.fragments.FeedMapFragment;
 import com.syv.takecare.takecare.R;
@@ -85,6 +93,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.syv.takecare.takecare.adapters.AchievementsAdapter.TOTAL_LIKES_BADGES;
 import static com.syv.takecare.takecare.adapters.AchievementsAdapter.TOTAL_PICKUP_METHOD_BADGES;
@@ -110,6 +119,7 @@ public class TakerMenuActivity extends TakeCareActivity
     private static final String FILTER_CATEGORY_KEY = "CATEGORY FILTER";
     private static final String FILTER_PICKUP_KEY = "PICKUP FILTER";
     private static final String MAP_VIEW_ENABLED_KEY = "MAP VIEW ENABLED";
+    private static final String FILTER_RADIUS_KEY = "FILTER RADIUS";
     public static final String EXTRA_ITEM = "EXTRA_ITEM";
     private RelativeLayout rootLayout;
     private ImageView userProfilePicture;
@@ -128,6 +138,7 @@ public class TakerMenuActivity extends TakeCareActivity
     private String queryKeywordFilter = null;
     private boolean mapViewEnabled;
     private boolean mLocationPermissionGranted;
+    private int distanceRadius;
 
     // Used in case the activity was started in order to display a location of a given item only
     private double Lat, Lng;
@@ -164,11 +175,12 @@ public class TakerMenuActivity extends TakeCareActivity
     private final int TUT_FILTER_IN_PERSON = 7;
     private final int TUT_FILTER_GIVEAWAY = 8;
     private final int TUT_FILTER_RACE = 9;
-    private final int TUT_NAV_DRAWER_TOGGLE = 10;
-    private final int TUT_NAV_DRAWER_HEADER = 11;
-    private final int TUT_NAV_DRAWER_CONTENT = 12;
-    private final int TUT_NAV_DRAWER_CONTENT_2 = 13;
-    private final int TUT_NAV_DRAWER_CONTENT_3 = 14;
+    private final int TUT_FILTER_LOCATION = 10;
+    private final int TUT_NAV_DRAWER_TOGGLE = 11;
+    private final int TUT_NAV_DRAWER_HEADER = 12;
+    private final int TUT_NAV_DRAWER_CONTENT = 13;
+    private final int TUT_NAV_DRAWER_CONTENT_2 = 14;
+    private final int TUT_NAV_DRAWER_CONTENT_3 = 15;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -245,9 +257,57 @@ public class TakerMenuActivity extends TakeCareActivity
             view.setOnClickListener(pickupMethodfilterListener);
         }
 
+        final CheckBox distanceFilterCheckbox = findViewById(R.id.distance_filter_checkbox);
+        distanceFilterCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                ConstraintLayout distanceFilterLayout = findViewById(R.id.distance_filter_layout);
+                if (isChecked) {
+                    getLocationPermission();
+                    if (!mLocationPermissionGranted) {
+                        distanceFilterCheckbox.setChecked(false);
+                        return;
+                    }
+                    distanceFilterLayout.setVisibility(VISIBLE);
+                    SeekBar distanceFilter = findViewById(R.id.distance_seekbar);
+                    final TickerView distanceDisplay = findViewById(R.id.distance_ticker);
+                    distanceDisplay.setCharacterLists(TickerUtils.provideNumberList());
+                    distanceDisplay.setText(String.valueOf(distanceFilter.getProgress() + 1));
+                    distanceRadius = distanceFilter.getProgress() + 1;
+                    distanceFilter.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
+                            String distance = "" + (progress + 1);
+                            distanceDisplay.setText(distance);
+                            distanceRadius = progress + 1;
+                        }
+
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+                        }
+
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
+                            changeFragment();
+                        }
+                    });
+                } else {
+                    distanceFilterLayout.setVisibility(GONE);
+                }
+                changeFragment();
+            }
+        });
+
+        final CheckBox hideNoLocationItems = findViewById(R.id.hide_no_location);
+        hideNoLocationItems.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                changeFragment();
+            }
+        });
+
         mLocationPermissionGranted = ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED;
+            android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
         if (savedInstanceState == null) {
             Log.d(TAG, "onCreate: saveInstanceState is null");
             Intent intent = getIntent();
@@ -277,7 +337,7 @@ public class TakerMenuActivity extends TakeCareActivity
                         searchBar.clearFocus();
                         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
-                        filterPopupMenu.setVisibility(View.GONE);
+                        filterPopupMenu.setVisibility(GONE);
                     }
                     changeFragment();
                 }
@@ -393,6 +453,15 @@ public class TakerMenuActivity extends TakeCareActivity
                 searchKeywordLayout.getHeight() + pickupMethodLayout.getHeight(),
                 Path.Direction.CW
         );
+        Path filterLocationHighlight = new Path();
+        ConstraintLayout locationOptionsLayout = findViewById(R.id.filter_location_options_layout);
+        filterLocationHighlight.addRect(
+                0,
+                searchKeywordLayout.getHeight() + pickupMethodLayout.getHeight(),
+                locationOptionsLayout.getWidth(),
+                searchKeywordLayout.getHeight() + pickupMethodLayout.getHeight() + locationOptionsLayout.getHeight(),
+                Path.Direction.CW
+        );
 
         List<TutorialState> states = new ArrayList<>();
         states.add(new PathState(TUT_FILTER_KEYWORDS, searchKeywordHighlight, null, rootLayout));
@@ -400,6 +469,7 @@ public class TakerMenuActivity extends TakeCareActivity
         states.add(new ViewState(TUT_FILTER_IN_PERSON, findViewById(R.id.pickup_in_person_button), null));
         states.add(new ViewState(TUT_FILTER_GIVEAWAY, findViewById(R.id.pickup_giveaway_button), null));
         states.add(new ViewState(TUT_FILTER_RACE, findViewById(R.id.pickup_race_button), null));
+        states.add(new PathState(TUT_FILTER_LOCATION, filterLocationHighlight, null, rootLayout));
 
         tutorial.clearStates();
         tutorial.addAllStates(states);
@@ -505,6 +575,9 @@ public class TakerMenuActivity extends TakeCareActivity
             case TUT_FILTER_RACE:
                 description.setText(R.string.tut_filter_race);
                 break;
+            case TUT_FILTER_LOCATION:
+                description.setText(R.string.tut_filer_location);
+                break;
             case TUT_NAV_DRAWER_TOGGLE:
                 description.setText(R.string.tut_drawer_toggle);
                 break;
@@ -565,7 +638,13 @@ public class TakerMenuActivity extends TakeCareActivity
                 break;
 
             case TUT_FILTER_RACE:
-                filterPopupMenu.setVisibility(View.GONE);
+                tutorial.configure()
+                        .withPopupAppearAnimation(R.anim.slide_in_right)
+                        .withPopupDisappearAnimation(R.anim.fade_out);
+                break;
+
+            case TUT_FILTER_LOCATION:
+                filterPopupMenu.setVisibility(GONE);
                 tutorial.clearStates();
                 tutorial.configure()
                         .withPopupAppearAnimation(R.anim.slide_in_right)
@@ -623,6 +702,7 @@ public class TakerMenuActivity extends TakeCareActivity
         savedInstanceState.putBoolean(MAP_VIEW_ENABLED_KEY, mapViewEnabled);
         super.onSaveInstanceState(savedInstanceState);
     }
+
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -741,7 +821,7 @@ public class TakerMenuActivity extends TakeCareActivity
             drawer.closeDrawer(GravityCompat.START);
         } else if (filterPopupMenu.getVisibility() == VISIBLE && !isTutorialOn) {
             Log.d(TAG, "onBackPressed: Search bar is focused");
-            filterPopupMenu.setVisibility(View.GONE);
+            filterPopupMenu.setVisibility(GONE);
         } else {
             super.onBackPressed();
         }
@@ -788,14 +868,14 @@ public class TakerMenuActivity extends TakeCareActivity
     }
 
     private void toggleFilterMenu() {
-        if (filterPopupMenu.getVisibility() == View.GONE) {
+        if (filterPopupMenu.getVisibility() == GONE) {
             filterPopupMenu.setVisibility(VISIBLE);
         } else {
             // Close the keyboard if it is open
             hideKeyboard(this);
             // Flush the search bar if the user has written to it
             searchBar.setText("");
-            filterPopupMenu.setVisibility(View.GONE);
+            filterPopupMenu.setVisibility(GONE);
         }
     }
 
@@ -831,7 +911,7 @@ public class TakerMenuActivity extends TakeCareActivity
         }
         changeFragment();
         if (!searchBar.isFocused())
-            filterPopupMenu.setVisibility(View.GONE);
+            filterPopupMenu.setVisibility(GONE);
     }
 
 
@@ -980,6 +1060,19 @@ public class TakerMenuActivity extends TakeCareActivity
     public String getQueryKeywordsFilter() {
         return queryKeywordFilter;
     }
+
+    public boolean isDistanceFilterEnabled() {
+        return ((CheckBox)(findViewById(R.id.distance_filter_checkbox))).isChecked();
+    }
+
+    public boolean hideNoLocationPostsEnabled() {
+        return ((CheckBox)(findViewById(R.id.hide_no_location))).isChecked();
+    }
+
+    public float getDistanceRadius() {
+        return distanceRadius;
+    }
+
     private void getLocationPermission() {
         /*
          * Request location permission, so that we can get the location of the

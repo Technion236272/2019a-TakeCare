@@ -86,6 +86,11 @@
     <string name="taker_card_hint_lost_and_found">This item\'s category is lost&amp;founds</string>
     <string name="taker_card_hint_hitchhikes">This item\'s category is hitchhiking</string>
     <string name="taker_card_hint_other">This item is in a category of its own</string>
+    <string name="no_location_access">Please allow location access to use this feature</string>
+    <string name="hide_no_location_posts">Hide posts without location</string>
+    <string name="filter_by_distance">Filter by distance</string>
+    <string name="radius">Radius:</string>
+    <string name="kilometers">km</string>
 
 
     <!--Login activity elements-->
@@ -346,6 +351,7 @@
     <string name="tut_filter_in_person">In Person:\nIf you want to share your item with one specific person, that\'s the option.\nThe requesting person will have a special button in your post to notify you they are interested. You also will have to accept their request manually.</string>
     <string name="tut_filter_giveaway">Giveaway:\nThe items with this method are a public giveaway, so no specific requests - everyone\'s invited.\nThe users viewing your giveaway post will still be able to message you privately.</string>
     <string name="tut_filter_race">Race:\nFor the moments you\'re in a hurry and would like to grant the item to someone as fast as possible.\nNo sharing agreement in advance, the post must be deleted when the lucky person came first to claim.\n\"First Come, First Claimed!\"</string>
+    <string name="tut_filer_location">You can also choose to see only the posts that mention their specific location on map, or only those in your vicinity.</string>
     <string name="tut_drawer_toggle">Now we\'ll check out the navigation through the app.\nTapping here we can open our \"Navigation Drawer\". Let\'s see what\'s inside!</string>
     <string name="tut_drawer_header">Here your profile picture and name are displayed. You can tap the picture and change them in your profile settings anytime.\nYou can also view here your awards for achievements.</string>
     <string name="tut_drawer_content">Every item has a certain category. Here you can choose to see items of only one, or all categories.\n</string>

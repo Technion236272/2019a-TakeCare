@@ -85,6 +85,11 @@
     <string name="taker_card_hint_lost_and_found">קטגוריית הפריט היא אבידות ומציאות</string>
     <string name="taker_card_hint_hitchhikes">קטגוריית הפריט היא טרמפים</string>
     <string name="taker_card_hint_other">לפריט זה קטגוריה משלו</string>
+    <string name="no_location_access">אנא אשרו גישה למיקומכם על מנת להשתמש באופציה הזו</string>
+    <string name="hide_no_location_posts">הסתר פרסומים ללא מיקום</string>
+    <string name="filter_by_distance">סנן לפי מרחק</string>
+    <string name="radius">רדיוס:</string>
+    <string name="kilometers">ק\"מ</string>
 
 
     <!-- Login activity elements -->
@@ -342,6 +347,7 @@
     <string name="tut_filter_in_person">אישי:\nאם ברצונכם לשתף את הפריט שלכם עם אדם אחד מסוים, זוהי האופציה המתאימה.\nלאדם שמעוניין בפריט שלכם יהיה מוצג כפתור מיוחד שמאפשר לו לבקש מכם את הפריט. כמו כן, תצטרכו לאשר ידנית את הבקשות.</string>
     <string name="tut_filter_giveaway">פומבי:\nהפריטים באופן איסוף זה נמצאים בחלוקה פומבית, ולכן אין בקשות פרטניות - כולם מוזמנים.\nהמשתמשים שצופים בחלוקה הפומבית שלך עדיין יוכלו לשלוח לך הודעות פרטיות.</string>
     <string name="tut_filter_race">מרוץ:\nעבור אותם המקרים בהם אתם ממהרים וברצונכם למסור את הפריט לאדם כלשהו מהר ככל שניתן.\nאין הסכמה מראש, על המפרסם למחוק את הפריט ברגע שבר-המזל הראשון הגיע לקבל את הפריט. \"כל הקודם זוכה!\"</string>
+    <string name="tut_filer_location">ניתן גם לבחור לראות רק את הפרסומים המציינים את המיקום המדויק שלהם על המפה, או רק אלו הנמצאים בסביבתכם.</string>
     <string name="tut_drawer_toggle">כעת נעבור לניווט באפליקציה. בלחיצה על הכפתור הנ\"ל נפתח את \"מגירת הניווט\" שלנו.\nבואו נראה מה נמצא כאן!</string>
     <string name="tut_drawer_header">כאן מוצגים השם ותמונת הפרופיל שלכם. ניתן לשנות אותם בהגדרות הפרופיל שלכם בכל עת על-ידי לחיצה על התמונה.\nכמו כן, ניתן לראות כאן את המדליות שלכם עבור הישגים.</string>
     <string name="tut_drawer_content">לכל פריט יש קטגוריה אליה הוא שייך. כאן ניתן לבחור לראות פריטים רק מקטגוריה אחת, או מכולן.</string>

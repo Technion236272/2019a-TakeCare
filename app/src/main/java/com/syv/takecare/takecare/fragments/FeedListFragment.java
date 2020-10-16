@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -34,14 +35,18 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.syv.takecare.takecare.POJOs.*;
 import com.syv.takecare.takecare.activities.ItemInfoActivity;
@@ -51,6 +56,7 @@ import com.syv.takecare.takecare.activities.UserProfileActivity;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -88,6 +94,8 @@ public class FeedListFragment extends Fragment {
     private HashSet<String> userKeywords = new HashSet<>();
     private boolean keywordsLoaded = false;
     private Parcelable listState;
+
+    private Location currentLocation;
 
     @Nullable
     @Override
@@ -133,7 +141,24 @@ public class FeedListFragment extends Fragment {
             layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         }
 
+        resolveCurrentLocation();
         return view;
+    }
+
+    private void resolveCurrentLocation() {
+        try {
+            Task<Location> locationResult = LocationServices.getFusedLocationProviderClient(getContext()).getLastLocation();
+            locationResult.addOnCompleteListener(new OnCompleteListener<Location>() {
+                @Override
+                public void onComplete(@NonNull Task<Location> task) {
+                    if (task.isSuccessful()) {
+                        currentLocation = task.getResult();
+                    }
+                }
+            });
+        } catch (SecurityException e) {
+            Log.e("Exception: %s", e.getMessage());
+        }
     }
 
     @Override
@@ -214,7 +239,7 @@ public class FeedListFragment extends Fragment {
         query = query.whereEqualTo("displayStatus", true)
                 .orderBy("timestamp", Query.Direction.DESCENDING);
 
-        FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
+        final FirestoreRecyclerOptions<FeedCardInformation> response = new FirestoreRecyclerOptions.Builder<FeedCardInformation>()
                 .setQuery(query, FeedCardInformation.class)
                 .build();
 
@@ -260,12 +285,35 @@ public class FeedListFragment extends Fragment {
                 return false;
             }
 
+            private boolean insideSearchRadius(final GeoPoint itemGeoPoint, int position) {
+                if (itemGeoPoint == null) {
+                    Log.d(TAG, "GeoPoint is null at position " + position);
+                    return !(((TakerMenuActivity) Objects.requireNonNull(getActivity())).hideNoLocationPostsEnabled());
+                }
+                if (!(((TakerMenuActivity) Objects.requireNonNull(getActivity())).isDistanceFilterEnabled())) return true;
+
+                final float distanceRadius = ((TakerMenuActivity)getActivity()).getDistanceRadius();
+                Log.d(TAG, "distanceRadius: " + distanceRadius);
+                if (currentLocation == null) {
+                    Log.d(TAG, "Cannot fetch last known location");
+                    return true;
+                }
+                Location itemLocation = new Location("itemLocation");
+                itemLocation.setLatitude(itemGeoPoint.getLatitude());
+                itemLocation.setLongitude(itemGeoPoint.getLongitude());
+                return (currentLocation.distanceTo(itemLocation) / 1000) <= distanceRadius;
+            }
+
             @SuppressLint("ClickableViewAccessibility")
             @Override
             protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, final int position, @NonNull final FeedCardInformation model) {
+                if (!insideSearchRadius(model.getLocation(), position)) {
+                    holder.itemView.setVisibility(View.GONE);
+                    holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+                    return;
+                }
 
                 holder.setIsRecyclable(false);
-
                 final String itemId = model.getItemId();
                 holder.itemTitle.setText(model.getTitle());
                 RequestOptions requestOptions = new RequestOptions();

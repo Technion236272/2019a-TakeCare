@@ -21,9 +21,10 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/filter_menu_popup"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="wrap_content"
             android:focusable="true"
             android:focusableInTouchMode="true"
+            android:animateLayoutChanges="true"
             android:visibility="gone"
             tools:visibility="visible">
 
@@ -39,7 +40,7 @@
                     android:id="@+id/search_bar"
                     android:layout_width="0dp"
                     android:layout_height="52dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginEnd="60dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
@@ -77,8 +78,8 @@
                 android:id="@+id/pickupMethodLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 app:layout_constraintTop_toBottomOf="@id/searchKeywordLayout"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
@@ -86,7 +87,7 @@
                     style="@style/SecondaryText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginBottom="20dp"
                     android:text="@string/filter_menu_pickup_method_text"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -174,13 +175,98 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginBottom="8dp"
                     android:tint="@color/secondary_text"
                     app:backgroundTint="@color/divider"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/pickup_giveaway_button"
                     app:srcCompat="@drawable/ic_race" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/filter_location_options_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/pickupMethodLayout" >
+
+                <CheckBox
+                    android:id="@+id/hide_no_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/hide_no_location_posts"
+                    android:textColor="@color/secondary_text"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <CheckBox
+                    android:id="@+id/distance_filter_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_by_distance"
+                    android:textColor="@color/secondary_text"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/hide_no_location"
+                    app:layout_constraintStart_toStartOf="@id/hide_no_location" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/distance_filter_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    app:layout_constraintTop_toBottomOf="@id/distance_filter_checkbox"
+                    app:layout_constraintStart_toStartOf="@id/distance_filter_checkbox"
+                    android:animateLayoutChanges="true"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/radius_hint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/radius"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
+
+                    <com.robinhood.ticker.TickerView
+                        android:id="@+id/distance_ticker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintTop_toTopOf="@id/radius_hint"
+                        app:layout_constraintBottom_toBottomOf="@id/radius_hint"
+                        app:layout_constraintStart_toEndOf="@id/radius_hint"
+                        app:ticker_animationDuration="1000" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/kilometers"
+                        app:layout_constraintStart_toEndOf="@id/distance_ticker"
+                        app:layout_constraintTop_toTopOf="@id/distance_ticker" />
+
+                    <SeekBar
+                        android:id="@+id/distance_seekbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toBottomOf="@id/radius_hint"
+                        app:layout_constraintStart_toStartOf="@id/radius_hint"
+                        android:layout_marginHorizontal="16dp"
+                        android:progress="49"
+                        android:max="199" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/distance_filter_layout"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,5 +1,7 @@
 package com.syv.takecare.takecare.POJOs;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.util.List;
 
 public class FeedCardInformation {
@@ -12,6 +14,7 @@ public class FeedCardInformation {
     private String userName;
     private String userProfilePicture;
     private List<String> tags;
+    private GeoPoint location = null;
     private int status;
 
     /**
@@ -106,4 +109,8 @@ public class FeedCardInformation {
     public void setItemId(String itemId) {
         this.itemId = itemId;
     }
+
+    public void setLocation(GeoPoint location) { this.location = location; }
+
+    public GeoPoint getLocation() { return location; }
 }

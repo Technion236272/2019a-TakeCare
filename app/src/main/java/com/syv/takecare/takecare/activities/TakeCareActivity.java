@@ -165,10 +165,10 @@ public class TakeCareActivity extends AppCompatActivity {
      * which are stored in every activity
      */
     private void initialize() {
-        db = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance().getReference();
 
         prefs = getSharedPreferences(APP_LANGUAGE, Context.MODE_PRIVATE);
     }

@@ -197,6 +197,7 @@ public class LoginScreenFragment extends Fragment {
                         } else {
                             // Sign in failed
                             Log.w(TAG, "signInWithCredential: failure", task.getException());
+                            dialog.dismiss();
                             Toast.makeText(getActivity(), R.string.auth_failed,
                                     Toast.LENGTH_SHORT).show();
                         }
