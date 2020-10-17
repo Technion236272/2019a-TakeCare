@@ -97,6 +97,9 @@ public class FeedListFragment extends Fragment {
 
     private Location currentLocation;
 
+    private int invisibleItemsCount = 0;
+    private boolean invisible = false;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -308,8 +311,10 @@ public class FeedListFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull final ItemsViewHolder holder, final int position, @NonNull final FeedCardInformation model) {
                 if (!insideSearchRadius(model.getLocation(), position)) {
+                    invisibleItemsCount++;
                     holder.itemView.setVisibility(View.GONE);
                     holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+                    toggleVisibility();
                     return;
                 }
 
@@ -692,13 +697,18 @@ public class FeedListFragment extends Fragment {
     public void toggleVisibility() {
         if (emptyFeedView != null) {
             //Make the emptyFeedView visible of the adapter has no items (feed is empty)
-            emptyFeedView.setVisibility(
-                    (recyclerView.getAdapter() == null || recyclerView.getAdapter().getItemCount() == 0) ?
-                            VISIBLE : View.GONE);
-            //The list itself is set to be invisible if there are no items, in order to display emptyFeedView in its stead
-            recyclerView.setVisibility(
-                    (recyclerView.getAdapter() == null || recyclerView.getAdapter().getItemCount() == 0) ?
-                            View.GONE : View.VISIBLE);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    emptyFeedView.setVisibility(
+                            (recyclerView.getAdapter() == null || (recyclerView.getAdapter().getItemCount() - invisibleItemsCount) == 0) ?
+                                    VISIBLE : View.GONE);
+                    //The list itself is set to be invisible if there are no items, in order to display emptyFeedView in its stead
+                    recyclerView.setVisibility(
+                            (recyclerView.getAdapter() == null || (recyclerView.getAdapter().getItemCount() - invisibleItemsCount) == 0) ?
+                                    View.GONE : View.VISIBLE);
+                }
+            }, 300);
         }
     }
 
