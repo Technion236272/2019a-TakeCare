@@ -85,7 +85,7 @@
     <string name="taker_card_hint_lost_and_found">קטגוריית הפריט היא אבידות ומציאות</string>
     <string name="taker_card_hint_hitchhikes">קטגוריית הפריט היא טרמפים</string>
     <string name="taker_card_hint_other">לפריט זה קטגוריה משלו</string>
-    <string name="no_location_access">אנא אשרו גישה למיקומכם על מנת להשתמש באופציה הזו</string>
+    <string name="location_disabled">אנא הפעילו שירותי מיקום על מנת להשתמש באופציה הזו</string>
     <string name="hide_no_location_posts">הסתר פרסומים ללא מיקום</string>
     <string name="filter_by_distance">סנן לפי מרחק</string>
     <string name="radius">רדיוס:</string>

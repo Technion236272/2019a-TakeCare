@@ -95,10 +95,7 @@ public class FeedListFragment extends Fragment {
     private boolean keywordsLoaded = false;
     private Parcelable listState;
 
-    private Location currentLocation;
-
     private int invisibleItemsCount = 0;
-    private boolean invisible = false;
 
     @Nullable
     @Override
@@ -143,25 +140,7 @@ public class FeedListFragment extends Fragment {
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) jumpButton.getLayoutParams();
             layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         }
-
-        resolveCurrentLocation();
         return view;
-    }
-
-    private void resolveCurrentLocation() {
-        try {
-            Task<Location> locationResult = LocationServices.getFusedLocationProviderClient(getContext()).getLastLocation();
-            locationResult.addOnCompleteListener(new OnCompleteListener<Location>() {
-                @Override
-                public void onComplete(@NonNull Task<Location> task) {
-                    if (task.isSuccessful()) {
-                        currentLocation = task.getResult();
-                    }
-                }
-            });
-        } catch (SecurityException e) {
-            Log.e("Exception: %s", e.getMessage());
-        }
     }
 
     @Override
@@ -297,6 +276,7 @@ public class FeedListFragment extends Fragment {
 
                 final float distanceRadius = ((TakerMenuActivity)getActivity()).getDistanceRadius();
                 Log.d(TAG, "distanceRadius: " + distanceRadius);
+                Location currentLocation = ((TakerMenuActivity)getActivity()).getCurrentLocation();
                 if (currentLocation == null) {
                     Log.d(TAG, "Cannot fetch last known location");
                     return true;

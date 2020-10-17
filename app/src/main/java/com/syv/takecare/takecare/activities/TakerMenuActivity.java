@@ -11,7 +11,9 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.NonNull;
@@ -25,6 +27,9 @@ import com.cleveroad.blur_tutorial.state.tutorial.MenuState;
 import com.cleveroad.blur_tutorial.state.tutorial.PathState;
 import com.cleveroad.blur_tutorial.state.tutorial.TutorialState;
 import com.cleveroad.blur_tutorial.state.tutorial.ViewState;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -156,6 +161,8 @@ public class TakerMenuActivity extends TakeCareActivity
     private NavigationView navigationView;
     private DrawerLayout drawer;
 
+    private Location currentLocation;
+
     public boolean isTutorialOn = false;
     private String currentLanguage;
     private BlurTutorial tutorial = null;
@@ -189,6 +196,8 @@ public class TakerMenuActivity extends TakeCareActivity
         //Set the toolbar as the AppBar for this activity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        requestCurrentLocation();
 
         // Update user's tokens
         FirebaseInstanceId.getInstance().getInstanceId()
@@ -261,40 +270,67 @@ public class TakerMenuActivity extends TakeCareActivity
         distanceFilterCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                ConstraintLayout distanceFilterLayout = findViewById(R.id.distance_filter_layout);
+                final ConstraintLayout distanceFilterLayout = findViewById(R.id.distance_filter_layout);
                 if (isChecked) {
+                    // Check permissions and location services availability
                     getLocationPermission();
                     if (!mLocationPermissionGranted) {
                         distanceFilterCheckbox.setChecked(false);
                         return;
                     }
-                    distanceFilterLayout.setVisibility(VISIBLE);
-                    SeekBar distanceFilter = findViewById(R.id.distance_seekbar);
-                    final TickerView distanceDisplay = findViewById(R.id.distance_ticker);
-                    distanceDisplay.setCharacterLists(TickerUtils.provideNumberList());
-                    distanceDisplay.setText(String.valueOf(distanceFilter.getProgress() + 1));
-                    distanceRadius = distanceFilter.getProgress() + 1;
-                    distanceFilter.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                        @Override
-                        public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
-                            String distance = "" + (progress + 1);
-                            distanceDisplay.setText(distance);
-                            distanceRadius = progress + 1;
+                    try {
+                        LocationManager lm = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+                        assert lm != null;
+                        boolean gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                        if (!gps_enabled) {
+                            distanceFilterCheckbox.setChecked(false);
+                            Toast.makeText(TakerMenuActivity.this, R.string.location_disabled,
+                                    Toast.LENGTH_LONG).show();
+                            return;
                         }
+                    } catch (Exception e) {
+                        Log.d(TAG, "Unable to check GPS and network availability");
+                    }
 
-                        @Override
-                        public void onStartTrackingTouch(SeekBar seekBar) {
-                        }
+                    try {
+                        LocationServices.getFusedLocationProviderClient(getApplicationContext()).getLastLocation()
+                                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                                    @Override
+                                    public void onSuccess(Location location) {
+                                        currentLocation = location;
+                                        distanceFilterLayout.setVisibility(VISIBLE);
+                                        setupLocationFiltering();
+                                    }
+                                });
+                    } catch (SecurityException e) {
+                        Log.d(TAG, "Couldn't resolve current location");
+                    }
 
-                        @Override
-                        public void onStopTrackingTouch(SeekBar seekBar) {
-                            changeFragment();
-                        }
-                    });
+
+                    // Resolve current location and enable distance filtering option
+//                    try {
+//                        Task<Location> locationResult = LocationServices.getFusedLocationProviderClient(getApplicationContext()).getLastLocation();
+//                        locationResult.addOnCompleteListener(new OnCompleteListener<Location>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<Location> task) {
+//                                if (task.isSuccessful()) {
+//                                    currentLocation = task.getResult();
+//                                    if (currentLocation == null) {
+//                                        Log.d(TAG, "current location is null");
+//                                    }
+//                                    distanceFilterLayout.setVisibility(VISIBLE);
+//                                    setupLocationFiltering();
+//                                }
+//                            }
+//                        });
+//                    } catch (SecurityException e) {
+//                        Log.e("Exception: %s", e.getMessage());
+//                    }
+
                 } else {
                     distanceFilterLayout.setVisibility(GONE);
+                    changeFragment();
                 }
-                changeFragment();
             }
         });
 
@@ -386,6 +422,57 @@ public class TakerMenuActivity extends TakeCareActivity
                         checkAchievementsUpdates(value, TakerMenuActivity.this);
                     }
                 });
+    }
+
+    private void requestCurrentLocation() {
+        LocationRequest mLocationRequest = LocationRequest.create();
+        mLocationRequest.setInterval(60000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        LocationCallback mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                currentLocation = locationResult.getLastLocation();
+            }
+        };
+        try {
+            LocationServices.getFusedLocationProviderClient(getApplicationContext()).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+        } catch (SecurityException e) {
+            Log.d(TAG, "Couldn't retrieve current last known location upon request");
+        }
+    }
+
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
+
+    private void setupLocationFiltering() {
+        SeekBar distanceFilter = findViewById(R.id.distance_seekbar);
+        final TickerView distanceDisplay = findViewById(R.id.distance_ticker);
+        distanceDisplay.setCharacterLists(TickerUtils.provideNumberList());
+        distanceDisplay.setText(String.valueOf(distanceFilter.getProgress() + 1));
+        distanceRadius = distanceFilter.getProgress() + 1;
+        distanceFilter.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
+                String distance = "" + (progress + 1);
+                distanceDisplay.setText(distance);
+                distanceRadius = progress + 1;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                changeFragment();
+            }
+        });
+        changeFragment();
     }
 
     private void showTutorial() {

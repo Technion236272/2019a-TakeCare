@@ -86,7 +86,7 @@
     <string name="taker_card_hint_lost_and_found">This item\'s category is lost&amp;founds</string>
     <string name="taker_card_hint_hitchhikes">This item\'s category is hitchhiking</string>
     <string name="taker_card_hint_other">This item is in a category of its own</string>
-    <string name="no_location_access">Please allow location access to use this feature</string>
+    <string name="location_disabled">Please enable location services to use this feature</string>
     <string name="hide_no_location_posts">Hide posts without location</string>
     <string name="filter_by_distance">Filter by distance</string>
     <string name="radius">Radius:</string>
